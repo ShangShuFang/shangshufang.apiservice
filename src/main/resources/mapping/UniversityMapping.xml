@@ -105,8 +105,7 @@
     ON A.create_user = E.admin_id
     INNER JOIN shangshufang_base.system_admin F
     ON A.update_user = F.admin_id
-    WHERE A.university_code = #{arg0,jdbcType=INTEGER}
-    AND A.data_status = 'A';
+    WHERE A.university_code = #{arg0,jdbcType=INTEGER};
   </select>
   <select id="checkUniversityCodeExist" resultType="java.lang.Integer">
     SELECT
