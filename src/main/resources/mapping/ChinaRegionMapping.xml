@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.ChinaRegionMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.ChinaRegionEntity" >
+    <id column="region_id" property="regionID" jdbcType="INTEGER" />
+    <result column="region_code" property="regionCode" jdbcType="INTEGER" />
+    <result column="region_name" property="regionName" jdbcType="VARCHAR" />
+    <result column="region_parent" property="regionParent" jdbcType="INTEGER" />
+  </resultMap>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+    region_id,
+    region_code,
+    region_name,
+    region_parent
+    FROM shangshufang_base.china_region A
+    WHERE region_parent = #{arg0,jdbcType=INTEGER};
+  </select>
+</mapper>
