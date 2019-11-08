@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.UniversityAccountMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.UniversityAccountEntity" >
+    <id column="account_id" property="accountID" jdbcType="INTEGER" />
+    <result column="university_code" property="universityCode" jdbcType="INTEGER" />
+    <result column="university_name" property="universityName" jdbcType="VARCHAR" />
+    <result column="school_id" property="schoolID" jdbcType="INTEGER" />
+    <result column="school_name" property="schoolName" jdbcType="VARCHAR" />
+    <result column="customer_id" property="customerID" jdbcType="INTEGER" />
+    <result column="full_name" property="customerName" jdbcType="VARCHAR" />
+    <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="photo" property="photo" jdbcType="VARCHAR" />
+    <result column="account_role" property="accountRole" jdbcType="VARCHAR" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS TotalCount
+    FROM shangshufang_customer.university_account
+    WHERE 1=1
+    <if test="arg0 != 0">
+      AND university_code = #{arg0,jdbcType=INTEGER}
+    </if>
+    <if test="arg1 != 0">
+      AND school_id = #{arg1,jdbcType=INTEGER}
+    </if>;
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.account_id,
+      A.university_code,
+      B.university_name,
+      A.school_id,
+      C.school_name,
+      A.cellphone,
+      A.account_role,
+      D.customer_id,
+      D.full_name,
+      D.email,
+      A.data_status,
+      CASE WHEN A.data_status = 'A' THEN '正常'
+          WHEN A.data_status = 'D' THEN '冻结'
+      ELSE '未知数据状态'
+      END AS data_status_text,
+      E.admin_name AS create_user,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      F.admin_name AS update_user,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.university_account A
+    INNER JOIN shangshufang_customer.university B
+    ON A.university_code = B.university_code
+    INNER JOIN shangshufang_customer.school C
+    ON A.university_code = C.university_code
+    AND A.school_id = C.school_id
+    INNER JOIN shangshufang_customer.university_customer D
+    ON A.university_code = D.university_code
+    AND A.school_id = D.school_id
+    AND A.cellphone = D.cellphone
+    INNER JOIN shangshufang_base.system_admin E
+    ON A.create_user = E.admin_id
+    INNER JOIN shangshufang_base.system_admin F
+    ON A.update_user = F.admin_id
+    WHERE 1=1
+    <if test="arg2 != 0">
+      AND A.university_code = #{arg2,jdbcType=INTEGER}
+    </if>
+    <if test="arg3 != 0">
+      AND A.school_id = #{arg3,jdbcType=INTEGER}
+    </if>
+    ORDER BY A.university_code, A.school_id, A.update_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+  <select id="login" resultMap="BaseResultMap">
+    SELECT
+      A.account_id,
+      A.university_code,
+      B.university_name,
+      A.school_id,
+      C.school_name,
+      A.cellphone,
+      A.account_role,
+      D.customer_id,
+      D.full_name,
+      D.email,
+      D.photo,
+      A.data_status,
+      CASE WHEN A.data_status = 'A' THEN '正常'
+          WHEN A.data_status = 'D' THEN '冻结'
+      ELSE '未知数据状态'
+      END AS data_status_text,
+      E.admin_name AS create_user,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      F.admin_name AS update_user,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.university_account A
+    INNER JOIN shangshufang_customer.university B
+    ON A.university_code = B.university_code
+    INNER JOIN shangshufang_customer.school C
+    ON A.university_code = C.university_code
+    AND A.school_id = C.school_id
+    INNER JOIN shangshufang_customer.university_customer D
+    ON A.university_code = D.university_code
+    AND A.school_id = D.school_id
+    AND A.cellphone = D.cellphone
+    INNER JOIN shangshufang_base.system_admin E
+    ON A.create_user = E.admin_id
+    INNER JOIN shangshufang_base.system_admin F
+    ON A.update_user = F.admin_id
+    WHERE A.cellphone = #{arg0,jdbcType=VARCHAR}
+    AND A.password = #{arg1,jdbcType=VARCHAR};
+  </select>
+  <select id="checkCellphoneExist" resultType="java.lang.Integer">
+    SELECT
+      COUNT(1) AS TotalCount
+    FROM shangshufang_customer.university_account
+    WHERE cellphone = #{cellphone,jdbcType=VARCHAR};
+  </select>
+  <select id="checkEmailExist" resultType="java.lang.Integer">
+    SELECT
+      COUNT(1) AS TotalCount
+    FROM shangshufang_customer.university_account
+    WHERE email = #{email,jdbcType=VARCHAR};
+  </select>
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.UniversityAccountEntity" >
+    INSERT INTO shangshufang_customer.university_account (
+      university_code,
+      school_id,
+      cellphone,
+      password,
+      account_role,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{universityCode, jdbcType=INTEGER},
+      #{schoolID, jdbcType=INTEGER},
+      #{cellphone, jdbcType=VARCHAR},
+      #{password, jdbcType=VARCHAR},
+      #{accountRole, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.UniversityAccountEntity" >
+    UPDATE shangshufang_customer.university_account SET
+      cellphone = #{cellphone,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE university_code = #{universityCode,jdbcType=INTEGER}
+    AND school_id = #{schoolID,jdbcType=INTEGER}
+    AND account_id = #{accountID,jdbcType=INTEGER};
+  </update>
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.UniversityAccountEntity" >
+    UPDATE shangshufang_customer.university_account SET
+      data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=INTEGER}
+    WHERE university_code = #{universityCode,jdbcType=INTEGER}
+    AND school_id = #{schoolID,jdbcType=INTEGER}
+    AND account_id = #{accountID,jdbcType=INTEGER};
+  </update>
+  <delete id="delete" parameterType="java.lang.Integer" >
+    DELETE FROM shangshufang_customer.university_account
+    WHERE university_code = #{arg0,jdbcType=INTEGER}
+    AND school_id = #{arg1,jdbcType=INTEGER}
+    AND account_id = #{arg2,jdbcType=INTEGER};
+  </delete>
+</mapper>
