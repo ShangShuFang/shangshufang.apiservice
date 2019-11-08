@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.SystemAdminMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.SystemAdminEntity" >
+    <id column="admin_id" property="adminID" jdbcType="INTEGER" />
+    <result column="admin_name" property="adminName" jdbcType="VARCHAR" />
+    <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="login" resultMap="BaseResultMap">
+    SELECT
+    admin_id,
+    admin_name,
+    cellphone
+    FROM shangshufang_base.system_admin
+    WHERE cellphone = #{arg0,jdbcType=VARCHAR}
+    AND password = #{arg1,jdbcType=VARCHAR};
+  </select>
+</mapper>
