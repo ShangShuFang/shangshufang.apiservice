@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.CompanyMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.CompanyEntity" >
+    <id column="company_id" property="companyID" jdbcType="INTEGER" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="province_code" property="provinceCode" jdbcType="INTEGER" />
+    <result column="province_name" property="provinceName" jdbcType="VARCHAR" />
+    <result column="city_code" property="cityCode" jdbcType="INTEGER" />
+    <result column="city_name" property="cityName" jdbcType="VARCHAR" />
+    <result column="district_code" property="districtCode" jdbcType="INTEGER" />
+    <result column="district_name" property="districtName" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="contacts" property="contacts" jdbcType="VARCHAR" />
+    <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
+    <result column="business_license" property="businessLicense" jdbcType="VARCHAR" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS TotalCount
+    FROM shangshufang_customer.company
+    WHERE 1=1
+    <if test="arg0 != 0">
+      AND province_code = #{arg0,jdbcType=INTEGER}
+    </if>
+    <if test="arg1 != 0">
+      AND city_code = #{arg1,jdbcType=INTEGER}
+    </if>;
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.company_id,
+      A.company_name,
+      A.province_code,
+      B.region_name AS province_name,
+      A.city_code,
+      IFNULL(C.region_name, CONCAT(B.region_name, '市')) AS city_name,
+      A.district_code,
+      D.region_name AS district_name,
+      A.address,
+      A.contacts,
+      A.cellphone,
+      A.business_license,
+      A.data_status,
+      CASE WHEN A.data_status = 'A' THEN '正常'
+          WHEN A.data_status = 'D' THEN '冻结'
+      ELSE '未知数据状态'
+      END AS data_status_text,
+      E.admin_name AS create_user,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      F.admin_name AS update_user,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.company A
+    INNER JOIN shangshufang_base.china_region B
+    ON A.province_code = B.region_code
+    LEFT JOIN shangshufang_base.china_region C
+    ON A.city_code = C.region_code
+    INNER JOIN shangshufang_base.china_region D
+    ON A.district_code = D.region_code
+    INNER JOIN shangshufang_base.system_admin E
+    ON A.create_user = E.admin_id
+    INNER JOIN shangshufang_base.system_admin F
+    ON A.update_user = F.admin_id
+    WHERE 1=1
+    <if test="arg2 != 0">
+      AND A.province_code = #{arg2,jdbcType=INTEGER}
+    </if>
+    <if test="arg3 != 0">
+      AND A.city_code = #{arg3,jdbcType=INTEGER}
+    </if>
+    ORDER BY A.update_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+  <select id="searchByID" resultMap="BaseResultMap">
+    SELECT
+      A.company_id,
+      A.company_name,
+      A.province_code,
+      B.region_name AS province_name,
+      A.city_code,
+      IFNULL(C.region_name, CONCAT(B.region_name, '市')) AS city_name,
+      A.district_code,
+      D.region_name AS district_name,
+      A.address,
+      A.contacts,
+      A.cellphone,
+      A.business_license,
+      A.data_status,
+      CASE WHEN A.data_status = 'A' THEN '正常'
+          WHEN A.data_status = 'D' THEN '冻结'
+      ELSE '未知数据状态'
+      END AS data_status_text,
+      E.admin_name AS create_user,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      F.admin_name AS update_user,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.company A
+    INNER JOIN shangshufang_base.china_region B
+    ON A.province_code = B.region_code
+    INNER JOIN shangshufang_base.china_region C
+    ON A.city_code = C.region_code
+    INNER JOIN shangshufang_base.china_region D
+    ON A.district_code = D.region_code
+    INNER JOIN shangshufang_base.system_admin E
+    ON A.create_user = E.admin_id
+    INNER JOIN shangshufang_base.system_admin F
+    ON A.update_user = F.admin_id
+    WHERE A.company_id = #{arg0,jdbcType=INTEGER};
+  </select>
+  <select id="checkCompanyNameExist" resultType="java.lang.Integer">
+    SELECT
+      COUNT(1) AS TotalCount
+    FROM shangshufang_customer.company
+    WHERE company_name = #{arg0,jdbcType=VARCHAR};
+  </select>
+  <select id="checkCellphoneExist" resultType="java.lang.Integer">
+    SELECT
+      COUNT(1) AS TotalCount
+    FROM shangshufang_customer.company
+    WHERE cellphone = #{arg0,jdbcType=VARCHAR};
+  </select>
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.CompanyEntity" >
+    INSERT INTO shangshufang_customer.company (
+      company_name,
+      province_code,
+      city_code,
+      district_code,
+      address,
+      contacts,
+      cellphone,
+      business_license,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{companyName, jdbcType=VARCHAR},
+      #{provinceCode, jdbcType=INTEGER},
+      #{cityCode, jdbcType=INTEGER},
+      #{districtCode, jdbcType=INTEGER},
+      #{address, jdbcType=VARCHAR},
+      #{contacts, jdbcType=VARCHAR},
+      #{cellphone, jdbcType=VARCHAR},
+      #{businessLicense, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.CompanyEntity" >
+    UPDATE shangshufang_customer.company SET
+      company_name = #{companyName,jdbcType=VARCHAR},
+      province_code = #{provinceCode,jdbcType=INTEGER},
+      city_code = #{cityCode,jdbcType=INTEGER},
+      district_code = #{districtCode,jdbcType=INTEGER},
+      address = #{address,jdbcType=VARCHAR},
+      contacts = #{contacts,jdbcType=VARCHAR},
+      cellphone = #{cellphone,jdbcType=VARCHAR},
+      business_license = #{businessLicense,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE company_id = #{companyID,jdbcType=INTEGER};
+  </update>
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.CompanyEntity" >
+    UPDATE shangshufang_customer.company SET
+      data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE company_id = #{companyID,jdbcType=INTEGER};
+  </update>
+  <delete id="delete" parameterType="java.lang.Integer" >
+    DELETE FROM shangshufang_customer.company
+    WHERE company_id = #{companyID,jdbcType=INTEGER};
+  </delete>
+</mapper>
