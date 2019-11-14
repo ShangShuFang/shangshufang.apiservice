@@ -3,17 +3,16 @@ package com.shangshufang.apiservice.entity;
 import lombok.Data;
 
 @Data
-public class UniversityAccountEntity extends BaseEntity {
+public class CompanyAccountEntity extends BaseEntity {
     private int accountID;
-    private int universityCode;
-    private String universityName;
-    private int schoolID;
-    private String schoolName;
+    private int companyID;
+    private String companyName;
     private int customerID;
     private String customerName;
     private String cellphone;
-    private String password;
     private String email;
+    private String password;
     private String accountRole;
     private String accountRoleText;
+    private String photo;
 }

@@ -14,6 +14,7 @@
     <result column="email" property="email" jdbcType="VARCHAR" />
     <result column="photo" property="photo" jdbcType="VARCHAR" />
     <result column="account_role" property="accountRole" jdbcType="VARCHAR" />
+    <result column="account_role_text" property="accountRoleText" jdbcType="VARCHAR" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -42,6 +43,10 @@
       C.school_name,
       A.cellphone,
       A.account_role,
+      CASE WHEN A.account_role = 'A' THEN '管理员'
+      WHEN A.account_role = 'S' THEN '员工'
+      ELSE '未知数据状态'
+      END AS account_role_text,
       D.customer_id,
       D.full_name,
       D.email,
@@ -87,6 +92,10 @@
       C.school_name,
       A.cellphone,
       A.account_role,
+      CASE WHEN A.account_role = 'A' THEN '管理员'
+          WHEN A.account_role = 'S' THEN '员工'
+          ELSE '未知数据状态'
+      END AS account_role_text,
       D.customer_id,
       D.full_name,
       D.email,
