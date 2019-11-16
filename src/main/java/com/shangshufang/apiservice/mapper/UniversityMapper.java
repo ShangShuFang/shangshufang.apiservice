@@ -17,5 +17,7 @@ public interface UniversityMapper extends BaseMapper<UniversityEntity> {
 
     int checkUniversityNameExist(String universityName);
 
+    int updateBrand(UniversityEntity entity);
+
     int delete(int universityID);
 }

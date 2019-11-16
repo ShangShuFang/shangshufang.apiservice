@@ -14,6 +14,8 @@
     <result column="contacts" property="contacts" jdbcType="VARCHAR" />
     <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
     <result column="business_license" property="businessLicense" jdbcType="VARCHAR" />
+    <result column="brand" property="brand" jdbcType="VARCHAR" />
+    <result column="memo" property="memo" jdbcType="VARCHAR" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -47,8 +49,11 @@
       A.contacts,
       A.cellphone,
       A.business_license,
+      A.brand,
+      A.memo,
       A.data_status,
-      CASE WHEN A.data_status = 'A' THEN '正常'
+      CASE WHEN A.data_status = 'P' THEN '未激活'
+          WHEN A.data_status = 'A' THEN '正常'
           WHEN A.data_status = 'D' THEN '冻结'
       ELSE '未知数据状态'
       END AS data_status_text,
@@ -91,8 +96,11 @@
       A.contacts,
       A.cellphone,
       A.business_license,
+      A.brand,
+      A.memo,
       A.data_status,
-      CASE WHEN A.data_status = 'A' THEN '正常'
+      CASE WHEN A.data_status = 'P' THEN '未激活'
+          WHEN A.data_status = 'A' THEN '正常'
           WHEN A.data_status = 'D' THEN '冻结'
       ELSE '未知数据状态'
       END AS data_status_text,
@@ -167,6 +175,13 @@
   <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.CompanyEntity" >
     UPDATE shangshufang_customer.company SET
       data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE company_id = #{companyID,jdbcType=INTEGER};
+  </update>
+  <update id="updateBrand" parameterType="com.shangshufang.apiservice.entity.CompanyEntity" >
+    UPDATE shangshufang_customer.company SET
+      brand = #{brand,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE company_id = #{companyID,jdbcType=INTEGER};
   </update>

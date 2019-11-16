@@ -50,6 +50,11 @@ public class UniversityController {
         return serviceImpl.changeDataStatus(dto);
     }
 
+    @RequestMapping(value="/changeBrand", method = RequestMethod.PUT)
+    public UnifiedResponse changeBrand(@RequestBody UniversityDTO dto){
+        return serviceImpl.changeBrand(dto);
+    }
+
     @RequestMapping(value = "/{universityID}", method = RequestMethod.DELETE)
     public UnifiedResponse delete(@PathVariable("universityID") int universityID){
         return serviceImpl.delete(universityID);

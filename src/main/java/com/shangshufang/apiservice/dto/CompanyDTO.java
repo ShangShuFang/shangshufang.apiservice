@@ -13,4 +13,6 @@ public class CompanyDTO extends BaseDTO {
     private String contacts;
     private String cellphone;
     private String businessLicense;
+    private String brand;
+    private String memo;
 }

@@ -86,6 +86,20 @@ public class UniversityServiceImpl implements UniversityService {
     }
 
     @Override
+    public UnifiedResponse changeBrand(UniversityDTO dto) {
+        try {
+            UniversityEntity entity = new UniversityEntity();
+            ObjectConvertUtils.toBean(dto, entity);
+            entity.setUpdateUser(dto.getLoginUser());
+            int affectRow = myMapper.updateBrand(entity);
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse add(UniversityDTO dto) {
         try {
             UniversityEntity entity = new UniversityEntity();

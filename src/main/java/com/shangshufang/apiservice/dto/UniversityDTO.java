@@ -11,4 +11,6 @@ public class UniversityDTO extends BaseDTO {
     private int cityCode;
     private int districtCode;
     private String address;
+    private String brand;
+    private String memo;
 }

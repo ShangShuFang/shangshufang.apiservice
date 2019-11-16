@@ -12,5 +12,7 @@ public interface UniversityService extends BaseService<UniversityDTO> {
 
     UnifiedResponse checkUniversityNameExist(String universityName);
 
+    UnifiedResponse changeBrand(UniversityDTO dto);
+
     UnifiedResponse delete(int universityID);
 }

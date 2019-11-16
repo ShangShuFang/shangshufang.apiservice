@@ -12,6 +12,8 @@
     <result column="district_code" property="districtCode" jdbcType="INTEGER" />
     <result column="district_name" property="districtName" jdbcType="VARCHAR" />
     <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="brand" property="brand" jdbcType="VARCHAR" />
+    <result column="memo" property="memo" jdbcType="VARCHAR" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -43,8 +45,11 @@
       A.district_code,
       D.region_name AS district_name,
       A.address,
+      A.brand,
+      A.memo,
       A.data_status,
-      CASE WHEN A.data_status = 'A' THEN '正常'
+      CASE WHEN A.data_status = 'P' THEN '未激活'
+          WHEN A.data_status = 'A' THEN '正常'
           WHEN A.data_status = 'D' THEN '冻结'
       ELSE '未知数据状态'
       END AS data_status_text,
@@ -85,8 +90,11 @@
       A.district_code,
       D.region_name AS district_name,
       A.address,
+      A.brand,
+      A.memo,
       A.data_status,
-      CASE WHEN A.data_status = 'A' THEN '正常'
+      CASE WHEN A.data_status = 'P' THEN '未激活'
+          WHEN A.data_status = 'A' THEN '正常'
           WHEN A.data_status = 'D' THEN '冻结'
       ELSE '未知数据状态'
       END AS data_status_text,
@@ -155,6 +163,13 @@
   <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.UniversityEntity" >
     UPDATE shangshufang_customer.university SET
       data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE university_id = #{universityID,jdbcType=INTEGER};
+  </update>
+  <update id="updateBrand" parameterType="com.shangshufang.apiservice.entity.UniversityEntity" >
+    UPDATE shangshufang_customer.university SET
+      brand = #{brand,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE university_id = #{universityID,jdbcType=INTEGER};
   </update>

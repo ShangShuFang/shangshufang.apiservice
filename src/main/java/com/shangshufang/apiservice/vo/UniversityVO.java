@@ -14,4 +14,6 @@ public class UniversityVO extends BaseVO {
     private int districtCode;
     private String districtName;
     private String address;
+    private String brand;
+    private String memo;
 }

@@ -12,5 +12,7 @@ public interface CompanyService extends BaseService<CompanyDTO> {
 
     UnifiedResponse checkCellphoneExist(String cellphone);
 
+    UnifiedResponse changeBrand(CompanyDTO dto);
+
     UnifiedResponse delete(int companyID);
 }

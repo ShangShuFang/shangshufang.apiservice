@@ -17,5 +17,7 @@ public interface CompanyMapper extends BaseMapper<CompanyEntity> {
 
     int checkCellphoneExist(String cellphone);
 
+    int updateBrand(CompanyEntity entity);
+
     int delete(int companyID);
 }
