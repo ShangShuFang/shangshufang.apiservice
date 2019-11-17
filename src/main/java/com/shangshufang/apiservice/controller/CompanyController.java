@@ -55,6 +55,11 @@ public class CompanyController {
         return serviceImpl.changeBrand(dto);
     }
 
+    @RequestMapping(value="/changeMemo", method = RequestMethod.PUT)
+    public UnifiedResponse changeMemo(@RequestBody CompanyDTO dto){
+        return serviceImpl.changeMemo(dto);
+    }
+
     @RequestMapping(value = "/{companyID}", method = RequestMethod.DELETE)
     public UnifiedResponse delete(@PathVariable("companyID") int companyID){
         return serviceImpl.delete(companyID);

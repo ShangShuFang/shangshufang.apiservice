@@ -181,6 +181,11 @@
   <update id="updateBrand" parameterType="com.shangshufang.apiservice.entity.CompanyEntity" >
     UPDATE shangshufang_customer.company SET
       brand = #{brand,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE company_id = #{companyID,jdbcType=INTEGER};
+  </update>
+  <update id="updateMemo" parameterType="com.shangshufang.apiservice.entity.CompanyEntity" >
+    UPDATE shangshufang_customer.company SET
       memo = #{memo,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE company_id = #{companyID,jdbcType=INTEGER};

@@ -19,5 +19,7 @@ public interface UniversityMapper extends BaseMapper<UniversityEntity> {
 
     int updateBrand(UniversityEntity entity);
 
+    int updateMemo(UniversityEntity entity);
+
     int delete(int universityID);
 }

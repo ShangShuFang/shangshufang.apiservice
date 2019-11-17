@@ -19,5 +19,7 @@ public interface CompanyMapper extends BaseMapper<CompanyEntity> {
 
     int updateBrand(CompanyEntity entity);
 
+    int updateMemo(CompanyEntity entity);
+
     int delete(int companyID);
 }

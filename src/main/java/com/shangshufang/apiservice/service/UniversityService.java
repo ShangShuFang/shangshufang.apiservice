@@ -14,5 +14,7 @@ public interface UniversityService extends BaseService<UniversityDTO> {
 
     UnifiedResponse changeBrand(UniversityDTO dto);
 
+    UnifiedResponse changeMemo(UniversityDTO dto);
+
     UnifiedResponse delete(int universityID);
 }

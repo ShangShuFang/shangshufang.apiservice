@@ -169,6 +169,11 @@
   <update id="updateBrand" parameterType="com.shangshufang.apiservice.entity.UniversityEntity" >
     UPDATE shangshufang_customer.university SET
       brand = #{brand,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE university_id = #{universityID,jdbcType=INTEGER};
+  </update>
+  <update id="updateMemo" parameterType="com.shangshufang.apiservice.entity.UniversityEntity" >
+    UPDATE shangshufang_customer.university SET
       memo = #{memo,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE university_id = #{universityID,jdbcType=INTEGER};

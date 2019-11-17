@@ -14,5 +14,7 @@ public interface CompanyService extends BaseService<CompanyDTO> {
 
     UnifiedResponse changeBrand(CompanyDTO dto);
 
+    UnifiedResponse changeMemo(CompanyDTO dto);
+
     UnifiedResponse delete(int companyID);
 }

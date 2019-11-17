@@ -99,6 +99,20 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public UnifiedResponse changeMemo(CompanyDTO dto) {
+        try {
+            CompanyEntity entity = new CompanyEntity();
+            ObjectConvertUtils.toBean(dto, entity);
+            entity.setUpdateUser(dto.getLoginUser());
+            int affectRow = myMapper.updateMemo(entity);
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse delete(int companyID) {
         try {
             int affectRow = myMapper.delete(companyID);
