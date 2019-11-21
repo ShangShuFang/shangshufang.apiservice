@@ -9,4 +9,5 @@ public class TechnologyEntity extends BaseEntity {
     private int technologyStars;
     private String technologyThumbnail;
     private String technologyMemo;
+    private int knowledgeCount;
 }

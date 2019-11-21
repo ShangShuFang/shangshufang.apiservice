@@ -7,6 +7,7 @@
     <result column="technology_stars" property="technologyStars" jdbcType="INTEGER" />
     <result column="technology_thumbnail" property="technologyThumbnail" jdbcType="VARCHAR" />
     <result column="technology_memo" property="technologyMemo" jdbcType="VARCHAR" />
+    <result column="knowledge_count" property="knowledgeCount" jdbcType="INTEGER" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -26,6 +27,7 @@
       A.technology_stars,
       A.technology_thumbnail,
       A.technology_memo,
+      D.knowledge_count,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未激活'
           WHEN A.data_status = 'A' THEN '正常'
@@ -41,6 +43,15 @@
     ON A.create_user = B.admin_id
     INNER JOIN shangshufang_base.system_admin C
     ON A.update_user = C.admin_id
+    LEFT JOIN
+    (
+    SELECT
+      technology_id,
+      COUNT(1) AS knowledge_count
+    FROM shangshufang_base.technology_knowledge
+    GROUP BY technology_id
+    ) D
+    ON A.technology_id = D.technology_id
     ORDER BY A.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
@@ -51,6 +62,7 @@
       A.technology_stars,
       A.technology_thumbnail,
       A.technology_memo,
+      D.knowledge_count,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未激活'
           WHEN A.data_status = 'A' THEN '正常'
@@ -66,6 +78,15 @@
     ON A.create_user = B.admin_id
     INNER JOIN shangshufang_base.system_admin C
     ON A.update_user = C.admin_id
+    LEFT JOIN
+    (
+    SELECT
+      technology_id,
+      COUNT(1) AS knowledge_count
+    FROM shangshufang_base.technology_knowledge
+    GROUP BY technology_id
+    ) D
+    ON A.technology_id = D.technology_id
     WHERE A.technology_id = #{arg0,jdbcType=INTEGER};
   </select>
   <select id="checkTechnologyNameExist" resultType="java.lang.Integer">

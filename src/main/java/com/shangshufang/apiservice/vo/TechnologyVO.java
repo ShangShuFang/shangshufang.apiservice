@@ -9,4 +9,5 @@ public class TechnologyVO extends BaseVO {
     private int technologyStars;
     private String technologyThumbnail;
     private String technologyMemo;
+    private int knowledgeCount;
 }
