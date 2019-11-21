@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.TechnologyKnowledgeMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.TechnologyKnowledgeEntity" >
+    <id column="knowledge_id" property="knowledgeID" jdbcType="INTEGER" />
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
+    <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS TotalCount
+    FROM shangshufang_base.technology_knowledge
+    WHERE 1=1
+    <if test="technologyID != 0">
+      AND technology_id = #{technologyID,jdbcType=INTEGER}
+    </if>;
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.knowledge_id,
+      A.technology_id,
+      B.technology_name,
+      A.knowledge_name,
+      A.data_status,
+      CASE WHEN A.data_status = 'P' THEN '未激活'
+          WHEN A.data_status = 'A' THEN '正常'
+          WHEN A.data_status = 'D' THEN '禁用'
+      ELSE '未知数据状态'
+      END AS data_status_text,
+      C.admin_name AS create_user,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      D.admin_name AS update_user,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_base.technology_knowledge A
+    INNER JOIN shangshufang_base.technology B
+    ON A.technology_id = B.technology_id
+    INNER JOIN shangshufang_base.system_admin C
+    ON A.create_user = C.admin_id
+    INNER JOIN shangshufang_base.system_admin D
+    ON A.update_user = D.admin_id
+    WHERE 1=1
+    <if test="arg2 != 0">
+      AND A.technology_id = #{arg2,jdbcType=INTEGER}
+    </if>
+    ORDER BY A.knowledge_id, A.update_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+
+  <select id="search" resultMap="BaseResultMap">
+    SELECT
+    A.knowledge_id,
+    A.technology_id,
+    B.technology_name,
+    A.knowledge_name,
+    A.data_status,
+    CASE WHEN A.data_status = 'P' THEN '未激活'
+    WHEN A.data_status = 'A' THEN '正常'
+    WHEN A.data_status = 'D' THEN '禁用'
+    ELSE '未知数据状态'
+    END AS data_status_text,
+    C.admin_name AS create_user,
+    DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+    D.admin_name AS update_user,
+    DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_base.technology_knowledge A
+    INNER JOIN shangshufang_base.technology B
+    ON A.technology_id = B.technology_id
+    INNER JOIN shangshufang_base.system_admin C
+    ON A.create_user = C.admin_id
+    INNER JOIN shangshufang_base.system_admin D
+    ON A.update_user = D.admin_id
+    WHERE A.technology_id = #{arg0,jdbcType=INTEGER}
+    AND B.data_status = 'A'
+    ORDER BY A.update_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+  <select id="checkKnowledgeNameExist" resultType="java.lang.Integer">
+    SELECT
+      COUNT(1) AS TotalCount
+    FROM shangshufang_base.technology_knowledge
+    WHERE technology_id = #{arg0,jdbcType=INTEGER}
+    AND knowledge_name = #{arg1,jdbcType=VARCHAR};
+  </select>
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.TechnologyKnowledgeEntity" >
+    INSERT INTO shangshufang_base.technology_knowledge (
+      technology_id,
+      knowledge_name,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{technologyID, jdbcType=VARCHAR},
+      #{knowledgeName, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.TechnologyKnowledgeEntity" >
+    UPDATE shangshufang_base.technology_knowledge SET
+      knowledge_name = #{knowledgeName,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+    AND knowledge_id = #{knowledgeID,jdbcType=INTEGER};
+  </update>
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.TechnologyKnowledgeEntity" >
+    UPDATE shangshufang_base.technology_knowledge SET
+      data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+    AND knowledge_id = #{knowledgeID,jdbcType=INTEGER};
+  </update>
+  <delete id="delete" parameterType="java.lang.Integer" >
+    DELETE FROM shangshufang_base.technology_knowledge
+    WHERE technology_id = #{arg0,jdbcType=INTEGER}
+    AND knowledge_id = #{arg1,jdbcType=INTEGER};
+  </delete>
+</mapper>
