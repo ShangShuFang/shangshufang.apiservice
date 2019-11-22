@@ -6,6 +6,7 @@ import lombok.Data;
 public class CompanyEntity extends BaseEntity {
     private int companyID;
     private String companyName;
+    private String companyAbbreviation;
     private int provinceCode;
     private String provinceName;
     private int cityCode;

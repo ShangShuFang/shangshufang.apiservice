@@ -6,6 +6,7 @@ import lombok.Data;
 public class CompanyDTO extends BaseDTO {
     private int companyID;
     private String companyName;
+    private String companyAbbreviation;
     private int provinceCode;
     private int cityCode;
     private int districtCode;

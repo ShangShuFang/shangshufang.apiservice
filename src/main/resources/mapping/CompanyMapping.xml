@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.CompanyEntity" >
     <id column="company_id" property="companyID" jdbcType="INTEGER" />
     <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="company_abbreviation" property="companyAbbreviation" jdbcType="VARCHAR" />
     <result column="province_code" property="provinceCode" jdbcType="INTEGER" />
     <result column="province_name" property="provinceName" jdbcType="VARCHAR" />
     <result column="city_code" property="cityCode" jdbcType="INTEGER" />
@@ -39,6 +40,7 @@
     SELECT
       A.company_id,
       A.company_name,
+      A.company_abbreviation,
       A.province_code,
       B.region_name AS province_name,
       A.city_code,
@@ -86,6 +88,7 @@
     SELECT
       A.company_id,
       A.company_name,
+      A.company_abbreviation,
       A.province_code,
       B.region_name AS province_name,
       A.city_code,
@@ -136,6 +139,7 @@
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.CompanyEntity" >
     INSERT INTO shangshufang_customer.company (
       company_name,
+      company_abbreviation,
       province_code,
       city_code,
       district_code,
@@ -148,6 +152,7 @@
     )
     VALUES (
       #{companyName, jdbcType=VARCHAR},
+      #{companyAbbreviation, jdbcType=VARCHAR},
       #{provinceCode, jdbcType=INTEGER},
       #{cityCode, jdbcType=INTEGER},
       #{districtCode, jdbcType=INTEGER},
@@ -162,6 +167,7 @@
   <update id="update" parameterType="com.shangshufang.apiservice.entity.CompanyEntity" >
     UPDATE shangshufang_customer.company SET
       company_name = #{companyName,jdbcType=VARCHAR},
+      company_abbreviation = #{companyAbbreviation,jdbcType=VARCHAR},
       province_code = #{provinceCode,jdbcType=INTEGER},
       city_code = #{cityCode,jdbcType=INTEGER},
       district_code = #{districtCode,jdbcType=INTEGER},
