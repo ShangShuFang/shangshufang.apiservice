@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.DirectionMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.DirectionEntity" >
+    <id column="direction_id" property="directionID" jdbcType="INTEGER" />
+    <result column="direction_name" property="directionName" jdbcType="VARCHAR" />
+    <result column="direction_stars" property="directionStars" jdbcType="VARCHAR" />
+    <result column="direction_thumbnail" property="directionThumbnail" jdbcType="VARCHAR" />
+    <result column="direction_memo" property="directionMemo" jdbcType="VARCHAR" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS TotalCount
+    FROM shangshufang_base.direction;
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.direction_id,
+      A.direction_name,
+      A.direction_stars,
+      A.direction_thumbnail,
+      A.direction_memo,
+      A.data_status,
+      CASE WHEN A.data_status = 'P' THEN '未激活'
+          WHEN A.data_status = 'A' THEN '正常'
+          WHEN A.data_status = 'D' THEN '冻结'
+      ELSE '未知数据状态'
+      END AS data_status_text,
+      B.admin_name AS create_user,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      C.admin_name AS update_user,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_base.direction A
+    INNER JOIN shangshufang_base.system_admin B
+    ON A.create_user = B.admin_id
+    INNER JOIN shangshufang_base.system_admin C
+    ON A.update_user = C.admin_id
+    ORDER BY A.update_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+  <select id="searchByID" resultMap="BaseResultMap">
+    SELECT
+      A.direction_id,
+      A.direction_name,
+      A.direction_stars,
+      A.direction_thumbnail,
+      A.direction_memo,
+      A.data_status,
+      CASE WHEN A.data_status = 'P' THEN '未激活'
+          WHEN A.data_status = 'A' THEN '正常'
+          WHEN A.data_status = 'D' THEN '冻结'
+      ELSE '未知数据状态'
+      END AS data_status_text,
+      B.admin_name AS create_user,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      C.admin_name AS update_user,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_base.direction A
+    INNER JOIN shangshufang_base.system_admin B
+    ON A.create_user = B.admin_id
+    INNER JOIN shangshufang_base.system_admin C
+    ON A.update_user = C.admin_id
+    WHERE A.direction_id = #{arg0,jdbcType=INTEGER};
+  </select>
+  <select id="checkDirectionNameExist" resultType="java.lang.Integer">
+    SELECT
+      COUNT(1) AS TotalCount
+    FROM shangshufang_base.direction
+    WHERE direction_name = #{arg0,jdbcType=VARCHAR};
+  </select>
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.DirectionEntity" >
+    INSERT INTO shangshufang_base.direction (
+      direction_name,
+      direction_stars,
+      direction_memo,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{directionName, jdbcType=VARCHAR},
+      #{directionStars, jdbcType=INTEGER},
+      #{directionMemo, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    );
+  </insert>
+
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.DirectionEntity" >
+    UPDATE shangshufang_base.direction SET
+      direction_name = #{directionName,jdbcType=VARCHAR},
+      direction_stars = #{directionStars,jdbcType=VARCHAR},
+      direction_memo = #{directionMemo,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE direction_id = #{directionID,jdbcType=INTEGER};
+  </update>
+
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.DirectionEntity" >
+    UPDATE shangshufang_base.direction SET
+      data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE direction_id = #{directionID,jdbcType=INTEGER};
+  </update>
+  <update id="updateThumbnail" parameterType="com.shangshufang.apiservice.entity.DirectionEntity" >
+    UPDATE shangshufang_base.direction SET
+      direction_thumbnail = #{directionThumbnail,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE direction_id = #{directionID,jdbcType=INTEGER};
+  </update>
+  <delete id="delete" parameterType="java.lang.Integer" >
+    DELETE FROM shangshufang_base.direction
+    WHERE direction_id = #{directionID,jdbcType=INTEGER};
+  </delete>
+</mapper>
