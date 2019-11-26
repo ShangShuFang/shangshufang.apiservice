@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.TechnologyDirectionMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.TechnologyDirectionEntity" >
+    <id column="matching_id" property="matchingID" jdbcType="INTEGER" />
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
+    <result column="direction_id" property="directionID" jdbcType="INTEGER" />
+    <result column="direction_name" property="directionName" jdbcType="VARCHAR" />
+    <result column="direction_stars" property="directionStars" jdbcType="VARCHAR" />
+    <result column="direction_thumbnail" property="directionThumbnail" jdbcType="VARCHAR" />
+    <result column="direction_memo" property="directionMemo" jdbcType="VARCHAR" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchList4Technology" resultMap="BaseResultMap">
+    SELECT
+      A.matching_id,
+      A.technology_id,
+      B.technology_name,
+      A.direction_id,
+      C.direction_name,
+      C.direction_stars,
+      C.direction_thumbnail,
+      C.direction_memo
+    FROM
+    (
+      SELECT
+        matching_id,
+        technology_id,
+        direction_id
+      FROM shangshufang_base.technology_direction_matching
+      WHERE technology_id = #{arg0,jdbcType=INTEGER}
+    ) A
+    INNER JOIN shangshufang_base.technology B
+    ON A.technology_id = B.technology_id
+    INNER JOIN shangshufang_base.direction C
+    ON A.direction_id = C.direction_id
+  </select>
+
+  <select id="searchList4Direction" resultMap="BaseResultMap">
+    SELECT
+      A.matching_id,
+      A.direction_id,
+      C.direction_name,
+      C.direction_stars,
+      C.direction_thumbnail,
+      C.direction_memo,
+      A.technology_id,
+      B.technology_name
+    FROM
+    (
+      SELECT
+        matching_id,
+        direction_id,
+        technology_id
+      FROM shangshufang_base.technology_direction_matching
+      WHERE direction_id = #{arg0,jdbcType=INTEGER}
+    ) A
+    INNER JOIN shangshufang_base.technology B
+    ON A.technology_id = B.technology_id
+    INNER JOIN shangshufang_base.direction C
+    ON A.direction_id = C.direction_id
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.TechnologyDirectionEntity" >
+    INSERT INTO shangshufang_base.technology_direction_matching (
+      technology_id,
+      direction_id,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{technologyID, jdbcType=INTEGER},
+      #{directionID, jdbcType=INTEGER},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+
+  <delete id="delete" parameterType="java.lang.Integer" >
+    DELETE FROM shangshufang_base.technology_direction_matching
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER};
+  </delete>
+</mapper>

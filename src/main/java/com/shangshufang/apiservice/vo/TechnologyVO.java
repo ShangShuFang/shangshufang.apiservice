@@ -10,4 +10,5 @@ public class TechnologyVO extends BaseVO {
     private String technologyThumbnail;
     private String technologyMemo;
     private int knowledgeCount;
+    private int directionCount;
 }

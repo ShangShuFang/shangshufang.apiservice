@@ -7,6 +7,7 @@
     <result column="direction_stars" property="directionStars" jdbcType="VARCHAR" />
     <result column="direction_thumbnail" property="directionThumbnail" jdbcType="VARCHAR" />
     <result column="direction_memo" property="directionMemo" jdbcType="VARCHAR" />
+    <result column="technology_count" property="technologyCount" jdbcType="INTEGER" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -26,6 +27,7 @@
       A.direction_stars,
       A.direction_thumbnail,
       A.direction_memo,
+      D.technology_count,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未激活'
           WHEN A.data_status = 'A' THEN '正常'
@@ -41,6 +43,15 @@
     ON A.create_user = B.admin_id
     INNER JOIN shangshufang_base.system_admin C
     ON A.update_user = C.admin_id
+    LEFT JOIN
+    (
+      SELECT
+        direction_id,
+        COUNT(1) AS technology_count
+      FROM shangshufang_base.technology_direction_matching
+      GROUP BY direction_id
+    ) D
+    ON A.direction_id = D.direction_id
     ORDER BY A.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>

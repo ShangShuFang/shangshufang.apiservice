@@ -9,4 +9,5 @@ public class DirectionEntity extends BaseEntity {
     private int directionStars;
     private String directionThumbnail;
     private String directionMemo;
+    private int technologyCount;
 }

@@ -8,6 +8,7 @@
     <result column="technology_thumbnail" property="technologyThumbnail" jdbcType="VARCHAR" />
     <result column="technology_memo" property="technologyMemo" jdbcType="VARCHAR" />
     <result column="knowledge_count" property="knowledgeCount" jdbcType="INTEGER" />
+    <result column="direction_count" property="directionCount" jdbcType="INTEGER" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -28,6 +29,7 @@
       A.technology_thumbnail,
       A.technology_memo,
       D.knowledge_count,
+      E.direction_count,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未激活'
           WHEN A.data_status = 'A' THEN '正常'
@@ -45,13 +47,22 @@
     ON A.update_user = C.admin_id
     LEFT JOIN
     (
-    SELECT
-      technology_id,
-      COUNT(1) AS knowledge_count
-    FROM shangshufang_base.technology_knowledge
-    GROUP BY technology_id
+      SELECT
+        technology_id,
+        COUNT(1) AS knowledge_count
+      FROM shangshufang_base.technology_knowledge
+      GROUP BY technology_id
     ) D
     ON A.technology_id = D.technology_id
+    LEFT JOIN
+    (
+      SELECT
+        technology_id,
+        COUNT(1) AS direction_count
+      FROM shangshufang_base.technology_direction_matching
+      GROUP BY technology_id
+    ) E
+    ON A.technology_id = E.technology_id
     ORDER BY A.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
@@ -95,7 +106,7 @@
     FROM shangshufang_base.technology
     WHERE technology_name = #{arg0,jdbcType=VARCHAR};
   </select>
-  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.TechnologyEntity" >
+  <insert id="insert" useGeneratedKeys="true" keyProperty="technologyID" parameterType="com.shangshufang.apiservice.entity.TechnologyEntity" >
     INSERT INTO shangshufang_base.technology (
       technology_name,
       technology_stars,
