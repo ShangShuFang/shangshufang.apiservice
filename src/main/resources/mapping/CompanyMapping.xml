@@ -17,6 +17,7 @@
     <result column="business_license" property="businessLicense" jdbcType="VARCHAR" />
     <result column="brand" property="brand" jdbcType="VARCHAR" />
     <result column="memo" property="memo" jdbcType="VARCHAR" />
+    <result column="using_technology_count" property="usingTechnologyCount" jdbcType="INTEGER" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -53,15 +54,16 @@
       A.business_license,
       A.brand,
       A.memo,
+      E.using_technology_count,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未激活'
-          WHEN A.data_status = 'A' THEN '正常'
-          WHEN A.data_status = 'D' THEN '冻结'
+      WHEN A.data_status = 'A' THEN '正常'
+      WHEN A.data_status = 'D' THEN '冻结'
       ELSE '未知数据状态'
       END AS data_status_text,
-      E.admin_name AS create_user,
+      G.admin_name AS create_user,
       DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-      F.admin_name AS update_user,
+      H.admin_name AS update_user,
       DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
     FROM shangshufang_customer.company A
     INNER JOIN shangshufang_base.china_region B
@@ -70,10 +72,19 @@
     ON A.city_code = C.region_code
     INNER JOIN shangshufang_base.china_region D
     ON A.district_code = D.region_code
-    INNER JOIN shangshufang_base.system_admin E
-    ON A.create_user = E.admin_id
-    INNER JOIN shangshufang_base.system_admin F
-    ON A.update_user = F.admin_id
+    LEFT JOIN
+    (
+      SELECT
+      company_id,
+      COUNT(1) AS using_technology_count
+      FROM shangshufang_customer.technology_using
+      GROUP BY company_id
+    ) E
+    ON A.company_id = E.company_id
+    INNER JOIN shangshufang_base.system_admin G
+    ON A.create_user = G.admin_id
+    INNER JOIN shangshufang_base.system_admin H
+    ON A.update_user = H.admin_id
     WHERE 1=1
     <if test="arg2 != 0">
       AND A.province_code = #{arg2,jdbcType=INTEGER}

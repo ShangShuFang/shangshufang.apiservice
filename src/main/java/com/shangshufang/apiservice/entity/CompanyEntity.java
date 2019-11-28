@@ -19,4 +19,5 @@ public class CompanyEntity extends BaseEntity {
     private String businessLicense;
     private String brand;
     private String memo;
+    private int usingTechnologyCount;
 }

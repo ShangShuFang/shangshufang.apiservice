@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.TechnologyUsingMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.TechnologyUsingEntity" >
+    <id column="using_id" property="usingID" jdbcType="INTEGER" />
+    <result column="company_id" property="companyID" jdbcType="INTEGER" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchUsingTechnologyList" resultMap="BaseResultMap">
+    SELECT
+      A.using_id,
+      A.company_id,
+      B.company_name,
+      A.technology_id,
+      C.technology_name
+    FROM shangshufang_customer.technology_using A
+    INNER JOIN shangshufang_customer.company B
+    ON A.company_id = B.company_id
+    INNER JOIN shangshufang_base.technology C
+    ON A.technology_id = C.technology_id
+    WHERE A.company_id = #{arg0,jdbcType=INTEGER}
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.TechnologyUsingEntity" >
+    INSERT INTO shangshufang_customer.technology_using (
+      company_id,
+      technology_id,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{companyID, jdbcType=INTEGER},
+      #{technologyID, jdbcType=INTEGER},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+
+  <delete id="delete" parameterType="java.lang.Integer" >
+    DELETE FROM shangshufang_customer.technology_using
+    WHERE company_id = #{companyID,jdbcType=INTEGER};
+  </delete>
+</mapper>
