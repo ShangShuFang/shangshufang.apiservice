@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.LearningPhaseMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.LearningPhaseEntity" >
+    <id column="learning_phase_id" property="learningPhaseID" jdbcType="INTEGER" />
+    <result column="learning_phase_name" property="learningPhaseName" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+    learning_phase_id,
+    learning_phase_name
+    FROM shangshufang_base.learning_phase;
+  </select>
+</mapper>

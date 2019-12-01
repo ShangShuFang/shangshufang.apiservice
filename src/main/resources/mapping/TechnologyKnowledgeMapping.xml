@@ -78,8 +78,7 @@
     ON A.update_user = D.admin_id
     WHERE A.technology_id = #{arg0,jdbcType=INTEGER}
     AND B.data_status = 'A'
-    ORDER BY A.update_time DESC
-    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+    ORDER BY A.knowledge_id;
   </select>
   <select id="checkKnowledgeNameExist" resultType="java.lang.Integer">
     SELECT

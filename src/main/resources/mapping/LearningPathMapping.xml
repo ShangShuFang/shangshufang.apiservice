@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.LearningPathMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.LearningPathEntity" >
+    <id column="learning_path_id" property="learningPathID" jdbcType="INTEGER" />
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
+    <result column="learning_phase_id" property="learningPhaseID" jdbcType="INTEGER" />
+    <result column="learning_phase_name" property="learningPhaseName" jdbcType="VARCHAR" />
+    <result column="knowledge_count" property="knowledgeCount" jdbcType="INTEGER" />
+    <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER" />
+    <result column="knowledge_name" property="knowledgeName" jdbcType="INTEGER" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS TotalCount
+    FROM
+    (
+      SELECT
+      technology_id,
+      learning_phase_id,
+      COUNT(1) AS knowledge_count
+      FROM shangshufang_base.technology_learning_path
+      WHERE 1=1
+      <if test="arg0 != 0">
+        AND technology_id = #{arg0,jdbcType=INTEGER}
+      </if>
+      <if test="arg1 != 0">
+        AND learning_phase_id = #{arg1,jdbcType=INTEGER}
+      </if>
+      GROUP BY technology_id, learning_phase_id
+    ) A;
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.technology_id,
+      B.technology_name,
+      A.learning_phase_id,
+      C.learning_phase_name,
+      A.knowledge_count,
+      A.data_status,
+      CASE WHEN A.data_status = 'P' THEN '未激活'
+          WHEN A.data_status = 'A' THEN '正常'
+          WHEN A.data_status = 'D' THEN '禁用'
+          ELSE '未知数据状态'
+      END AS data_status_text
+    FROM
+    (
+      SELECT
+        technology_id,
+        learning_phase_id,
+        data_status,
+        COUNT(1) AS knowledge_count,
+        MAX(update_time) AS update_time
+      FROM shangshufang_base.technology_learning_path
+      WHERE 1=1
+      <if test="arg2 != 0">
+        AND technology_id = #{arg2,jdbcType=INTEGER}
+      </if>
+      <if test="arg3 != 0">
+        AND learning_phase_id = #{arg3,jdbcType=INTEGER}
+      </if>
+      GROUP BY technology_id, learning_phase_id, data_status
+      ORDER BY update_time DESC
+      LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER}
+    ) A
+    INNER JOIN shangshufang_base.technology B
+    ON A.technology_id = B.technology_id
+    INNER JOIN shangshufang_base.learning_phase C
+    ON A.learning_phase_id = C.learning_phase_id;
+  </select>
+  <select id="searchUsingLearningPhase" resultMap="BaseResultMap">
+    SELECT
+      A.learning_phase_id,
+      B.learning_phase_name
+    FROM
+    (
+      SELECT
+      DISTINCT learning_phase_id
+      FROM shangshufang_base.technology_learning_path
+      WHERE technology_id = #{arg0,jdbcType=INTEGER}
+    ) A
+    INNER JOIN shangshufang_base.learning_phase B
+    ON A.learning_phase_id = B.learning_phase_id
+    ORDER BY A.learning_phase_id;
+  </select>
+  <select id="searchUsingKnowledge" resultMap="BaseResultMap">
+    SELECT
+      A.knowledge_id,
+      B.knowledge_name
+    FROM
+    (
+      SELECT
+      DISTINCT knowledge_id
+      FROM shangshufang_base.technology_learning_path
+      WHERE technology_id = #{arg0,jdbcType=INTEGER}
+      <if test="arg1 != 0">
+        AND learning_phase_id = #{arg1,jdbcType=INTEGER}
+      </if>
+    ) A
+    INNER JOIN shangshufang_base.technology_knowledge B
+    ON A.knowledge_id = B.knowledge_id
+    ORDER BY A.knowledge_id;
+  </select>
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.LearningPathEntity" >
+    INSERT INTO shangshufang_base.technology_learning_path (
+      technology_id,
+      learning_phase_id,
+      knowledge_id,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{technologyID, jdbcType=INTEGER},
+      #{learningPhaseID, jdbcType=INTEGER},
+      #{knowledgeID, jdbcType=INTEGER},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    );
+  </insert>
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.LearningPathEntity" >
+    UPDATE shangshufang_base.technology_learning_path SET
+      data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+    AND learning_phase_id = #{learningPhaseID,jdbcType=INTEGER};
+  </update>
+  <delete id="delete" parameterType="java.lang.Integer" >
+    DELETE FROM shangshufang_base.technology_learning_path
+    WHERE technology_id = #{arg0,jdbcType=INTEGER}
+    AND learning_phase_id = #{arg1,jdbcType=INTEGER};
+  </delete>
+</mapper>
