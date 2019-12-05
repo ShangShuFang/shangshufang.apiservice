@@ -20,4 +20,5 @@ public class CompanyVO extends BaseVO {
     private String brand;
     private String memo;
     private int usingTechnologyCount;
+    private int usingKnowledgeCount;
 }

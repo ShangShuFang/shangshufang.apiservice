@@ -18,6 +18,7 @@
     <result column="brand" property="brand" jdbcType="VARCHAR" />
     <result column="memo" property="memo" jdbcType="VARCHAR" />
     <result column="using_technology_count" property="usingTechnologyCount" jdbcType="INTEGER" />
+    <result column="using_knowledge_count" property="usingKnowledgeCount" jdbcType="INTEGER" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -54,7 +55,8 @@
       A.business_license,
       A.brand,
       A.memo,
-      E.using_technology_count,
+      IFNULL(E.using_technology_count,0) AS using_technology_count,
+      IFNULL(F.using_knowledge_count, 0) AS using_knowledge_count,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未激活'
       WHEN A.data_status = 'A' THEN '正常'
@@ -81,6 +83,15 @@
       GROUP BY company_id
     ) E
     ON A.company_id = E.company_id
+    LEFT JOIN
+    (
+      SELECT
+      company_id,
+      COUNT(1) AS using_knowledge_count
+      FROM shangshufang_customer.technology_knowledge_using
+      GROUP BY company_id
+    ) F
+    ON A.company_id = F.company_id
     INNER JOIN shangshufang_base.system_admin G
     ON A.create_user = G.admin_id
     INNER JOIN shangshufang_base.system_admin H

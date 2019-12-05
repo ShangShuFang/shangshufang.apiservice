@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.TechnologyKnowledgeUsingMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.TechnologyKnowledgeUsingEntity" >
+    <id column="using_id" property="usingID" jdbcType="INTEGER" />
+    <result column="company_id" property="companyID" jdbcType="INTEGER" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
+    <result column="learning_phase_id" property="learningPhaseID" jdbcType="INTEGER" />
+    <result column="learning_phase_name" property="learningPhaseName" jdbcType="VARCHAR" />
+    <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER" />
+    <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.using_id,
+      A.company_id,
+      B.company_name,
+      A.technology_id,
+      C.technology_name,
+      A.learning_phase_id,
+      D.learning_phase_name,
+      A.knowledge_id,
+      E.knowledge_name
+    FROM shangshufang_customer.technology_knowledge_using A
+    INNER JOIN shangshufang_customer.company B
+    ON A.company_id = B.company_id
+    INNER JOIN shangshufang_base.technology C
+    ON A.technology_id = C.technology_id
+    INNER JOIN shangshufang_base.learning_phase D
+    ON A.learning_phase_id = D.learning_phase_id
+    INNER JOIN shangshufang_base.technology_knowledge E
+    ON A.technology_id = E.technology_id
+    AND A.knowledge_id = E.knowledge_id
+    WHERE A.company_id = #{arg0,jdbcType=INTEGER}
+    ORDER BY A.technology_id, A.learning_phase_id, A.knowledge_id;
+  </select>
+
+  <select id="searchTechnologyList" resultMap="BaseResultMap">
+    SELECT
+    A.company_id,
+    B.company_name,
+    A.technology_id,
+    C.technology_name
+    FROM
+    (
+      SELECT
+        DISTINCT company_id, technology_id
+      FROM shangshufang_customer.technology_knowledge_using
+      WHERE company_id = #{arg0,jdbcType=INTEGER}
+    ) A
+    INNER JOIN shangshufang_customer.company B
+    ON A.company_id = B.company_id
+    INNER JOIN shangshufang_base.technology C
+    ON A.technology_id = C.technology_id
+  </select>
+
+  <select id="searchLearningPhaseList" resultMap="BaseResultMap">
+    SELECT
+      A.company_id,
+      B.company_name,
+      A.technology_id,
+      C.technology_name,
+      A.learning_phase_id,
+      D.learning_phase_name
+    FROM
+    (
+      SELECT
+        DISTINCT company_id, technology_id, learning_phase_id
+      FROM shangshufang_customer.technology_knowledge_using
+      WHERE company_id = #{arg0,jdbcType=INTEGER}
+      AND technology_id = #{arg1,jdbcType=INTEGER}
+    ) A
+    INNER JOIN shangshufang_customer.company B
+    ON A.company_id = B.company_id
+    INNER JOIN shangshufang_base.technology C
+    ON A.technology_id = C.technology_id
+    INNER JOIN shangshufang_base.learning_phase D
+    ON A.learning_phase_id = D.learning_phase_id
+  </select>
+
+  <select id="searchKnowledgeList" resultMap="BaseResultMap">
+    SELECT
+      A.company_id,
+      B.company_name,
+      A.technology_id,
+      C.technology_name,
+      A.learning_phase_id,
+      D.learning_phase_name,
+      A.knowledge_id,
+      E.knowledge_name
+    FROM
+    (
+      SELECT
+        DISTINCT company_id, technology_id, learning_phase_id, knowledge_id
+      FROM shangshufang_customer.technology_knowledge_using
+      WHERE company_id = #{arg0,jdbcType=INTEGER}
+      AND technology_id = #{arg1,jdbcType=INTEGER}
+      AND learning_phase_id = #{arg2,jdbcType=INTEGER}
+    ) A
+    INNER JOIN shangshufang_customer.company B
+    ON A.company_id = B.company_id
+    INNER JOIN shangshufang_base.technology C
+    ON A.technology_id = C.technology_id
+    INNER JOIN shangshufang_base.learning_phase D
+    ON A.learning_phase_id = D.learning_phase_id
+    INNER JOIN shangshufang_base.technology_knowledge E
+    ON A.knowledge_id = E.knowledge_id
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.TechnologyKnowledgeUsingEntity" >
+    INSERT INTO shangshufang_customer.technology_knowledge_using (
+      company_id,
+      technology_id,
+      learning_phase_id,
+      knowledge_id,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{companyID, jdbcType=INTEGER},
+      #{technologyID, jdbcType=INTEGER},
+      #{learningPhaseID, jdbcType=INTEGER},
+      #{knowledgeID, jdbcType=INTEGER},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+
+  <delete id="delete" parameterType="java.lang.Integer" >
+    DELETE FROM shangshufang_customer.technology_knowledge_using
+    WHERE company_id = #{arg0,jdbcType=INTEGER}
+    AND technology_id = #{arg1,jdbcType=INTEGER}
+    AND learning_phase_id = #{arg2,jdbcType=INTEGER};
+  </delete>
+</mapper>
