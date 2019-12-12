@@ -75,6 +75,22 @@
     INNER JOIN shangshufang_base.learning_phase C
     ON A.learning_phase_id = C.learning_phase_id;
   </select>
+
+  <select id="searchUsingTechnology" resultMap="BaseResultMap">
+    SELECT
+      A.technology_id,
+      B.technology_name
+    FROM
+    (
+      SELECT
+      DISTINCT technology_id
+      FROM shangshufang_base.technology_learning_path
+    ) A
+    INNER JOIN shangshufang_base.technology B
+    ON A.technology_id = B.technology_id
+    ORDER BY A.technology_id;
+  </select>
+
   <select id="searchUsingLearningPhase" resultMap="BaseResultMap">
     SELECT
       A.learning_phase_id,

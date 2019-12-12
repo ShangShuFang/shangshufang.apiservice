@@ -46,6 +46,26 @@ public class LearningPathServiceImpl implements LearningPathService {
     }
 
     @Override
+    public UnifiedResponse findUsingTechnology() {
+        try {
+            List<LearningPathVO> modelList = new ArrayList<>();
+            List<LearningPathEntity> entityList =  myMapper.searchUsingTechnology();
+            if(entityList.isEmpty()){
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            for (LearningPathEntity entity : entityList) {
+                LearningPathVO model = new LearningPathVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse findUsingLearningPhase(int technologyID) {
         try {
             List<LearningPathVO> modelList = new ArrayList<>();

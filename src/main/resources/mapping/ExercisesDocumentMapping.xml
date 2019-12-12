@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.ExercisesDocumentMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.ExercisesDocumentEntity" >
+    <id column="exercises_document_id" property="exercisesDocumentID" jdbcType="INTEGER" />
+    <result column="exercises_id" property="exercisesID" jdbcType="INTEGER" />
+    <result column="document_url" property="documentUrl" jdbcType="VARCHAR" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.exercises_document_id,
+      A.exercises_id,
+      A.document_url,
+      A.data_status,
+      CASE WHEN A.data_status = 'A' THEN '正常'
+          WHEN A.data_status = 'D' THEN '冻结'
+          ELSE '未知数据状态'
+      END AS data_status_text,
+      B.admin_name AS create_user,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      C.admin_name AS update_user,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_base.exercises_document A
+    INNER JOIN shangshufang_base.system_admin B
+    ON A.create_user = B.admin_id
+    INNER JOIN shangshufang_base.system_admin C
+    ON A.update_user = C.admin_id
+    WHERE exercises_id = #{arg0,jdbcType=VARCHAR}
+    ORDER BY A.document_url;
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.ExercisesDocumentEntity" >
+    INSERT INTO shangshufang_base.exercises_document (
+      exercises_id,
+      document_url,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{exercisesID, jdbcType=INTEGER},
+      #{documentUrl, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+  <delete id="delete" parameterType="java.lang.Integer" >
+    DELETE FROM shangshufang_base.exercises_document
+    WHERE exercises_id = #{arg0,jdbcType=INTEGER};
+  </delete>
+</mapper>

@@ -11,6 +11,8 @@ public interface LearningPathMapper extends BaseMapper<LearningPathEntity> {
 
     List<LearningPathEntity> searchList(int startIndex, int pageSize, int technologyID, int learningPhase);
 
+    List<LearningPathEntity> searchUsingTechnology();
+
     List<LearningPathEntity> searchUsingLearningPhase(int technologyID);
 
     List<LearningPathEntity> searchUsingKnowledge(int technologyID, int learningPhase);

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.ExercisesMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.ExercisesEntity" >
+    <id column="exercises_id" property="exercisesID" jdbcType="INTEGER" />
+    <result column="exercises_name" property="exercisesName" jdbcType="VARCHAR" />
+    <result column="exercises_code" property="exercisesCode" jdbcType="VARCHAR" />
+    <result column="exercises_type" property="exercisesType" jdbcType="VARCHAR" />
+    <result column="exercises_type_text" property="exercisesTypeText" jdbcType="VARCHAR" />
+    <result column="technology_count" property="technologyCount" jdbcType="INTEGER" />
+    <result column="learning_phase_count" property="learningPhaseCount" jdbcType="INTEGER" />
+    <result column="knowledge_count" property="knowledgeCount" jdbcType="INTEGER" />
+    <result column="document_count" property="documentCount" jdbcType="INTEGER" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS total_count
+    FROM
+    (
+      SELECT
+        DISTINCT exercises_id
+      FROM shangshufang_base.exercises_knowledge
+      WHERE 1 = 1
+      <if test="arg1 != 0">
+        AND technology_id = #{arg1,jdbcType=INTEGER}
+      </if>
+      <if test="arg2 != 0">
+        AND learning_phase_id = #{arg2,jdbcType=INTEGER}
+      </if>
+    ) A
+    INNER JOIN shangshufang_base.exercises B
+    ON A.exercises_id = B.exercises_id
+    WHERE 1 = 1
+    <if test="arg0 != null">
+      AND B.exercises_type = #{arg0,jdbcType=VARCHAR}
+    </if>;
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.exercises_id,
+      B.exercises_name,
+      B.exercises_code,
+      B.exercises_type,
+      CASE WHEN B.exercises_type = 'S' THEN '单点练习'
+      WHEN B.exercises_type = 'C' THEN '综合练习'
+      WHEN B.exercises_type = 'P' THEN '项目练习'
+      ELSE '未知数据状态'
+      END AS exercises_type_text,
+      C.technology_count,
+      C.learning_phase_count,
+      C.knowledge_count,
+      D.document_count,
+      B.data_status,
+      CASE WHEN B.data_status = 'P' THEN '待审核'
+      WHEN B.data_status = 'A' THEN '通过'
+      WHEN B.data_status = 'D' THEN '冻结'
+      ELSE '未知数据状态'
+      END AS data_status_text,
+      E.admin_name AS create_user,
+      DATE_FORMAT(B.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      F.admin_name AS update_user,
+      DATE_FORMAT(B.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM
+    (
+      SELECT
+      DISTINCT exercises_id
+      FROM shangshufang_base.exercises_knowledge
+      WHERE 1 = 1
+      <if test="arg3 != 0">
+        AND technology_id = #{arg3,jdbcType=INTEGER}
+      </if>
+      <if test="arg4 != 0">
+        AND learning_phase_id = #{arg4,jdbcType=INTEGER}
+      </if>
+    ) A
+    INNER JOIN
+    (
+      SELECT
+        exercises_id,
+        exercises_name,
+        exercises_code,
+        exercises_type,
+        data_status,
+        create_user,
+        create_time,
+        update_user,
+        update_time
+      FROM shangshufang_base.exercises
+      WHERE 1 = 1
+      <if test="arg2 != null">
+        AND exercises_type = #{arg2,jdbcType=VARCHAR}
+      </if>
+    ) B
+    ON A.exercises_id = B.exercises_id
+    LEFT JOIN
+    (
+      SELECT
+        exercises_id,
+        COUNT(DISTINCT technology_id) AS technology_count,
+        COUNT(DISTINCT learning_phase_id) AS learning_phase_count,
+        COUNT(DISTINCT knowledge_id) AS knowledge_count
+      FROM shangshufang_base.exercises_knowledge
+      GROUP BY exercises_id
+    ) C
+    ON A.exercises_id = C.exercises_id
+    LEFT JOIN
+    (
+      SELECT
+        exercises_id,
+      COUNT(1) AS document_count
+      FROM shangshufang_base.exercises_document
+      GROUP BY exercises_id
+    ) D
+    ON A.exercises_id = D.exercises_id
+    INNER JOIN shangshufang_base.system_admin E
+    ON B.create_user = E.admin_id
+    INNER JOIN shangshufang_base.system_admin F
+    ON B.update_user = F.admin_id
+    ORDER BY B.update_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+  <select id="search" resultMap="BaseResultMap">
+    SELECT
+      exercises_id,
+      exercises_name,
+      exercises_code,
+      exercises_type
+    FROM shangshufang_base.exercises
+    WHERE exercises_id = #{arg0,jdbcType=INTEGER};
+  </select>
+  <select id="checkExercisesCodeExist" resultType="java.lang.Integer">
+    SELECT
+      COUNT(1) AS TotalCount
+    FROM shangshufang_base.exercises
+    WHERE exercises_code = #{arg0,jdbcType=VARCHAR};
+  </select>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="exercisesID" parameterType="com.shangshufang.apiservice.entity.ExercisesEntity" >
+    INSERT INTO shangshufang_base.exercises (
+      exercises_name,
+      exercises_code,
+      exercises_type,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{exercisesName, jdbcType=VARCHAR},
+      #{exercisesCode, jdbcType=VARCHAR},
+      #{exercisesType, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.ExercisesEntity" >
+    UPDATE shangshufang_base.exercises SET
+      exercises_name = #{exercisesName,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE exercises_id = #{exercisesID,jdbcType=VARCHAR};
+  </update>
+
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.ExercisesEntity" >
+    UPDATE shangshufang_base.exercises SET
+      data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=INTEGER}
+    WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
+  </update>
+
+  <delete id="delete" parameterType="java.lang.Integer" >
+    DELETE FROM shangshufang_base.exercises
+    WHERE exercises_id = #{arg0,jdbcType=INTEGER};
+  </delete>
+</mapper>

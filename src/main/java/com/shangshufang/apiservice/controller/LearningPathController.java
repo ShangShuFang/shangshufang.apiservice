@@ -20,6 +20,11 @@ public class LearningPathController {
         return serviceImpl.findList(pageNumber, pageSize, technologyID, learningPhase);
     }
 
+    @RequestMapping(value = "/usingTechnology", method = RequestMethod.GET)
+    public UnifiedResponse findUsingTechnology(){
+        return serviceImpl.findUsingTechnology();
+    }
+
     @RequestMapping(value = "/usingLearningPhase/{technologyID}", method = RequestMethod.GET)
     public UnifiedResponse findUsingLearningPhase(@PathVariable("technologyID") int technologyID){
         return serviceImpl.findUsingLearningPhase(technologyID);
