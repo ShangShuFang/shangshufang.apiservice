@@ -13,6 +13,7 @@ public class UniversityAccountVO extends BaseVO {
     private String customerName;
     private String cellphone;
     private String email;
+    private String photo;
     private String accountRole;
     private String accountRoleText;
 }

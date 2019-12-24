@@ -11,7 +11,9 @@ public interface UniversityAccountMapper extends BaseMapper<UniversityAccountEnt
 
     List<UniversityAccountEntity> searchList(int startIndex, int pageSize, int universityCode, int schoolID);
 
-    UniversityAccountEntity login(String cellphone, String password);
+    UniversityAccountEntity teacherLogin(String cellphone, String password);
+
+    UniversityAccountEntity studentLogin(String cellphone, String password);
 
     int checkCellphoneExist(String cellphone);
 

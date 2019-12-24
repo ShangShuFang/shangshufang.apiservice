@@ -14,6 +14,7 @@ public class UniversityAccountEntity extends BaseEntity {
     private String cellphone;
     private String password;
     private String email;
+    private String photo;
     private String accountRole;
     private String accountRoleText;
 }

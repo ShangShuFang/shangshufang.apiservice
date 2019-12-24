@@ -83,7 +83,7 @@
     ORDER BY A.university_code, A.school_id, A.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
-  <select id="login" resultMap="BaseResultMap">
+  <select id="teacherLogin" resultMap="BaseResultMap">
     SELECT
       A.account_id,
       A.university_code,
@@ -93,7 +93,8 @@
       A.cellphone,
       A.account_role,
       CASE WHEN A.account_role = 'A' THEN '管理员'
-          WHEN A.account_role = 'S' THEN '员工'
+          WHEN A.account_role = 'T' THEN '教师'
+          WHEN A.account_role = 'S' THEN '学生'
           ELSE '未知数据状态'
       END AS account_role_text,
       D.customer_id,
@@ -101,7 +102,9 @@
       D.email,
       D.photo,
       A.data_status,
-      CASE WHEN A.data_status = 'A' THEN '正常'
+      CASE WHEN A.data_status = 'P' THEN '待审批'
+          WHEN A.data_status = 'A' THEN '正常'
+          WHEN A.data_status = 'N' THEN '未通过'
           WHEN A.data_status = 'D' THEN '冻结'
       ELSE '未知数据状态'
       END AS data_status_text,
@@ -124,7 +127,55 @@
     INNER JOIN shangshufang_base.system_admin F
     ON A.update_user = F.admin_id
     WHERE A.cellphone = #{arg0,jdbcType=VARCHAR}
-    AND A.password = #{arg1,jdbcType=VARCHAR};
+    AND A.password = #{arg1,jdbcType=VARCHAR}
+    AND A.account_role IN ('A', 'T');
+  </select>
+  <select id="studentLogin" resultMap="BaseResultMap">
+    SELECT
+      A.account_id,
+      A.university_code,
+      B.university_name,
+      A.school_id,
+      C.school_name,
+      A.cellphone,
+      A.account_role,
+      CASE WHEN A.account_role = 'A' THEN '管理员'
+          WHEN A.account_role = 'T' THEN '教师'
+          WHEN A.account_role = 'S' THEN '学生'
+          ELSE '未知数据状态'
+      END AS account_role_text,
+      D.customer_id,
+      D.full_name,
+      D.email,
+      D.photo,
+      A.data_status,
+      CASE WHEN A.data_status = 'P' THEN '待审批'
+          WHEN A.data_status = 'A' THEN '正常'
+          WHEN A.data_status = 'N' THEN '未通过'
+          WHEN A.data_status = 'D' THEN '冻结'
+      ELSE '未知数据状态'
+      END AS data_status_text,
+      E.admin_name AS create_user,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      F.admin_name AS update_user,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.university_account A
+    INNER JOIN shangshufang_customer.university B
+    ON A.university_code = B.university_code
+    INNER JOIN shangshufang_customer.school C
+    ON A.university_code = C.university_code
+    AND A.school_id = C.school_id
+    INNER JOIN shangshufang_customer.university_customer D
+    ON A.university_code = D.university_code
+    AND A.school_id = D.school_id
+    AND A.cellphone = D.cellphone
+    INNER JOIN shangshufang_base.system_admin E
+    ON A.create_user = E.admin_id
+    INNER JOIN shangshufang_base.system_admin F
+    ON A.update_user = F.admin_id
+    WHERE A.cellphone = #{arg0,jdbcType=VARCHAR}
+    AND A.password = #{arg1,jdbcType=VARCHAR}
+    AND A.account_role = 'S';
   </select>
   <select id="checkCellphoneExist" resultType="java.lang.Integer">
     SELECT

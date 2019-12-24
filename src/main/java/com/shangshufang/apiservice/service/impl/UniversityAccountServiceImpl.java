@@ -2,6 +2,7 @@ package com.shangshufang.apiservice.service.impl;
 
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
+import com.shangshufang.apiservice.constant.UniversityAccountConstant;
 import com.shangshufang.apiservice.dto.UniversityAccountDTO;
 import com.shangshufang.apiservice.entity.UniversityAccountEntity;
 import com.shangshufang.apiservice.entity.UniversityCustomerEntity;
@@ -51,9 +52,18 @@ public class UniversityAccountServiceImpl implements UniversityAccountService {
     }
 
     @Override
-    public UnifiedResponse login(String cellphone, String password) {
+    public UnifiedResponse login(String cellphone, String password, String accountRole) {
         try {
-            UniversityAccountEntity entity =  myMapper.login(cellphone, password);
+            UniversityAccountEntity entity = null;
+            switch (accountRole){
+                case UniversityAccountConstant.ADMIN:
+                case UniversityAccountConstant.TEACHER:
+                    entity =  myMapper.teacherLogin(cellphone, password);
+                    break;
+                case UniversityAccountConstant.STUDENT:
+                    entity =  myMapper.studentLogin(cellphone, password);
+                    break;
+            }
             if(entity == null){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
