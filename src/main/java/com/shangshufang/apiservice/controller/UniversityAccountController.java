@@ -32,6 +32,11 @@ public class UniversityAccountController {
         return serviceImpl.checkCellphoneExist(cellphone);
     }
 
+    @RequestMapping(value = "/changePassword/checkCellphone/{cellphone}", method = RequestMethod.GET)
+    public UnifiedResponse checkCellphone4ChangePassword(@PathVariable("cellphone") String cellphone){
+        return serviceImpl.checkCellphone4ChangePassword(cellphone);
+    }
+
     @RequestMapping(value = "/checkEmail/{email}", method = RequestMethod.GET)
     public UnifiedResponse checkEmailExist(@PathVariable("email") String email){
         return serviceImpl.checkEmailExist(email);
@@ -53,6 +58,11 @@ public class UniversityAccountController {
     @RequestMapping(method = RequestMethod.PUT)
     public UnifiedResponse change(@RequestBody UniversityAccountDTO dto){
         return serviceImpl.change(dto);
+    }
+
+    @RequestMapping(value="/changePassword",method = RequestMethod.PUT)
+    public UnifiedResponse changePassword(@RequestBody UniversityAccountDTO dto){
+        return serviceImpl.changePassword(dto);
     }
 
     @RequestMapping(value="/changeStatus", method = RequestMethod.PUT)

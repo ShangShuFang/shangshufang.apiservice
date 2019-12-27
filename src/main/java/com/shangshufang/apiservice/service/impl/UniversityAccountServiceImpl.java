@@ -89,11 +89,37 @@ public class UniversityAccountServiceImpl implements UniversityAccountService {
     }
 
     @Override
+    public UnifiedResponse checkCellphone4ChangePassword(String cellphone) {
+        try {
+            int count =  myMapper.checkCellphone4ChangePassword(cellphone);
+            Boolean exist =  count > 0;
+            return UnifiedResponseManager.buildSearchSuccessResponse(count, exist);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse checkEmailExist(String email) {
         try {
             int count =  myMapper.checkEmailExist(email);
             Boolean exist =  count > 0;
             return UnifiedResponseManager.buildSearchSuccessResponse(count, exist);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse changePassword(UniversityAccountDTO dto) {
+        try {
+            UniversityAccountEntity accountEntity = new UniversityAccountEntity();
+            ObjectConvertUtils.toBean(dto, accountEntity);
+            accountEntity.setUpdateUser(dto.getLoginUser());
+            int affectRow = myMapper.updatePassword(accountEntity);
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
         } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();

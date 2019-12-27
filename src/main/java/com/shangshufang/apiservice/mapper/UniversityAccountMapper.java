@@ -17,7 +17,11 @@ public interface UniversityAccountMapper extends BaseMapper<UniversityAccountEnt
 
     int checkCellphoneExist(String cellphone);
 
+    int checkCellphone4ChangePassword(String cellphone);
+
     int checkEmailExist(String email);
+
+    int updatePassword(UniversityAccountEntity entity);
 
     int delete(int universityCode, int schoolID, int accountID);
 

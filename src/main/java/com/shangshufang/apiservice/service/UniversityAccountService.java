@@ -10,7 +10,11 @@ public interface UniversityAccountService extends BaseService<UniversityAccountD
 
     UnifiedResponse checkCellphoneExist(String cellphone);
 
+    UnifiedResponse checkCellphone4ChangePassword(String cellphone);
+
     UnifiedResponse checkEmailExist(String email);
+
+    UnifiedResponse changePassword(UniversityAccountDTO dto);
 
     UnifiedResponse delete(int universityCode, int schoolID, int accountID, int customerID);
 }

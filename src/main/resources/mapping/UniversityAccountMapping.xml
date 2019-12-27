@@ -187,6 +187,13 @@
     WHERE cellphone = #{cellphone,jdbcType=VARCHAR}
     AND data_status != 'N';
   </select>
+  <select id="checkCellphone4ChangePassword" resultType="java.lang.Integer">
+    SELECT
+      COUNT(1) AS TotalCount
+    FROM shangshufang_customer.university_account
+    WHERE cellphone = #{cellphone,jdbcType=VARCHAR}
+    AND data_status = 'A';
+  </select>
   <select id="checkEmailExist" resultType="java.lang.Integer">
     SELECT
       COUNT(1) AS TotalCount
@@ -231,12 +238,16 @@
     AND school_id = #{schoolID,jdbcType=INTEGER}
     AND account_id = #{accountID,jdbcType=INTEGER};
   </update>
-
+  <update id="updatePassword" parameterType="com.shangshufang.apiservice.entity.UniversityAccountEntity" >
+    UPDATE shangshufang_customer.university_account SET
+      password = #{password,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=INTEGER}
+    WHERE cellphone = #{cellphone,jdbcType=VARCHAR};
+  </update>
   <delete id="deleteByCellphone">
     DELETE FROM shangshufang_customer.university_account
     WHERE cellphone = #{arg0,jdbcType=VARCHAR};
   </delete>
-
   <delete id="delete" parameterType="java.lang.Integer" >
     DELETE FROM shangshufang_customer.university_account
     WHERE university_code = #{arg0,jdbcType=INTEGER}
