@@ -44,14 +44,17 @@
       A.cellphone,
       A.account_role,
       CASE WHEN A.account_role = 'A' THEN '管理员'
-      WHEN A.account_role = 'S' THEN '员工'
-      ELSE '未知数据状态'
+        WHEN A.account_role = 'T' THEN '教师'
+        WHEN A.account_role = 'S' THEN '学生'
+        ELSE '未知数据状态'
       END AS account_role_text,
       D.customer_id,
       D.full_name,
       D.email,
       A.data_status,
-      CASE WHEN A.data_status = 'A' THEN '正常'
+      CASE WHEN A.data_status = 'P' THEN '待审核'
+          WHEN A.data_status = 'A' THEN '正常'
+          WHEN A.data_status = 'N' THEN '驳回'
           WHEN A.data_status = 'D' THEN '冻结'
       ELSE '未知数据状态'
       END AS data_status_text,
@@ -181,7 +184,8 @@
     SELECT
       COUNT(1) AS TotalCount
     FROM shangshufang_customer.university_account
-    WHERE cellphone = #{cellphone,jdbcType=VARCHAR};
+    WHERE cellphone = #{cellphone,jdbcType=VARCHAR}
+    AND data_status != 'N';
   </select>
   <select id="checkEmailExist" resultType="java.lang.Integer">
     SELECT
@@ -196,6 +200,7 @@
       cellphone,
       password,
       account_role,
+      data_status,
       create_user,
       update_user
     )
@@ -205,6 +210,7 @@
       #{cellphone, jdbcType=VARCHAR},
       #{password, jdbcType=VARCHAR},
       #{accountRole, jdbcType=VARCHAR},
+      #{dataStatus, jdbcType=VARCHAR},
       #{createUser, jdbcType=VARCHAR},
       #{updateUser, jdbcType=VARCHAR}
     )
@@ -225,6 +231,12 @@
     AND school_id = #{schoolID,jdbcType=INTEGER}
     AND account_id = #{accountID,jdbcType=INTEGER};
   </update>
+
+  <delete id="deleteByCellphone">
+    DELETE FROM shangshufang_customer.university_account
+    WHERE cellphone = #{arg0,jdbcType=VARCHAR};
+  </delete>
+
   <delete id="delete" parameterType="java.lang.Integer" >
     DELETE FROM shangshufang_customer.university_account
     WHERE university_code = #{arg0,jdbcType=INTEGER}

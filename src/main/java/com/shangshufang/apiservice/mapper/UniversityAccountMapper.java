@@ -20,4 +20,6 @@ public interface UniversityAccountMapper extends BaseMapper<UniversityAccountEnt
     int checkEmailExist(String email);
 
     int delete(int universityCode, int schoolID, int accountID);
+
+    int deleteByCellphone(String cellphone);
 }

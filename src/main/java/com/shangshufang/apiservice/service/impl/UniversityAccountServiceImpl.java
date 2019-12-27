@@ -129,7 +129,10 @@ public class UniversityAccountServiceImpl implements UniversityAccountService {
             customerEntity.setEmail("");
             customerEntity.setPhoto("");
 
-            int affectRow = myMapper.insert(accountEntity);
+            int affectRow = 0;
+            affectRow += customerMapper.deleteByCellphone(customerEntity.getCellphone());
+            affectRow += myMapper.deleteByCellphone(accountEntity.getCellphone());
+            affectRow += myMapper.insert(accountEntity);
             affectRow += customerMapper.insert(customerEntity);
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
         } catch (Exception ex) {

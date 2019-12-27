@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.VerificationCodeMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.VerificationCodeEntity" >
+    <id column="code_id" property="codeID" jdbcType="INTEGER" />
+    <result column="system_function" property="systemFunction" jdbcType="VARCHAR" />
+    <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="search" resultMap="BaseResultMap">
+    SELECT
+      code_id,
+      system_function,
+      cellphone,
+      code,
+      DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      DATE_FORMAT(update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_log.verification_code
+    WHERE cellphone = #{arg0,jdbcType=VARCHAR}
+    AND code = #{arg1,jdbcType=VARCHAR}
+    ORDER BY create_time DESC
+    LIMIT 0, 1;
+  </select>
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.VerificationCodeEntity" >
+    INSERT INTO shangshufang_log.verification_code (
+      system_function,
+      cellphone,
+      code
+    )
+    VALUES (
+      #{systemFunction, jdbcType=VARCHAR},
+      #{cellphone, jdbcType=VARCHAR},
+      #{code, jdbcType=VARCHAR}
+    );
+  </insert>
+</mapper>

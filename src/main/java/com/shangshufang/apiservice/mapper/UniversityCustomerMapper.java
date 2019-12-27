@@ -14,4 +14,6 @@ public interface UniversityCustomerMapper extends BaseMapper<UniversityCustomerE
     int updateCellphone(UniversityCustomerEntity entity);
 
     int delete(int universityCode, int schoolID, int customerID);
+
+    int deleteByCellphone(String cellphone);
 }

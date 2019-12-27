@@ -113,6 +113,11 @@
     AND customer_id = #{customerID,jdbcType=INTEGER};
   </update>
 
+  <delete id="deleteByCellphone">
+    DELETE FROM shangshufang_customer.university_customer
+    WHERE cellphone = #{arg0,jdbcType=VARCHAR};
+  </delete>
+
   <delete id="delete" parameterType="java.lang.Integer" >
     DELETE FROM shangshufang_customer.university_customer
     WHERE university_code = #{arg0,jdbcType=INTEGER}
