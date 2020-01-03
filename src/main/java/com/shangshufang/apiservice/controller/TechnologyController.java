@@ -17,6 +17,11 @@ public class TechnologyController {
         return serviceImpl.findList(pageNumber, pageSize);
     }
 
+    @RequestMapping(value = "/client/{pageNumber}/{pageSize}", method = RequestMethod.GET)
+    public UnifiedResponse findList4Client(@PathVariable("pageNumber") int pageNumber, @PathVariable("pageSize") int pageSize){
+        return serviceImpl.findList4Client(pageNumber, pageSize);
+    }
+
     @RequestMapping(value = "/{technologyID}", method = RequestMethod.GET)
     public UnifiedResponse find(@PathVariable("technologyID") int technologyID){
         return serviceImpl.find(technologyID);

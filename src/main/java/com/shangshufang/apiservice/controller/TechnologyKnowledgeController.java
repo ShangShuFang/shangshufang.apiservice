@@ -12,11 +12,13 @@ public class TechnologyKnowledgeController {
     @Autowired
     private TechnologyKnowledgeServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/{pageNumber}/{pageSize}/{technologyID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{pageNumber}/{pageSize}/{technologyID}/{learningPhaseID}/{dataStatus}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
-                                    @PathVariable("technologyID") int technologyID){
-        return serviceImpl.findList(pageNumber, pageSize, technologyID);
+                                    @PathVariable("technologyID") int technologyID,
+                                    @PathVariable("learningPhaseID") int learningPhaseID,
+                                    @PathVariable("dataStatus") String dataStatus){
+        return serviceImpl.findList(pageNumber, pageSize, technologyID, learningPhaseID, dataStatus);
     }
 
     @RequestMapping(value = "/{technologyID}", method = RequestMethod.GET)
@@ -44,8 +46,10 @@ public class TechnologyKnowledgeController {
         return serviceImpl.changeDataStatus(dto);
     }
 
-    @RequestMapping(value = "/{technologyID}/{knowledgeID}", method = RequestMethod.DELETE)
-    public UnifiedResponse delete(@PathVariable("technologyID") int technologyID, @PathVariable("knowledgeID") int knowledgeID){
-        return serviceImpl.delete(technologyID, knowledgeID);
+    @RequestMapping(value = "/{technologyID}/{learningPhaseID}/{knowledgeID}", method = RequestMethod.DELETE)
+    public UnifiedResponse delete(@PathVariable("technologyID") int technologyID,
+                                  @PathVariable("learningPhaseID") int learningPhaseID,
+                                  @PathVariable("knowledgeID") int knowledgeID){
+        return serviceImpl.delete(technologyID, learningPhaseID, knowledgeID);
     }
 }

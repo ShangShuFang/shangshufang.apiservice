@@ -40,6 +40,7 @@
     ON A.technology_id = B.technology_id
     INNER JOIN shangshufang_base.direction C
     ON A.direction_id = C.direction_id
+    ORDER BY C.direction_stars DESC;
   </select>
 
   <select id="searchList4Direction" resultMap="BaseResultMap">
@@ -65,6 +66,7 @@
     ON A.technology_id = B.technology_id
     INNER JOIN shangshufang_base.direction C
     ON A.direction_id = C.direction_id
+    ORDER BY C.direction_stars DESC;
   </select>
 
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.TechnologyDirectionEntity" >

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.ProgrammingLanguageMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.ProgrammingLanguageEntity" >
+    <id column="language_id" property="languageID" jdbcType="INTEGER" />
+    <result column="language_name" property="languageName" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+    language_id,
+    language_name
+    FROM shangshufang_base.programming_language;
+  </select>
+</mapper>

@@ -3,12 +3,16 @@
 <mapper namespace="com.shangshufang.apiservice.mapper.TechnologyMapper" >
   <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.TechnologyEntity" >
     <id column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="language_id" property="languageID" jdbcType="INTEGER" />
+    <result column="language_name" property="languageName" jdbcType="VARCHAR" />
     <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
     <result column="technology_stars" property="technologyStars" jdbcType="INTEGER" />
     <result column="technology_thumbnail" property="technologyThumbnail" jdbcType="VARCHAR" />
     <result column="technology_memo" property="technologyMemo" jdbcType="VARCHAR" />
     <result column="knowledge_count" property="knowledgeCount" jdbcType="INTEGER" />
     <result column="direction_count" property="directionCount" jdbcType="INTEGER" />
+    <result column="direction_names" property="directionNames" jdbcType="VARCHAR" />
+    <result column="using_company_count" property="usingCompanyCount" jdbcType="INTEGER" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -28,6 +32,8 @@
       A.technology_stars,
       A.technology_thumbnail,
       A.technology_memo,
+      A.language_id,
+      F.language_name,
       D.knowledge_count,
       E.direction_count,
       A.data_status,
@@ -63,9 +69,70 @@
       GROUP BY technology_id
     ) E
     ON A.technology_id = E.technology_id
+    INNER JOIN shangshufang_base.programming_language F
+    ON A.language_id = F.language_id
     ORDER BY A.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
+
+  <select id="searchList4Client" resultMap="BaseResultMap">
+    SELECT
+      A.technology_id,
+      A.technology_name,
+      A.technology_stars,
+      A.technology_thumbnail,
+      A.technology_memo,
+      A.language_id,
+      B.knowledge_count,
+      C.direction_count,
+      D.direction_names,
+      E.using_company_count,
+      F.language_name
+    FROM shangshufang_base.technology A
+    LEFT JOIN
+    (
+      SELECT
+        technology_id,
+        COUNT(1) AS knowledge_count
+      FROM shangshufang_base.technology_knowledge
+      GROUP BY technology_id
+    ) B
+    ON A.technology_id = B.technology_id
+    LEFT JOIN
+    (
+      SELECT
+        technology_id,
+        COUNT(1) AS direction_count
+      FROM shangshufang_base.technology_direction_matching
+      GROUP BY technology_id
+    ) C
+    ON A.technology_id = C.technology_id
+    LEFT JOIN
+    (
+      SELECT
+        A.technology_id,
+        GROUP_CONCAT(B.direction_name) AS direction_names
+      FROM shangshufang_base.technology_direction_matching A
+      INNER JOIN shangshufang_base.direction B
+      ON A.direction_id = B.direction_id
+      GROUP BY technology_id
+    ) D
+    ON A.technology_id = D.technology_id
+    LEFT JOIN
+    (
+      SELECT
+        technology_id,
+        COUNT(1) AS using_company_count
+      FROM shangshufang_customer.technology_using
+      GROUP BY technology_id
+    ) E
+    ON A.technology_id = E.technology_id
+    INNER JOIN shangshufang_base.programming_language F
+    ON A.language_id = F.language_id
+    ORDER BY A.technology_stars DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+
   <select id="searchByID" resultMap="BaseResultMap">
     SELECT
       A.technology_id,
@@ -108,6 +175,7 @@
   </select>
   <insert id="insert" useGeneratedKeys="true" keyProperty="technologyID" parameterType="com.shangshufang.apiservice.entity.TechnologyEntity" >
     INSERT INTO shangshufang_base.technology (
+      language_id,
       technology_name,
       technology_stars,
       technology_memo,
@@ -115,6 +183,7 @@
       update_user
     )
     VALUES (
+      #{languageID, jdbcType=INTEGER},
       #{technologyName, jdbcType=VARCHAR},
       #{technologyStars, jdbcType=INTEGER},
       #{technologyMemo, jdbcType=VARCHAR},

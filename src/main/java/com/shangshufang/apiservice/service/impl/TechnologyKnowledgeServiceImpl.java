@@ -22,16 +22,17 @@ public class TechnologyKnowledgeServiceImpl implements TechnologyKnowledgeServic
     @Autowired
     private TechnologyKnowledgeMapper myMapper;
     private Logger logger = LogManager.getLogger(TechnologyKnowledgeServiceImpl.class);
+
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, int technologyID) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, int technologyID, int learningPhaseID, String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<TechnologyKnowledgeVO> modelList = new ArrayList<>();
-            int totalCount = myMapper.searchTotalCount(technologyID);
+            int totalCount = myMapper.searchTotalCount(technologyID, learningPhaseID, dataStatus.equals("N") ? null : dataStatus);
             if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<TechnologyKnowledgeEntity> entityList =  myMapper.searchList(startIndex, pageSize, technologyID);
+            List<TechnologyKnowledgeEntity> entityList =  myMapper.searchList(startIndex, pageSize, technologyID, learningPhaseID, dataStatus.equals("N") ? null : dataStatus);
             for (TechnologyKnowledgeEntity entity : entityList) {
                 TechnologyKnowledgeVO model = new TechnologyKnowledgeVO();
                 ObjectConvertUtils.toBean(entity, model);
@@ -78,9 +79,9 @@ public class TechnologyKnowledgeServiceImpl implements TechnologyKnowledgeServic
     }
 
     @Override
-    public UnifiedResponse delete(int technologyID, int knowledgeID) {
+    public UnifiedResponse delete(int technologyID, int learningPhaseID, int knowledgeID) {
         try {
-            int affectRow = myMapper.delete(technologyID, knowledgeID);
+            int affectRow = myMapper.delete(technologyID, learningPhaseID, knowledgeID);
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
         } catch (Exception ex) {
             logger.error(ex.toString());

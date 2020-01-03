@@ -50,6 +50,28 @@ public class TechnologyServiceImpl implements TechnologyService {
     }
 
     @Override
+    public UnifiedResponse findList4Client(int pageNumber, int pageSize) {
+        try {
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<TechnologyVO> modelList = new ArrayList<>();
+            int totalCount = myMapper.searchTotalCount();
+            if(totalCount == 0){
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            List<TechnologyEntity> entityList =  myMapper.searchList4Client(startIndex, pageSize);
+            for (TechnologyEntity entity : entityList) {
+                TechnologyVO model = new TechnologyVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse find(int technologyID) {
         try {
             TechnologyEntity entity =  myMapper.searchByID(technologyID);

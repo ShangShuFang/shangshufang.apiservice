@@ -5,7 +5,10 @@
     <id column="knowledge_id" property="knowledgeID" jdbcType="INTEGER" />
     <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
     <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
+    <result column="learning_phase_id" property="learningPhaseID" jdbcType="INTEGER" />
+    <result column="learning_phase_name" property="learningPhaseName" jdbcType="VARCHAR" />
     <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR" />
+    <result column="using_company_count" property="usingCompanyCount" jdbcType="INTEGER" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -18,8 +21,14 @@
     COUNT(1) AS TotalCount
     FROM shangshufang_base.technology_knowledge
     WHERE 1=1
-    <if test="technologyID != 0">
-      AND technology_id = #{technologyID,jdbcType=INTEGER}
+    <if test="arg0 != 0">
+      AND technology_id = #{arg0,jdbcType=INTEGER}
+    </if>
+    <if test="arg1 != 0">
+      AND learning_phase_id = #{arg1,jdbcType=INTEGER}
+    </if>
+    <if test="arg2 != null">
+      AND data_status = #{arg2,jdbcType=VARCHAR}
     </if>;
   </select>
   <select id="searchList" resultMap="BaseResultMap">
@@ -27,6 +36,8 @@
       A.knowledge_id,
       A.technology_id,
       B.technology_name,
+      A.learning_phase_id,
+      C.learning_phase_name,
       A.knowledge_name,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未激活'
@@ -34,22 +45,51 @@
           WHEN A.data_status = 'D' THEN '禁用'
       ELSE '未知数据状态'
       END AS data_status_text,
-      C.admin_name AS create_user,
+      IFNULL(D.using_company_count, 0) AS using_company_count,
+      E.admin_name AS create_user,
       DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-      D.admin_name AS update_user,
+      F.admin_name AS update_user,
       DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
     FROM shangshufang_base.technology_knowledge A
     INNER JOIN shangshufang_base.technology B
     ON A.technology_id = B.technology_id
-    INNER JOIN shangshufang_base.system_admin C
-    ON A.create_user = C.admin_id
-    INNER JOIN shangshufang_base.system_admin D
-    ON A.update_user = D.admin_id
+    INNER JOIN shangshufang_base.learning_phase C
+    ON A.learning_phase_id = C.learning_phase_id
+    LEFT JOIN
+    (
+      SELECT
+        technology_id,
+        learning_phase_id,
+        knowledge_id,
+        COUNT(1) AS using_company_count
+      FROM shangshufang_customer.technology_knowledge_using
+      WHERE 1=1
+      <if test="arg2 != 0">
+        AND technology_id = #{arg2,jdbcType=INTEGER}
+      </if>
+      <if test="arg3 != 0">
+        AND learning_phase_id = #{arg3,jdbcType=INTEGER}
+      </if>
+      GROUP BY technology_id, learning_phase_id, knowledge_id
+    ) D
+    ON A.technology_id = D.technology_id
+    AND A.learning_phase_id = D.learning_phase_id
+    AND A.knowledge_id = D.knowledge_id
+    INNER JOIN shangshufang_base.system_admin E
+    ON A.create_user = E.admin_id
+    INNER JOIN shangshufang_base.system_admin F
+    ON A.update_user = F.admin_id
     WHERE 1=1
     <if test="arg2 != 0">
       AND A.technology_id = #{arg2,jdbcType=INTEGER}
     </if>
-    ORDER BY A.knowledge_id, A.update_time DESC
+    <if test="arg3 != 0">
+      AND A.learning_phase_id = #{arg3,jdbcType=INTEGER}
+    </if>
+    <if test="arg4 != null">
+      AND A.data_status = #{arg4,jdbcType=VARCHAR}
+    </if>
+    ORDER BY A.knowledge_id, A.learning_phase_id
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 
@@ -90,12 +130,14 @@
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.TechnologyKnowledgeEntity" >
     INSERT INTO shangshufang_base.technology_knowledge (
       technology_id,
+      learning_phase_id,
       knowledge_name,
       create_user,
       update_user
     )
     VALUES (
-      #{technologyID, jdbcType=VARCHAR},
+      #{technologyID, jdbcType=INTEGER},
+      #{learningPhaseID, jdbcType=INTEGER},
       #{knowledgeName, jdbcType=VARCHAR},
       #{createUser, jdbcType=VARCHAR},
       #{updateUser, jdbcType=VARCHAR}
@@ -106,6 +148,7 @@
       knowledge_name = #{knowledgeName,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+    AND learning_phase_id = #{learningPhaseID,jdbcType=INTEGER}
     AND knowledge_id = #{knowledgeID,jdbcType=INTEGER};
   </update>
   <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.TechnologyKnowledgeEntity" >
@@ -113,11 +156,13 @@
       data_status = #{dataStatus,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+    AND learning_phase_id = #{learningPhaseID,jdbcType=INTEGER}
     AND knowledge_id = #{knowledgeID,jdbcType=INTEGER};
   </update>
   <delete id="delete" parameterType="java.lang.Integer" >
     DELETE FROM shangshufang_base.technology_knowledge
     WHERE technology_id = #{arg0,jdbcType=INTEGER}
-    AND knowledge_id = #{arg1,jdbcType=INTEGER};
+    AND learning_phase_id = #{arg1,jdbcType=INTEGER}
+    AND knowledge_id = #{arg2,jdbcType=INTEGER};
   </delete>
 </mapper>

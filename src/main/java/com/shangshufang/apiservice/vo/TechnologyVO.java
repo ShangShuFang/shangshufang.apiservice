@@ -11,4 +11,8 @@ public class TechnologyVO extends BaseVO {
     private String technologyMemo;
     private int knowledgeCount;
     private int directionCount;
+    private int usingCompanyCount;
+    private String directionNames;
+    private int languageID;
+    private String languageName;
 }

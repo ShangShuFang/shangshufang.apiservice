@@ -11,6 +11,8 @@ public interface TechnologyMapper extends BaseMapper<TechnologyEntity> {
 
     List<TechnologyEntity> searchList(int startIndex, int pageSize);
 
+    List<TechnologyEntity> searchList4Client(int startIndex, int pageSize);
+
     TechnologyEntity searchByID(int technologyID);
 
     int checkTechnologyNameExist(String technologyName);
