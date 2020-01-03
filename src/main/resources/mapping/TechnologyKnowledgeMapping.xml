@@ -92,7 +92,6 @@
     ORDER BY A.knowledge_id, A.learning_phase_id
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
-
   <select id="search" resultMap="BaseResultMap">
     SELECT
     A.knowledge_id,

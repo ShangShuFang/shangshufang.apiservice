@@ -2,7 +2,6 @@ package com.shangshufang.apiservice.service.impl;
 
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
-import com.shangshufang.apiservice.dto.LearningPathDTO;
 import com.shangshufang.apiservice.entity.LearningPathEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
 import com.shangshufang.apiservice.mapper.LearningPathMapper;
@@ -24,32 +23,10 @@ public class LearningPathServiceImpl implements LearningPathService {
     private Logger logger = LogManager.getLogger(LearningPathServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, int technologyID, int learningPhase) {
-        try {
-            int startIndex = (pageNumber - 1) * pageSize;
-            List<LearningPathVO> modelList = new ArrayList<>();
-            int totalCount = myMapper.searchTotalCount(technologyID, learningPhase);
-            if(totalCount == 0){
-                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
-            }
-            List<LearningPathEntity> entityList =  myMapper.searchList(startIndex, pageSize, technologyID, learningPhase);
-            for (LearningPathEntity entity : entityList) {
-                LearningPathVO model = new LearningPathVO();
-                ObjectConvertUtils.toBean(entity, model);
-                modelList.add(model);
-            }
-            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
-        } catch (Exception ex) {
-            logger.error(ex.toString());
-            return UnifiedResponseManager.buildExceptionResponse();
-        }
-    }
-
-    @Override
-    public UnifiedResponse findUsingTechnology() {
+    public UnifiedResponse findTechnology() {
         try {
             List<LearningPathVO> modelList = new ArrayList<>();
-            List<LearningPathEntity> entityList =  myMapper.searchUsingTechnology();
+            List<LearningPathEntity> entityList =  myMapper.searchTechnology();
             if(entityList.isEmpty()){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
@@ -66,10 +43,10 @@ public class LearningPathServiceImpl implements LearningPathService {
     }
 
     @Override
-    public UnifiedResponse findUsingLearningPhase(int technologyID) {
+    public UnifiedResponse findLearningPhase(int technologyID) {
         try {
             List<LearningPathVO> modelList = new ArrayList<>();
-            List<LearningPathEntity> entityList =  myMapper.searchUsingLearningPhase(technologyID);
+            List<LearningPathEntity> entityList =  myMapper.searchLearningPhase(technologyID);
             if(entityList.isEmpty()){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
@@ -86,10 +63,10 @@ public class LearningPathServiceImpl implements LearningPathService {
     }
 
     @Override
-    public UnifiedResponse findUsingKnowledge(int technologyID, int learningPhase) {
+    public UnifiedResponse findKnowledge(int technologyID, int learningPhase) {
         try {
             List<LearningPathVO> modelList = new ArrayList<>();
-            List<LearningPathEntity> entityList =  myMapper.searchUsingKnowledge(technologyID, learningPhase);
+            List<LearningPathEntity> entityList =  myMapper.searchKnowledge(technologyID, learningPhase);
             if(entityList.isEmpty()){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
@@ -99,73 +76,6 @@ public class LearningPathServiceImpl implements LearningPathService {
                 modelList.add(model);
             }
             return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
-        } catch (Exception ex) {
-            logger.error(ex.toString());
-            return UnifiedResponseManager.buildExceptionResponse();
-        }
-    }
-
-    @Override
-    public UnifiedResponse delete(int technologyID, int learningPhase) {
-        try {
-            int affectRow = myMapper.delete(technologyID, learningPhase);
-            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
-        } catch (Exception ex) {
-            logger.error(ex.toString());
-            return UnifiedResponseManager.buildExceptionResponse();
-        }
-    }
-
-    @Override
-    public UnifiedResponse add(LearningPathDTO dto) {
-        try {
-            String[] usingKnowledgeArray = dto.getKnowledgeIdList().split(",");
-            int affectRow = 0;
-            for (String knowledge : usingKnowledgeArray) {
-                LearningPathEntity entity = new LearningPathEntity();
-                entity.setTechnologyID(dto.getTechnologyID());
-                entity.setLearningPhaseID(dto.getLearningPhaseID());
-                entity.setKnowledgeID(Integer.parseInt(knowledge));
-                entity.setCreateUser(dto.getLoginUser());
-                entity.setUpdateUser(dto.getLoginUser());
-                affectRow += myMapper.insert(entity);
-            }
-            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
-        } catch (Exception ex) {
-            logger.error(ex.toString());
-            return UnifiedResponseManager.buildExceptionResponse();
-        }
-    }
-
-    @Override
-    public UnifiedResponse change(LearningPathDTO dto) {
-        try {
-            String[] usingKnowledgeArray = dto.getKnowledgeIdList().split(",");
-            int affectRow = myMapper.delete(dto.getTechnologyID(), dto.getLearningPhaseID());
-            for (String knowledge : usingKnowledgeArray) {
-                LearningPathEntity entity = new LearningPathEntity();
-                entity.setTechnologyID(dto.getTechnologyID());
-                entity.setLearningPhaseID(dto.getLearningPhaseID());
-                entity.setKnowledgeID(Integer.parseInt(knowledge));
-                entity.setCreateUser(dto.getLoginUser());
-                entity.setUpdateUser(dto.getLoginUser());
-                affectRow += myMapper.insert(entity);
-            }
-            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
-        } catch (Exception ex) {
-            logger.error(ex.toString());
-            return UnifiedResponseManager.buildExceptionResponse();
-        }
-    }
-
-    @Override
-    public UnifiedResponse changeDataStatus(LearningPathDTO dto) {
-        try {
-            LearningPathEntity entity = new LearningPathEntity();
-            ObjectConvertUtils.toBean(dto, entity);
-            entity.setUpdateUser(dto.getLoginUser());
-            int affectRow = myMapper.updateDataStatus(entity);
-            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
         } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();

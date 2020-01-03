@@ -6,16 +6,10 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 @Mapper
-public interface LearningPathMapper extends BaseMapper<LearningPathEntity> {
-    int searchTotalCount(int technologyID, int learningPhase);
+public interface LearningPathMapper {
+    List<LearningPathEntity> searchTechnology();
 
-    List<LearningPathEntity> searchList(int startIndex, int pageSize, int technologyID, int learningPhase);
+    List<LearningPathEntity> searchLearningPhase(int technologyID);
 
-    List<LearningPathEntity> searchUsingTechnology();
-
-    List<LearningPathEntity> searchUsingLearningPhase(int technologyID);
-
-    List<LearningPathEntity> searchUsingKnowledge(int technologyID, int learningPhase);
-
-    int delete(int technologyID, int learningPhase);
+    List<LearningPathEntity> searchKnowledge(int technologyID, int learningPhase);
 }

@@ -64,7 +64,6 @@
     WHERE A.exercises_id = #{arg0,jdbcType=INTEGER}
     ORDER BY A.update_time DESC;
   </select>
-
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.ExercisesKnowledgeEntity" >
     INSERT INTO shangshufang_base.exercises_knowledge (
       exercises_id,

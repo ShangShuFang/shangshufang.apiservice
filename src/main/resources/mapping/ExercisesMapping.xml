@@ -162,14 +162,12 @@
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE exercises_id = #{exercisesID,jdbcType=VARCHAR};
   </update>
-
   <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.ExercisesEntity" >
     UPDATE shangshufang_base.exercises SET
       data_status = #{dataStatus,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=INTEGER}
     WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
   </update>
-
   <delete id="delete" parameterType="java.lang.Integer" >
     DELETE FROM shangshufang_base.exercises
     WHERE exercises_id = #{arg0,jdbcType=INTEGER};
