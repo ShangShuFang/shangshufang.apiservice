@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.CoursePlanMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.CoursePlanEntity" >
+    <id column="plan_id" property="planID" jdbcType="INTEGER" />
+    <result column="university_code" property="universityCode" jdbcType="INTEGER" />
+    <result column="school_id" property="schoolID" jdbcType="INTEGER" />
+    <result column="course_id" property="courseID" jdbcType="INTEGER" />
+    <result column="course_class" property="courseClass" jdbcType="INTEGER" />
+    <result column="learning_phase_id" property="learningPhaseID" jdbcType="INTEGER" />
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="technology_name" property="technologyName" jdbcType="INTEGER" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.plan_id,
+      A.university_code,
+      A.school_id,
+      A.course_id,
+      A.course_class,
+      A.learning_phase_id,
+      A.technology_id,
+      B.technology_name
+    FROM shangshufang_customer.course_plan A
+    INNER JOIN shangshufang_base.technology B
+    ON A.technology_id = B.technology_id
+    WHERE university_code = #{arg0,jdbcType=INTEGER}
+    AND school_id = #{arg1,jdbcType=INTEGER}
+    AND course_id = #{arg2,jdbcType=INTEGER}
+    ORDER BY course_order;
+  </select>
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.CoursePlanEntity" >
+    INSERT INTO shangshufang_customer.course_plan (
+      university_code,
+      school_id,
+      course_id,
+      course_class,
+      learning_phase_id,
+      technology_id,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{universityCode, jdbcType=INTEGER},
+      #{schoolID, jdbcType=INTEGER},
+      #{courseID, jdbcType=INTEGER},
+      #{courseClass, jdbcType=INTEGER},
+      #{learningPhaseID, jdbcType=INTEGER},
+      #{technologyID, jdbcType=INTEGER},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    );
+  </insert>
+  <delete id="delete" parameterType="java.lang.Integer" >
+    DELETE FROM shangshufang_customer.course_plan
+    WHERE university_code = #{arg0,jdbcType=INTEGER}
+    AND school_id = #{arg1,jdbcType=INTEGER}
+    AND course_id = #{arg2,jdbcType=INTEGER};
+  </delete>
+</mapper>

@@ -20,6 +20,34 @@
     <result column="update_user" property="updateUser" jdbcType="INTEGER" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.customer_id,
+      A.university_code,
+      B.university_name,
+      A.school_id,
+      C.school_name,
+      A.full_name,
+      A.sex,
+      A.birth,
+      A.cellphone,
+      A.email,
+      A.photo,
+      A.customer_role
+    FROM shangshufang_customer.university_customer A
+    INNER JOIN shangshufang_customer.university B
+    ON A.university_code = B.university_code
+    INNER JOIN shangshufang_customer.school C
+    ON A.university_code = C.university_code
+    AND A.school_id = C.school_id
+    WHERE A.university_code = #{arg0,jdbcType=INTEGER}
+    <if test="arg1 != 0">
+      AND A.school_id = #{arg1,jdbcType=INTEGER}
+    </if>
+    AND A.customer_role = #{arg2,jdbcType=VARCHAR}
+    AND A.full_name LIKE #{arg3,jdbcType=VARCHAR}
+    ORDER BY A.customer_id;
+  </select>
 
   <select id="search" resultMap="BaseResultMap">
     SELECT
@@ -51,7 +79,6 @@
     WHERE A.customer_id = #{arg0,jdbcType=INTEGER}
     AND A.cellphone = #{arg1,jdbcType=VARCHAR};
   </select>
-
   <select id="checkCellphoneExist" resultType="java.lang.Integer">
     SELECT
       COUNT(1) AS TotalCount
@@ -103,7 +130,6 @@
     AND school_id = #{schoolID,jdbcType=INTEGER}
     AND customer_id = #{customerID,jdbcType=INTEGER};
   </update>
-
   <update id="updateCellphone" parameterType="com.shangshufang.apiservice.entity.UniversityCustomerEntity" >
     UPDATE shangshufang_customer.university_customer SET
       cellphone = #{cellphone,jdbcType=VARCHAR},
@@ -112,12 +138,10 @@
     AND school_id = #{schoolID,jdbcType=INTEGER}
     AND customer_id = #{customerID,jdbcType=INTEGER};
   </update>
-
   <delete id="deleteByCellphone">
     DELETE FROM shangshufang_customer.university_customer
     WHERE cellphone = #{arg0,jdbcType=VARCHAR};
   </delete>
-
   <delete id="delete" parameterType="java.lang.Integer" >
     DELETE FROM shangshufang_customer.university_customer
     WHERE university_code = #{arg0,jdbcType=INTEGER}

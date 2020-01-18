@@ -19,6 +19,12 @@ public class DateUtils {
         return simpleDateFormat.parse(value);
     }
 
+    public static int compare(String date1, String date2) throws ParseException {
+        Date dateTime1 = DateUtils.convert(date1);
+        Date dateTime2 = DateUtils.convert(date2);
+        return dateTime1.compareTo(dateTime2);
+    }
+
     public static String getRecentMonthDateTime(int recentMonth){
         GregorianCalendar gc=new GregorianCalendar();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.CourseMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.CourseEntity" >
+    <id column="course_id" property="courseID" jdbcType="INTEGER" />
+    <result column="university_code" property="universityCode" jdbcType="INTEGER" />
+    <result column="university_name" property="universityName" jdbcType="VARCHAR" />
+    <result column="school_id" property="schoolID" jdbcType="INTEGER" />
+    <result column="school_name" property="schoolName" jdbcType="VARCHAR" />
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
+    <result column="course_name" property="courseName" jdbcType="VARCHAR" />
+    <result column="teacher_id" property="teacherID" jdbcType="INTEGER" />
+    <result column="teacher_name" property="teacherName" jdbcType="VARCHAR" />
+    <result column="course_time_begin" property="courseTimeBegin" jdbcType="TIMESTAMP" />
+    <result column="course_time_end" property="courseTimeEnd" jdbcType="TIMESTAMP" />
+    <result column="course_Introduction" property="courseIntroduction" jdbcType="VARCHAR" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+      COUNT(1) AS TotalCount
+    FROM shangshufang_customer.course
+    WHERE university_code = #{arg0,jdbcType=INTEGER}
+      AND school_id = #{arg1,jdbcType=INTEGER}
+      AND teacher_id = #{arg2,jdbcType=INTEGER}
+      AND data_status != 'D'
+    <if test="arg3 != null">
+      AND course_time_begin = #{arg3,jdbcType=VARCHAR}
+    </if>
+    <if test="arg4 != null">
+      AND course_time_end = #{arg4,jdbcType=VARCHAR}
+    </if>
+    <if test="arg5 != null">
+      AND data_status = #{arg5,jdbcType=VARCHAR}
+    </if>;
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.course_id,
+      A.university_code,
+      B.university_name,
+      A.school_id,
+      C.school_name,
+      A.technology_id,
+      D.technology_name,
+      A.course_name,
+      A.teacher_id,
+      E.full_name,
+      A.course_time_begin,
+      A.course_time_end,
+      A.course_introduction,
+      A.data_status,
+      CASE WHEN A.data_status = 'P' THEN '未开始'
+      WHEN A.data_status = 'A' THEN '进行中'
+      WHEN A.data_status = 'S' THEN '已暂停'
+      WHEN A.data_status = 'F' THEN '已结束'
+      WHEN A.data_status = 'D' THEN '已删除'
+      ELSE '未知数据状态'
+      END AS data_status_text,
+      F.admin_name AS create_user,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      G.admin_name AS update_user,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.course A
+    INNER JOIN shangshufang_customer.university B
+    ON A.university_code = B.university_code
+    INNER JOIN shangshufang_customer.school C
+    ON A.university_code = C.university_code
+    AND A.school_id = C.school_id
+    INNER JOIN shangshufang_base.technology D
+    ON A.technology_id = D.technology_id
+    INNER JOIN shangshufang_customer.university_customer E
+    ON A.university_code = E.university_code
+    AND A.school_id = E.school_id
+    AND A.teacher_id = E.customer_id
+    AND E.customer_role = 'T'
+    INNER JOIN shangshufang_base.system_admin F
+    ON A.create_user = F.admin_id
+    INNER JOIN shangshufang_base.system_admin G
+    ON A.update_user = G.admin_id
+    WHERE university_code = #{arg0,jdbcType=INTEGER}
+    AND school_id = #{arg1,jdbcType=INTEGER}
+    AND teacher_id = #{arg2,jdbcType=INTEGER}
+    AND data_status != 'D'
+    <if test="arg3 != null">
+      AND course_time_begin = #{arg3,jdbcType=VARCHAR}
+    </if>
+    <if test="arg4 != null">
+      AND course_time_end = #{arg4,jdbcType=VARCHAR}
+    </if>
+    <if test="arg5 != null">
+      AND data_status = #{arg5,jdbcType=VARCHAR}
+    </if>
+    ORDER BY A.update_time DESC
+    LIMIT #{arg6,jdbcType=INTEGER}, #{arg7,jdbcType=INTEGER};
+  </select>
+  <select id="search" resultMap="BaseResultMap">
+    SELECT
+      A.course_id,
+      A.university_code,
+      B.university_name,
+      A.school_id,
+      C.school_name,
+      A.technology_id,
+      D.technology_name,
+      A.course_name,
+      A.teacher_id,
+      E.full_name,
+      A.course_time_begin,
+      A.course_time_end,
+      A.course_introduction,
+      A.data_status,
+      CASE WHEN A.data_status = 'P' THEN '未开始'
+      WHEN A.data_status = 'A' THEN '进行中'
+      WHEN A.data_status = 'S' THEN '已暂停'
+      WHEN A.data_status = 'F' THEN '已结束'
+      WHEN A.data_status = 'D' THEN '已删除'
+      ELSE '未知数据状态'
+      END AS data_status_text,
+      F.admin_name AS create_user,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      G.admin_name AS update_user,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.course A
+    INNER JOIN shangshufang_customer.university B
+    ON A.university_code = B.university_code
+    INNER JOIN shangshufang_customer.school C
+    ON A.university_code = C.university_code
+    AND A.school_id = C.school_id
+    INNER JOIN shangshufang_base.technology D
+    ON A.technology_id = D.technology_id
+    INNER JOIN shangshufang_customer.university_customer E
+    ON A.university_code = E.university_code
+    AND A.school_id = E.school_id
+    AND A.teacher_id = E.customer_id
+    AND E.customer_role = 'T'
+    INNER JOIN shangshufang_base.system_admin F
+    ON A.create_user = F.admin_id
+    INNER JOIN shangshufang_base.system_admin G
+    ON A.update_user = G.admin_id
+    WHERE university_code = #{arg0,jdbcType=INTEGER}
+    AND school_id = #{arg1,jdbcType=INTEGER}
+    AND teacher_id = #{arg2,jdbcType=INTEGER}
+    AND course_id = #{arg3,jdbcType=INTEGER}
+    AND data_status != 'D';
+  </select>
+  <select id="checkCourseExist" resultType="java.lang.Integer">
+    SELECT
+      COUNT(1) AS TotalCount
+    FROM shangshufang_customer.course
+    WHERE university_code = #{arg0,jdbcType=INTEGER}
+    AND school_id = #{arg1,jdbcType=INTEGER}
+    AND course_name = #{arg2,jdbcType=VARCHAR}
+    AND (
+          (course_time_begin &gt;= #{arg3,jdbcType=VARCHAR} AND course_time_end &lt;= #{arg4,jdbcType=VARCHAR})
+          OR
+          (course_time_begin &gt;= #{arg3,jdbcType=VARCHAR} AND course_time_end &gt;= #{arg4,jdbcType=VARCHAR})
+          OR
+          (course_time_begin &lt;= #{arg3,jdbcType=VARCHAR} AND course_time_end &gt;= #{arg3,jdbcType=VARCHAR} AND course_time_end &gt;= #{arg4,jdbcType=VARCHAR})
+          OR
+          (course_time_begin &lt;= #{arg3,jdbcType=VARCHAR} AND course_time_end &gt;= #{arg3,jdbcType=VARCHAR} AND course_time_end &lt;= #{arg4,jdbcType=VARCHAR})
+    );
+  </select>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="courseID" parameterType="com.shangshufang.apiservice.entity.CourseEntity" >
+    INSERT INTO shangshufang_customer.course (
+      university_code,
+      school_id,
+      technology_id,
+      course_name,
+      teacher_id,
+      course_time_begin,
+      course_time_end,
+      course_introduction,
+      data_status,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{universityCode, jdbcType=INTEGER},
+      #{schoolID, jdbcType=INTEGER},
+      #{technologyID, jdbcType=INTEGER},
+      #{courseName, jdbcType=VARCHAR},
+      #{teacherID, jdbcType=INTEGER},
+      #{courseTimeBegin, jdbcType=VARCHAR},
+      #{courseTimeEnd, jdbcType=VARCHAR},
+      #{courseIntroduction, jdbcType=VARCHAR},
+      #{dataStatus, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.CourseEntity" >
+    UPDATE shangshufang_customer.course SET
+      course_name = #{courseName,jdbcType=VARCHAR},
+      teacher_id = #{teacherID,jdbcType=INTEGER},
+      course_time_begin = #{courseTimeBegin,jdbcType=VARCHAR},
+      course_time_end = #{courseTimeEnd,jdbcType=VARCHAR},
+      course_introduction = #{courseIntroduction,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE university_code = #{universityCode,jdbcType=INTEGER}
+    AND school_id = #{schoolID,jdbcType=INTEGER}
+    AND teacher_id = #{teacherID,jdbcType=INTEGER}
+    AND course_id = #{courseID,jdbcType=INTEGER};
+  </update>
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.CourseEntity" >
+    UPDATE shangshufang_customer.course SET
+      data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=INTEGER}
+     WHERE university_code = #{universityCode,jdbcType=INTEGER}
+    AND school_id = #{schoolID,jdbcType=INTEGER}
+    AND teacher_id = #{teacherID,jdbcType=INTEGER}
+    AND course_id = #{courseID,jdbcType=INTEGER};
+  </update>
+</mapper>
