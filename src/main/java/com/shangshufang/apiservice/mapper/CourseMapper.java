@@ -11,14 +11,12 @@ public interface CourseMapper extends BaseMapper<CourseEntity> {
                          int schoolID,
                          int teacherID,
                          String courseTimeBegin,
-                         String courseTimeEnd,
                          String dataStatus);
 
     List<CourseEntity> searchList(int universityCode,
                                   int schoolID,
                                   int teacherID,
                                   String courseTimeBegin,
-                                  String courseTimeEnd,
                                   String dataStatus,
                                   int startIndex,
                                   int pageSize);

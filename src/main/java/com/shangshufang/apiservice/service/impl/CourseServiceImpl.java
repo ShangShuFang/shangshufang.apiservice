@@ -41,18 +41,20 @@ public class CourseServiceImpl implements CourseService {
                                     int schoolID,
                                     int teacherID,
                                     String courseTimeBegin,
-                                    String courseTimeEnd,
                                     String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<CourseVO> modelList = new ArrayList<>();
 
-            int totalCount = courseMapper.searchTotalCount(universityCode,
+            courseTimeBegin = courseTimeBegin.equals(ParameterConstant.NO_PARAMETER) ? null : courseTimeBegin;
+            dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
+
+            int totalCount = courseMapper.searchTotalCount(
+                    universityCode,
                     schoolID,
                     teacherID,
-                    courseTimeBegin.equals(ParameterConstant.NO_PARAMETER) ? null : courseTimeBegin,
-                    courseTimeEnd.equals(ParameterConstant.NO_PARAMETER) ? null : courseTimeEnd,
-                    dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus);
+                    courseTimeBegin,
+                    dataStatus);
             if(totalCount == 0) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
@@ -62,9 +64,8 @@ public class CourseServiceImpl implements CourseService {
                     universityCode,
                     schoolID,
                     teacherID,
-                    courseTimeBegin.equals(ParameterConstant.NO_PARAMETER) ? null : courseTimeBegin,
-                    courseTimeEnd.equals(ParameterConstant.NO_PARAMETER) ? null : courseTimeEnd,
-                    dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus,
+                    courseTimeBegin,
+                    dataStatus,
                     startIndex,
                     pageSize);
 

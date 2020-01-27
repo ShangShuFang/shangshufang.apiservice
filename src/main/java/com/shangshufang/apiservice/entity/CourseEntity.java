@@ -17,12 +17,13 @@ public class CourseEntity extends BaseEntity {
     private String courseTimeBegin;
     private String courseTimeEnd;
     private String courseIntroduction;
-    private float courseProcess;
-    private int courseKnowledgeAcceptCompanyCount;
-    private int courseKnowledgeTotalCount;
+    private int courseTechnologyUsingCompanyCount;
+    private int courseKnowledgeCount;
+    private int technologyKnowledgeCount;
+    private int courseKnowledgeExercisesCount;
+    private int courseSingUpCount;
+    private int courseQuestionFinish;
+    private int courseQuestion;
+    private String courseProcess;
     private int courseKnowledgeFinishCount;
-    private int courseExercisesCount;
-    private int applyStudentCount;
-    private int onlineQuestionTotalCount;
-    private int onlineQuestionFinishCount;
 }

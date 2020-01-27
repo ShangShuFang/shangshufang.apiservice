@@ -7,9 +7,16 @@
     <result column="school_id" property="schoolID" jdbcType="INTEGER" />
     <result column="course_id" property="courseID" jdbcType="INTEGER" />
     <result column="course_class" property="courseClass" jdbcType="INTEGER" />
-    <result column="learning_phase_id" property="learningPhaseID" jdbcType="INTEGER" />
+
     <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
-    <result column="technology_name" property="technologyName" jdbcType="INTEGER" />
+    <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
+
+    <result column="learning_phase_id" property="learningPhaseID" jdbcType="INTEGER" />
+    <result column="learning_phase_name" property="learningPhaseName" jdbcType="VARCHAR" />
+
+    <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER" />
+    <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR" />
+
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_user" property="updateUser" jdbcType="INTEGER" />
@@ -22,16 +29,25 @@
       A.school_id,
       A.course_id,
       A.course_class,
-      A.learning_phase_id,
       A.technology_id,
-      B.technology_name
+      B.technology_name,
+      A.learning_phase_id,
+      C.learning_phase_name,
+      A.knowledge_id,
+      D.knowledge_name
     FROM shangshufang_customer.course_plan A
     INNER JOIN shangshufang_base.technology B
     ON A.technology_id = B.technology_id
-    WHERE university_code = #{arg0,jdbcType=INTEGER}
-    AND school_id = #{arg1,jdbcType=INTEGER}
-    AND course_id = #{arg2,jdbcType=INTEGER}
-    ORDER BY course_order;
+    INNER JOIN shangshufang_base.learning_phase C
+    ON A.learning_phase_id = C.learning_phase_id
+    INNER JOIN shangshufang_base.technology_knowledge D
+    ON A.technology_id = D.technology_id
+    AND A.learning_phase_id = D.learning_phase_id
+    AND A.knowledge_id = D.knowledge_id
+    WHERE A.university_code = #{arg0,jdbcType=INTEGER}
+    AND A.school_id = #{arg1,jdbcType=INTEGER}
+    AND A.course_id = #{arg2,jdbcType=INTEGER}
+    ORDER BY A.course_class;
   </select>
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.CoursePlanEntity" >
     INSERT INTO shangshufang_customer.course_plan (
@@ -39,8 +55,9 @@
       school_id,
       course_id,
       course_class,
-      learning_phase_id,
       technology_id,
+      learning_phase_id,
+      knowledge_id,
       create_user,
       update_user
     )
@@ -49,8 +66,9 @@
       #{schoolID, jdbcType=INTEGER},
       #{courseID, jdbcType=INTEGER},
       #{courseClass, jdbcType=INTEGER},
-      #{learningPhaseID, jdbcType=INTEGER},
       #{technologyID, jdbcType=INTEGER},
+      #{learningPhaseID, jdbcType=INTEGER},
+      #{knowledgeID, jdbcType=INTEGER},
       #{createUser, jdbcType=VARCHAR},
       #{updateUser, jdbcType=VARCHAR}
     );

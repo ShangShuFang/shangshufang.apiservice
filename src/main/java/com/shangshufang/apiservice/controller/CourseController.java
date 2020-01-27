@@ -12,16 +12,15 @@ public class CourseController {
     @Autowired
     private CourseServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{teacherID}/{courseTimeBegin}/{courseTimeEnd}/{dataStatus}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{teacherID}/{courseTimeBegin}/{dataStatus}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
                                     @PathVariable("universityCode") int universityCode,
                                     @PathVariable("schoolID") int schoolID,
                                     @PathVariable("teacherID") int teacherID,
                                     @PathVariable("courseTimeBegin") String courseTimeBegin,
-                                    @PathVariable("courseTimeEnd") String courseTimeEnd,
                                     @PathVariable("dataStatus") String dataStatus){
-        return serviceImpl.findList(pageNumber, pageSize, universityCode, schoolID, teacherID, courseTimeBegin, courseTimeEnd, dataStatus);
+        return serviceImpl.findList(pageNumber, pageSize, universityCode, schoolID, teacherID, courseTimeBegin, dataStatus);
     }
 
     @RequestMapping(value = "/{universityCode}/{schoolID}/{teacherID}/{courseID}", method = RequestMethod.GET)
