@@ -16,6 +16,7 @@ public class CourseVO extends BaseVO {
     private String courseName;
     private int teacherID;
     private String teacherName;
+    private String teacherPhotoUrl;
     private String courseTimeBegin;
     private String courseTimeEnd;
     private String courseIntroduction;

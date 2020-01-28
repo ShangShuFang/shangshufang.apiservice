@@ -14,6 +14,7 @@ public class CourseEntity extends BaseEntity {
     private String courseName;
     private int teacherID;
     private String teacherName;
+    private String teacherPhotoUrl;
     private String courseTimeBegin;
     private String courseTimeEnd;
     private String courseIntroduction;

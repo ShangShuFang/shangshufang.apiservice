@@ -40,8 +40,10 @@ public class CourseServiceImpl implements CourseService {
                                     int universityCode,
                                     int schoolID,
                                     int teacherID,
+                                    int technologyID,
                                     String courseTimeBegin,
-                                    String dataStatus) {
+                                    String dataStatus,
+                                    boolean isSelf) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<CourseVO> modelList = new ArrayList<>();
@@ -53,8 +55,10 @@ public class CourseServiceImpl implements CourseService {
                     universityCode,
                     schoolID,
                     teacherID,
+                    technologyID,
                     courseTimeBegin,
-                    dataStatus);
+                    dataStatus,
+                    isSelf);
             if(totalCount == 0) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
@@ -64,10 +68,12 @@ public class CourseServiceImpl implements CourseService {
                     universityCode,
                     schoolID,
                     teacherID,
+                    technologyID,
                     courseTimeBegin,
                     dataStatus,
                     startIndex,
-                    pageSize);
+                    pageSize,
+                    isSelf);
 
             for (CourseEntity entity : entityList) {
                 //取得课程的课表

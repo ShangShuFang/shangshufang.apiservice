@@ -12,6 +12,9 @@
     <result column="course_name" property="courseName" jdbcType="VARCHAR" />
     <result column="teacher_id" property="teacherID" jdbcType="INTEGER" />
     <result column="teacher_name" property="teacherName" jdbcType="VARCHAR" />
+
+    <result column="teacher_photo" property="teacherPhotoUrl" jdbcType="VARCHAR" />
+
     <result column="course_time_begin" property="courseTimeBegin" jdbcType="TIMESTAMP" />
     <result column="course_time_end" property="courseTimeEnd" jdbcType="TIMESTAMP" />
     <result column="course_introduction" property="courseIntroduction" jdbcType="VARCHAR" />
@@ -34,16 +37,28 @@
     SELECT
       COUNT(1) AS TotalCount
     FROM shangshufang_customer.course
-    WHERE university_code = #{arg0,jdbcType=INTEGER}
-      AND school_id = #{arg1,jdbcType=INTEGER}
-      AND teacher_id = #{arg2,jdbcType=INTEGER}
-      AND data_status != 'D'
-    <if test="arg3 != null">
-      AND course_time_begin &gt;= #{arg3,jdbcType=VARCHAR}
-    </if>
-    <if test="arg4 != null">
-      AND data_status = #{arg4,jdbcType=VARCHAR}
-    </if>;
+    WHERE data_status != 'D'
+      <if test="arg6 == true">
+        AND university_code = #{arg0,jdbcType=INTEGER}
+      </if>
+      <if test="arg6 != true">
+        AND university_code != #{arg0,jdbcType=INTEGER}
+      </if>
+      <if test="arg1 != 0">
+        AND school_id = #{arg1,jdbcType=INTEGER}
+      </if>
+      <if test="arg2 != 0">
+        AND teacher_id = #{arg2,jdbcType=INTEGER}
+      </if>
+      <if test="arg3 != 0">
+        AND technology_id = #{arg3,jdbcType=INTEGER}
+      </if>
+      <if test="arg4 != null">
+        AND course_time_begin &gt;= #{arg4,jdbcType=VARCHAR}
+      </if>
+      <if test="arg5 != null">
+        AND data_status = #{arg5,jdbcType=VARCHAR}
+      </if>;
   </select>
   <select id="searchList" resultMap="BaseResultMap">
     SELECT
@@ -57,6 +72,7 @@
       A.course_name,
       A.teacher_id,
       E.full_name AS teacher_name,
+      E.photo AS teacher_photo,
       DATE_FORMAT(A.course_time_begin, '%Y-%m-%d') AS course_time_begin,
       DATE_FORMAT(A.course_time_end, '%Y-%m-%d') AS course_time_end,
       A.course_introduction,
@@ -67,7 +83,7 @@
       IFNULL(J.course_sing_up_count, 0) AS course_sing_up_count,
       IFNULL(K.course_question_finish, 0) AS course_question_finish,
       IFNULL(L.course_question, 0) AS course_question,
-    CONCAT(TRUNCATE(TRUNCATE(IFNULL(N.course_class_finish_count, 0) / IFNULL(M.course_class_total_count, 0), 2) * 100, 0), '%') AS course_process,
+      CONCAT(TRUNCATE(TRUNCATE(IFNULL(N.course_class_finish_count, 0) / IFNULL(M.course_class_total_count, 0), 2) * 100, 0), '%') AS course_process,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未开始'
       WHEN A.data_status = 'A' THEN '进行中'
@@ -96,18 +112,30 @@
         create_time,
         update_time
       FROM shangshufang_customer.course
-      WHERE university_code = #{arg0,jdbcType=INTEGER}
-      AND school_id = #{arg1,jdbcType=INTEGER}
-      AND teacher_id = #{arg2,jdbcType=INTEGER}
-      AND data_status != 'D'
-      <if test="arg3 != null">
-        AND course_time_begin &gt;= #{arg3,jdbcType=VARCHAR}
+      WHERE data_status != 'D'
+      <if test="arg8 == true">
+        AND university_code = #{arg0,jdbcType=INTEGER}
+      </if>
+      <if test="arg8 != true">
+        AND university_code != #{arg0,jdbcType=INTEGER}
+      </if>
+      <if test="arg1 != 0">
+        AND school_id = #{arg1,jdbcType=INTEGER}
+      </if>
+      <if test="arg2 != 0">
+        AND teacher_id = #{arg2,jdbcType=INTEGER}
+      </if>
+      <if test="arg3 != 0">
+        AND technology_id = #{arg3,jdbcType=INTEGER}
       </if>
       <if test="arg4 != null">
-        AND data_status = #{arg4,jdbcType=VARCHAR}
+        AND course_time_begin &gt;= #{arg4,jdbcType=VARCHAR}
+      </if>
+      <if test="arg5 != null">
+        AND data_status = #{arg5,jdbcType=VARCHAR}
       </if>
       ORDER BY update_time DESC
-      LIMIT #{arg5,jdbcType=INTEGER}, #{arg6,jdbcType=INTEGER}
+      LIMIT #{arg6,jdbcType=INTEGER}, #{arg7,jdbcType=INTEGER}
     ) A
     INNER JOIN shangshufang_customer.university B
     ON A.university_code = B.university_code
@@ -171,18 +199,30 @@
           AND A.school_id = B.school_id
           AND A.course_id = B.course_id
           AND A.technology_id = B.technology_id
-        WHERE A.university_code = #{arg0,jdbcType=INTEGER}
-        AND A.school_id = #{arg1,jdbcType=INTEGER}
-        AND A.teacher_id = #{arg2,jdbcType=INTEGER}
-        AND A.data_status != 'D'
-        <if test="arg3 != null">
-          AND A.course_time_begin &gt;= #{arg3,jdbcType=VARCHAR}
+        WHERE A.data_status != 'D'
+        <if test="arg8 == true">
+          AND A.university_code = #{arg0,jdbcType=INTEGER}
+        </if>
+        <if test="arg8 != true">
+          AND A.university_code != #{arg0,jdbcType=INTEGER}
+        </if>
+        <if test="arg1 != 0">
+          AND A.school_id = #{arg1,jdbcType=INTEGER}
+        </if>
+        <if test="arg2 != 0">
+          AND A.teacher_id = #{arg2,jdbcType=INTEGER}
+        </if>
+        <if test="arg3 != 0">
+          AND A.technology_id = #{arg3,jdbcType=INTEGER}
         </if>
         <if test="arg4 != null">
-          AND A.data_status = #{arg4,jdbcType=VARCHAR}
+          AND A.course_time_begin &gt;= #{arg4,jdbcType=VARCHAR}
+        </if>
+        <if test="arg5 != null">
+          AND A.data_status = #{arg5,jdbcType=VARCHAR}
         </if>
         ORDER BY A.update_time DESC
-        LIMIT #{arg5,jdbcType=INTEGER}, #{arg6,jdbcType=INTEGER}
+        LIMIT #{arg6,jdbcType=INTEGER}, #{arg7,jdbcType=INTEGER}
       ) C
       INNER JOIN shangshufang_base.exercises_knowledge D
       ON C.technology_id = D.technology_id
@@ -228,6 +268,7 @@
     ) N
     ON A.course_id = N.course_id;
   </select>
+
   <select id="search" resultMap="BaseResultMap">
     SELECT
       A.course_id,
