@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.BusinessAnalyseLogMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.BusinessAnalyseLogEntity" >
+    <id column="log_id" property="logID" jdbcType="INTEGER" />
+    <result column="city_ip" property="cityIP" jdbcType="VARCHAR" />
+    <result column="city_id" property="cityID" jdbcType="VARCHAR" />
+    <result column="city_name" property="cityName" jdbcType="VARCHAR" />
+    <result column="browser" property="browser" jdbcType="VARCHAR" />
+    <result column="portal" property="portal" jdbcType="INTEGER" />
+    <result column="device" property="device" jdbcType="VARCHAR" />
+    <result column="page_name" property="pageName" jdbcType="VARCHAR" />
+    <result column="operation" property="operation" jdbcType="VARCHAR" />
+    <result column="memo" property="memo" jdbcType="VARCHAR" />
+    <result column="customer_id" property="customerID" jdbcType="INTEGER" />
+    <result column="customer_name" property="customerName" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS TotalCount
+    FROM shangshufang_base.business_analyse_log;
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      log_id,
+      city_ip,
+      city_id,
+      city_name,
+      browser,
+      portal,
+      device,
+      page_name,
+      operation,
+      memo,
+      customer_id
+    FROM shangshufang_base.business_analyse_log
+    ORDER BY update_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.BusinessAnalyseLogEntity" >
+    INSERT INTO shangshufang_base.business_analyse_log (
+      city_ip,
+      city_id,
+      city_name,
+      browser,
+      portal,
+      device,
+      page_name,
+      operation,
+      memo,
+      customer_id
+    )
+    VALUES (
+      #{cityIP, jdbcType=VARCHAR},
+      #{cityID, jdbcType=VARCHAR},
+      #{cityName, jdbcType=VARCHAR},
+      #{browser, jdbcType=VARCHAR},
+      #{portal, jdbcType=VARCHAR},
+      #{device, jdbcType=VARCHAR},
+      #{pageName, jdbcType=VARCHAR},
+      #{operation, jdbcType=VARCHAR},
+      #{memo, jdbcType=VARCHAR},
+      #{customerID, jdbcType=INTEGER}
+    );
+  </insert>
+</mapper>
