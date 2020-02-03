@@ -11,6 +11,7 @@ public class CourseEntity extends BaseEntity {
     private String schoolName;
     private int technologyID;
     private String technologyName;
+    private String technologyThumbnail;
     private String courseName;
     private int teacherID;
     private String teacherName;

@@ -25,12 +25,12 @@ public class CourseController {
         return serviceImpl.findList(pageNumber, pageSize, universityCode, schoolID, teacherID, technologyID, courseTimeBegin, dataStatus, isSelf);
     }
 
-    @RequestMapping(value = "/{universityCode}/{schoolID}/{teacherID}/{courseID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{universityCode}/{schoolID}/{courseID}/{dataStatus}", method = RequestMethod.GET)
     public UnifiedResponse find(@PathVariable("universityCode") int universityCode,
                                 @PathVariable("schoolID") int schoolID,
-                                @PathVariable("teacherID") int teacherID,
-                                @PathVariable("courseID") int courseID) {
-        return serviceImpl.find(universityCode, schoolID, teacherID, courseID);
+                                @PathVariable("courseID") int courseID,
+                                @PathVariable("dataStatus") String dataStatus) {
+        return serviceImpl.find(universityCode, schoolID, courseID, dataStatus);
     }
 
     @RequestMapping(value = "/checkCourse/{universityCode}/{schoolID}/{courseName}/{courseTimeBegin}/{courseTimeEnd}", method = RequestMethod.GET)
@@ -50,6 +50,21 @@ public class CourseController {
     @RequestMapping(method = RequestMethod.PUT)
     public UnifiedResponse change(@RequestBody CourseDTO dto){
         return serviceImpl.change(dto);
+    }
+
+    @RequestMapping(value="/courseBaseInfo", method = RequestMethod.PUT)
+    public UnifiedResponse changeCourseBaseInfo(@RequestBody CourseDTO dto){
+        return serviceImpl.changeCourseBaseInfo(dto);
+    }
+
+    @RequestMapping(value="/courseSchedule", method = RequestMethod.PUT)
+    public UnifiedResponse changeCourseSchedule(@RequestBody CourseDTO dto){
+        return serviceImpl.changeCourseSchedule(dto);
+    }
+
+    @RequestMapping(value="/coursePlan", method = RequestMethod.PUT)
+    public UnifiedResponse changeCoursePlan(@RequestBody CourseDTO dto){
+        return serviceImpl.changeCoursePlan(dto);
     }
 
     @RequestMapping(value="/changeStatus", method = RequestMethod.PUT)

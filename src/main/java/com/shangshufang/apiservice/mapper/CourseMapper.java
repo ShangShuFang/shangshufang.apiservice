@@ -27,12 +27,18 @@ public interface CourseMapper extends BaseMapper<CourseEntity> {
 
     CourseEntity search(int universityCode,
                         int schoolID,
-                        int teacherID,
-                        int courseID);
+                        int courseID,
+                        String dataStatus);
 
     int checkCourseExist(int universityCode,
                              int schoolID,
                              String courseName,
                              String courseTimeBegin,
                              String courseTimeEnd);
+
+    int updateCourseBaseInfo(CourseEntity entity);
+
+    int updateCourseSchedule(CourseEntity entity);
+
+    int updateCoursePlan(CourseEntity entity);
 }

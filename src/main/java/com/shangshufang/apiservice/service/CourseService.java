@@ -16,12 +16,18 @@ public interface CourseService extends BaseService<CourseDTO> {
 
     UnifiedResponse find(int universityCode,
                          int schoolID,
-                         int teacherID,
-                         int courseID);
+                         int courseID,
+                         String dataStatus);
 
     UnifiedResponse checkCourseExist(int universityCode,
                                       int schoolID,
                                       String courseName,
                                       String courseTimeBegin,
                                       String courseTimeEnd);
+
+    UnifiedResponse changeCourseBaseInfo(CourseDTO dto);
+
+    UnifiedResponse changeCourseSchedule(CourseDTO dto);
+
+    UnifiedResponse changeCoursePlan(CourseDTO dto);
 }

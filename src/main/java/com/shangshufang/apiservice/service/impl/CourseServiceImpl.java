@@ -101,12 +101,13 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public UnifiedResponse find(int universityCode,
                                 int schoolID,
-                                int teacherID,
-                                int courseID) {
+                                int courseID,
+                                String dataStatus) {
         try {
             CourseVO model = new CourseVO();
+            dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
             //取得课程基本信息
-            CourseEntity entity =  courseMapper.search(universityCode, schoolID, teacherID, courseID);
+            CourseEntity entity =  courseMapper.search(universityCode, schoolID, courseID, dataStatus);
             if(entity == null){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
@@ -139,6 +140,68 @@ public class CourseServiceImpl implements CourseService {
             Boolean exist =  count > 0;
             return UnifiedResponseManager.buildSearchSuccessResponse(count, exist);
         } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse changeCourseBaseInfo(CourseDTO dto) {
+        try{
+            int affectRow = 0;
+            CourseEntity courseEntity = new CourseEntity();
+            ObjectConvertUtils.toBean(dto, courseEntity);
+            courseEntity.setCreateUser(dto.getLoginUser());
+            courseEntity.setUpdateUser(dto.getLoginUser());
+            affectRow += courseMapper.update(courseEntity);
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
+        }catch (Exception ex){
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse changeCourseSchedule(CourseDTO dto) {
+        try{
+            int affectRow = 0;
+            List<CourseScheduleEntity> courseScheduleEntityList = JsonUtils.deserializationToObject(dto.getCourseScheduleJson(), CourseScheduleEntity.class);
+            if(courseScheduleEntityList != null) {
+                affectRow += courseScheduleMapper.delete(dto.getUniversityCode(), dto.getSchoolID(), dto.getCourseID());
+                for (CourseScheduleEntity courseScheduleEntity : courseScheduleEntityList) {
+                    courseScheduleEntity.setUniversityCode(dto.getUniversityCode());
+                    courseScheduleEntity.setSchoolID(dto.getSchoolID());
+                    courseScheduleEntity.setCourseID(dto.getCourseID());
+                    courseScheduleEntity.setCreateUser(dto.getLoginUser());
+                    courseScheduleEntity.setUpdateUser(dto.getLoginUser());
+                    affectRow += courseScheduleMapper.insert(courseScheduleEntity);
+                }
+            }
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
+        }catch (Exception ex){
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse changeCoursePlan(CourseDTO dto) {
+        try{
+            int affectRow = 0;
+            List<CoursePlanEntity> coursePlanEntityList = JsonUtils.deserializationToObject(dto.getCoursePlanJson(), CoursePlanEntity.class);
+            if(coursePlanEntityList != null) {
+                affectRow += coursePlanMapper.delete(dto.getUniversityCode(), dto.getSchoolID(), dto.getCourseID());
+                for (CoursePlanEntity coursePlanEntity : coursePlanEntityList) {
+                    coursePlanEntity.setUniversityCode(dto.getUniversityCode());
+                    coursePlanEntity.setSchoolID(dto.getSchoolID());
+                    coursePlanEntity.setCourseID(dto.getCourseID());
+                    coursePlanEntity.setCreateUser(dto.getLoginUser());
+                    coursePlanEntity.setUpdateUser(dto.getLoginUser());
+                    affectRow += coursePlanMapper.insert(coursePlanEntity);
+                }
+            }
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
+        }catch (Exception ex){
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();
         }
@@ -212,10 +275,10 @@ public class CourseServiceImpl implements CourseService {
             courseEntity.setCreateUser(dto.getLoginUser());
             courseEntity.setUpdateUser(dto.getLoginUser());
 
-            //添加课程基本信息
+            //修改课程基本信息
             affectRow += courseMapper.update(courseEntity);
 
-            //添加课程表
+            //修改课程表
             if(courseScheduleEntityList != null) {
                 affectRow += courseScheduleMapper.delete(courseEntity.getUniversityCode(), courseEntity.getSchoolID(), courseEntity.getCourseID());
                 for (CourseScheduleEntity courseScheduleEntity : courseScheduleEntityList) {
@@ -223,7 +286,7 @@ public class CourseServiceImpl implements CourseService {
                 }
             }
 
-            //添加课程授课计划
+            //修改课程授课计划
             if(coursePlanEntityList != null) {
                 affectRow += coursePlanMapper.delete(courseEntity.getUniversityCode(), courseEntity.getSchoolID(), courseEntity.getCourseID());
                 for (CoursePlanEntity coursePlanEntity : coursePlanEntityList) {
