@@ -13,9 +13,7 @@
     <result column="course_name" property="courseName" jdbcType="VARCHAR" />
     <result column="teacher_id" property="teacherID" jdbcType="INTEGER" />
     <result column="teacher_name" property="teacherName" jdbcType="VARCHAR" />
-
     <result column="teacher_photo" property="teacherPhotoUrl" jdbcType="VARCHAR" />
-
     <result column="course_time_begin" property="courseTimeBegin" jdbcType="TIMESTAMP" />
     <result column="course_time_end" property="courseTimeEnd" jdbcType="TIMESTAMP" />
     <result column="course_introduction" property="courseIntroduction" jdbcType="VARCHAR" />

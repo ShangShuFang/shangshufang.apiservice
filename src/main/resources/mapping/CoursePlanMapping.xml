@@ -7,16 +7,13 @@
     <result column="school_id" property="schoolID" jdbcType="INTEGER" />
     <result column="course_id" property="courseID" jdbcType="INTEGER" />
     <result column="course_class" property="courseClass" jdbcType="INTEGER" />
-
     <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
     <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
-
     <result column="learning_phase_id" property="learningPhaseID" jdbcType="INTEGER" />
     <result column="learning_phase_name" property="learningPhaseName" jdbcType="VARCHAR" />
-
     <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER" />
     <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR" />
-
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_user" property="updateUser" jdbcType="INTEGER" />
@@ -34,7 +31,8 @@
       A.learning_phase_id,
       C.learning_phase_name,
       A.knowledge_id,
-      D.knowledge_name
+      D.knowledge_name,
+      A.data_status
     FROM shangshufang_customer.course_plan A
     INNER JOIN shangshufang_base.technology B
     ON A.technology_id = B.technology_id
@@ -73,10 +71,26 @@
       #{updateUser, jdbcType=VARCHAR}
     );
   </insert>
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.CoursePlanEntity" >
+    UPDATE shangshufang_customer.course_plan SET
+      data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=INTEGER}
+     WHERE university_code = #{universityCode,jdbcType=INTEGER}
+    AND school_id = #{schoolID,jdbcType=INTEGER}
+    AND course_id = #{courseID,jdbcType=INTEGER}
+    AND course_class = #{courseClass,jdbcType=INTEGER};
+  </update>
   <delete id="delete" parameterType="java.lang.Integer" >
     DELETE FROM shangshufang_customer.course_plan
     WHERE university_code = #{arg0,jdbcType=INTEGER}
     AND school_id = #{arg1,jdbcType=INTEGER}
     AND course_id = #{arg2,jdbcType=INTEGER};
+  </delete>
+  <delete id="delete4Class" parameterType="java.lang.Integer" >
+    DELETE FROM shangshufang_customer.course_plan
+    WHERE university_code = #{arg0,jdbcType=INTEGER}
+    AND school_id = #{arg1,jdbcType=INTEGER}
+    AND course_id = #{arg2,jdbcType=INTEGER}
+    AND course_class = #{arg3,jdbcType=INTEGER};
   </delete>
 </mapper>

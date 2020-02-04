@@ -10,4 +10,8 @@ public interface CoursePlanMapper extends BaseMapper<CoursePlanEntity> {
     List<CoursePlanEntity> searchList(int universityCode, int schoolID, int courseID);
 
     int delete(int universityCode, int schoolID, int courseID);
+
+    int delete4Class(int universityCode, int schoolID, int courseID, int courseClass);
+
+    int updateDataStatus(int universityCode, int schoolID, int courseID, int courseClass);
 }

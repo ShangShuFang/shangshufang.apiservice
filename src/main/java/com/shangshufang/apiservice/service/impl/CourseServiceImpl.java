@@ -190,8 +190,11 @@ public class CourseServiceImpl implements CourseService {
             int affectRow = 0;
             List<CoursePlanEntity> coursePlanEntityList = JsonUtils.deserializationToObject(dto.getCoursePlanJson(), CoursePlanEntity.class);
             if(coursePlanEntityList != null) {
-                affectRow += coursePlanMapper.delete(dto.getUniversityCode(), dto.getSchoolID(), dto.getCourseID());
                 for (CoursePlanEntity coursePlanEntity : coursePlanEntityList) {
+                    if(coursePlanEntity.getDataStatus().equals(CourseStatus.Finished)){
+                        continue;
+                    }
+                    affectRow += coursePlanMapper.delete4Class(dto.getUniversityCode(), dto.getSchoolID(), dto.getCourseID(), coursePlanEntity.getCourseClass());
                     coursePlanEntity.setUniversityCode(dto.getUniversityCode());
                     coursePlanEntity.setSchoolID(dto.getSchoolID());
                     coursePlanEntity.setCourseID(dto.getCourseID());
