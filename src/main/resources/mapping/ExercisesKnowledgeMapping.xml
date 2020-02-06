@@ -11,6 +11,7 @@
     <result column="learning_phase_name" property="learningPhaseName" jdbcType="VARCHAR" />
     <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER" />
     <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR" />
+    <result column="exercises_type" property="exercisesType" jdbcType="VARCHAR" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -70,6 +71,7 @@
       technology_id,
       learning_phase_id,
       knowledge_id,
+      exercises_type,
       create_user,
       update_user
     )
@@ -78,6 +80,7 @@
       #{technologyID, jdbcType=INTEGER},
       #{learningPhaseID, jdbcType=INTEGER},
       #{knowledgeID, jdbcType=INTEGER},
+      #{exercisesType, jdbcType=VARCHAR},
       #{createUser, jdbcType=VARCHAR},
       #{updateUser, jdbcType=VARCHAR}
     )

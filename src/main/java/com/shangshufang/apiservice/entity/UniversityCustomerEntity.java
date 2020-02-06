@@ -15,4 +15,5 @@ public class UniversityCustomerEntity extends BaseEntity {
     private String cellphone;
     private String email;
     private String photo;
+    private String customerRole;
 }

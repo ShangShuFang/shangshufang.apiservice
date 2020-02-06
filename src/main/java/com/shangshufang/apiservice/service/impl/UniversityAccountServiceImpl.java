@@ -154,6 +154,7 @@ public class UniversityAccountServiceImpl implements UniversityAccountService {
             customerEntity.setBirth("");
             customerEntity.setEmail("");
             customerEntity.setPhoto("");
+            customerEntity.setCustomerRole(dto.getAccountRole());
 
             int affectRow = 0;
             affectRow += customerMapper.deleteByCellphone(customerEntity.getCellphone());

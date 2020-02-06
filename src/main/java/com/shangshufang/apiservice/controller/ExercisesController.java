@@ -21,6 +21,13 @@ public class ExercisesController {
         return serviceImpl.findList(pageNumber, pageSize, exercisesType, technologyID, learningPhaseID);
     }
 
+    @RequestMapping(value = "/{universityCode}/{schoolID}/{courseID}", method = RequestMethod.GET)
+    public UnifiedResponse findCourseExercisesList(@PathVariable("universityCode") int universityCode,
+                                                   @PathVariable("schoolID") int schoolID,
+                                                   @PathVariable("courseID") int courseID){
+        return serviceImpl.findCourseExercisesList(universityCode, schoolID, courseID);
+    }
+
     @RequestMapping(value = "/{exercisesID}", method = RequestMethod.GET)
     public UnifiedResponse find(@PathVariable("exercisesID") int exercisesID){
         return serviceImpl.find(exercisesID);

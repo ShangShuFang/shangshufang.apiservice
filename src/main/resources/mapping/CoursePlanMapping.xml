@@ -14,6 +14,7 @@
     <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER" />
     <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_user" property="updateUser" jdbcType="INTEGER" />
@@ -32,7 +33,11 @@
       C.learning_phase_name,
       A.knowledge_id,
       D.knowledge_name,
-      A.data_status
+      A.data_status,
+      CASE WHEN A.data_status = 'P' THEN '未结束'
+      WHEN A.data_status = 'F' THEN '已结束'
+      ELSE '未知数据状态'
+      END AS data_status_text
     FROM shangshufang_customer.course_plan A
     INNER JOIN shangshufang_base.technology B
     ON A.technology_id = B.technology_id
@@ -91,6 +96,6 @@
     WHERE university_code = #{arg0,jdbcType=INTEGER}
     AND school_id = #{arg1,jdbcType=INTEGER}
     AND course_id = #{arg2,jdbcType=INTEGER}
-    AND course_class = #{arg3,jdbcType=INTEGER};
+    AND data_status = 'P';
   </delete>
 </mapper>

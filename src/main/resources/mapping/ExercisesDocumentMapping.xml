@@ -5,6 +5,7 @@
     <id column="exercises_document_id" property="exercisesDocumentID" jdbcType="INTEGER" />
     <result column="exercises_id" property="exercisesID" jdbcType="INTEGER" />
     <result column="document_url" property="documentUrl" jdbcType="VARCHAR" />
+    <result column="answer_url" property="answerUrl" jdbcType="VARCHAR" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -17,6 +18,7 @@
       A.exercises_document_id,
       A.exercises_id,
       A.document_url,
+      A.answer_url,
       A.data_status,
       CASE WHEN A.data_status = 'A' THEN '正常'
           WHEN A.data_status = 'D' THEN '冻结'
@@ -32,19 +34,21 @@
     INNER JOIN shangshufang_base.system_admin C
     ON A.update_user = C.admin_id
     WHERE exercises_id = #{arg0,jdbcType=VARCHAR}
-    ORDER BY A.document_url;
+    ORDER BY A.update_time;
   </select>
 
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.ExercisesDocumentEntity" >
     INSERT INTO shangshufang_base.exercises_document (
       exercises_id,
       document_url,
+      answer_url,
       create_user,
       update_user
     )
     VALUES (
       #{exercisesID, jdbcType=INTEGER},
       #{documentUrl, jdbcType=VARCHAR},
+      #{answerUrl, jdbcType=VARCHAR},
       #{createUser, jdbcType=VARCHAR},
       #{updateUser, jdbcType=VARCHAR}
     )

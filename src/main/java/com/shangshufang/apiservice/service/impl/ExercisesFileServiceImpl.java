@@ -1,10 +1,12 @@
 package com.shangshufang.apiservice.service.impl;
 
+import com.shangshufang.apiservice.common.JsonUtils;
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.ExercisesFileDTO;
 import com.shangshufang.apiservice.entity.ExercisesDocumentEntity;
 import com.shangshufang.apiservice.entity.ExercisesImageEntity;
+import com.shangshufang.apiservice.entity.ExercisesKnowledgeEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
 import com.shangshufang.apiservice.mapper.ExercisesDocumentMapper;
 import com.shangshufang.apiservice.mapper.ExercisesImageMapper;
@@ -65,26 +67,25 @@ public class ExercisesFileServiceImpl implements ExercisesFileService {
     public UnifiedResponse add(ExercisesFileDTO dto) {
         try{
             int affectRow = 0;
-            String[] imageList = dto.getImageList().split(",");
-            String[] documentList = dto.getDocumentList().split(",");
+            //String[] imageList = dto.getImageList().split(",");
+            //String[] documentList = dto.getDocumentList().split(",");
+            List<ExercisesDocumentEntity> exercisesDocumentEntityList = JsonUtils.deserializationToObject(dto.getDocumentList(), ExercisesDocumentEntity.class);
 
             //更新图片信息
-            affectRow += exercisesImageMapper.delete(dto.getExercisesID());
-            for (String imageUrl : imageList) {
-                ExercisesImageEntity imageEntity = new ExercisesImageEntity();
-                imageEntity.setExercisesID(dto.getExercisesID());
-                imageEntity.setImageUrl(imageUrl);
-                imageEntity.setCreateUser(dto.getLoginUser());
-                imageEntity.setUpdateUser(dto.getLoginUser());
-                affectRow += exercisesImageMapper.insert(imageEntity);
-            }
+//            affectRow += exercisesImageMapper.delete(dto.getExercisesID());
+//            for (String imageUrl : imageList) {
+//                ExercisesImageEntity imageEntity = new ExercisesImageEntity();
+//                imageEntity.setExercisesID(dto.getExercisesID());
+//                imageEntity.setImageUrl(imageUrl);
+//                imageEntity.setCreateUser(dto.getLoginUser());
+//                imageEntity.setUpdateUser(dto.getLoginUser());
+//                affectRow += exercisesImageMapper.insert(imageEntity);
+//            }
 
             //更新文档信息
             affectRow += exercisesDocumentMapper.delete(dto.getExercisesID());
-            for (String documentUrl : documentList) {
-                ExercisesDocumentEntity documentEntity = new ExercisesDocumentEntity();
+            for (ExercisesDocumentEntity documentEntity : exercisesDocumentEntityList) {
                 documentEntity.setExercisesID(dto.getExercisesID());
-                documentEntity.setDocumentUrl(documentUrl);
                 documentEntity.setCreateUser(dto.getLoginUser());
                 documentEntity.setUpdateUser(dto.getLoginUser());
                 affectRow += exercisesDocumentMapper.insert(documentEntity);

@@ -13,6 +13,7 @@
     <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
     <result column="email" property="email" jdbcType="VARCHAR" />
     <result column="photo" property="photo" jdbcType="VARCHAR" />
+    <result column="customer_role" property="customerRole" jdbcType="VARCHAR" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -101,6 +102,7 @@
       cellphone,
       email,
       photo,
+      customer_role,
       create_user,
       update_user
     )
@@ -113,6 +115,7 @@
       #{cellphone, jdbcType=VARCHAR},
       #{email, jdbcType=VARCHAR},
       #{photo, jdbcType=VARCHAR},
+      #{customerRole, jdbcType=VARCHAR},
       #{createUser, jdbcType=VARCHAR},
       #{updateUser, jdbcType=VARCHAR}
     )

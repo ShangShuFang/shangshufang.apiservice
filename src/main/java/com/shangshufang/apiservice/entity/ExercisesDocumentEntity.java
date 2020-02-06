@@ -7,4 +7,5 @@ public class ExercisesDocumentEntity extends BaseEntity {
     private int exercisesDocumentID;
     private int exercisesID;
     private String documentUrl;
+    private String answerUrl;
 }

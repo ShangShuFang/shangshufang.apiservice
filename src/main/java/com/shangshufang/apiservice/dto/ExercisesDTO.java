@@ -8,7 +8,6 @@ public class ExercisesDTO extends BaseDTO {
     private String  exercisesName;
     private String exercisesCode;
     private String exercisesType;
-    private String exercisesAnswer;
     private String knowledgeListJson;
     private String imageListJson;
     private String documentListJson;
