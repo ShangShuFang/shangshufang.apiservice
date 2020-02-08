@@ -148,7 +148,6 @@
     ON A.university_code = E.university_code
     AND A.school_id = E.school_id
     AND A.teacher_id = E.customer_id
-    AND E.customer_role = 'T'
     INNER JOIN
     (
       SELECT
@@ -341,7 +340,6 @@
     ON A.university_code = E.university_code
     AND A.school_id = E.school_id
     AND A.teacher_id = E.customer_id
-    AND E.customer_role = 'T'
     INNER JOIN
     (
       SELECT

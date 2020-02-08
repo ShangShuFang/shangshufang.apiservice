@@ -4,7 +4,7 @@ import com.shangshufang.apiservice.dto.UniversityCustomerDTO;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
 
 public interface UniversityCustomerService extends BaseService<UniversityCustomerDTO> {
-    UnifiedResponse findList(int universityCode, int schoolID, String customerRole, String fullName);
+    UnifiedResponse findList(int universityCode, int schoolID, String fullName);
 
     UnifiedResponse find(int customerID, String cellphone);
 

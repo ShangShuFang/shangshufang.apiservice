@@ -7,7 +7,7 @@ import java.util.List;
 
 @Mapper
 public interface UniversityCustomerMapper extends BaseMapper<UniversityCustomerEntity> {
-    List<UniversityCustomerEntity> searchList(int universityCode, int schoolID, String customerRole, String fullName);
+    List<UniversityCustomerEntity> searchList(int universityCode, int schoolID, String fullName);
 
     UniversityCustomerEntity search(int customerID, String cellphone);
 

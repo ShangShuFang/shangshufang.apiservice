@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.shangshufang.apiservice.mapper.UniversityCustomerMapper" >
-  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.UniversityCustomerEntity" >
-    <id column="customer_id" property="customerID" jdbcType="INTEGER" />
+<mapper namespace="com.shangshufang.apiservice.mapper.UniversityStudentMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.UniversityStudentEntity" >
+    <id column="student_id" property="studentID" jdbcType="INTEGER" />
     <result column="university_code" property="universityCode" jdbcType="INTEGER" />
     <result column="university_name" property="universityName" jdbcType="VARCHAR" />
     <result column="school_id" property="schoolID" jdbcType="INTEGER" />
@@ -10,10 +10,11 @@
     <result column="full_name" property="fullName" jdbcType="VARCHAR" />
     <result column="sex" property="sex" jdbcType="VARCHAR" />
     <result column="birth" property="birth" jdbcType="VARCHAR" />
+    <result column="enrollment_year" property="enrollmentYear" jdbcType="VARCHAR" />
     <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
     <result column="email" property="email" jdbcType="VARCHAR" />
     <result column="photo" property="photo" jdbcType="VARCHAR" />
-    <result column="customer_role" property="customerRole" jdbcType="VARCHAR" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -21,9 +22,24 @@
     <result column="update_user" property="updateUser" jdbcType="INTEGER" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS TotalCount
+    FROM shangshufang_customer.university_student
+    WHERE 1 = 1
+    <if test="arg0 != 0">
+      AND university_code = #{arg0,jdbcType=INTEGER}
+    </if>
+    <if test="arg1 != 0">
+      AND school_id = #{arg1,jdbcType=INTEGER}
+    </if>
+    <if test="arg2 != null">
+      AND full_name LIKE #{arg2,jdbcType=VARCHAR}
+    </if>;
+  </select>
   <select id="searchList" resultMap="BaseResultMap">
     SELECT
-      A.customer_id,
+      A.student_id,
       A.university_code,
       B.university_name,
       A.school_id,
@@ -31,27 +47,32 @@
       A.full_name,
       A.sex,
       A.birth,
+      A.enrollment_year,
       A.cellphone,
       A.email,
-      A.photo,
-      A.customer_role
-    FROM shangshufang_customer.university_customer A
+      A.photo
+    FROM shangshufang_customer.university_student A
     INNER JOIN shangshufang_customer.university B
     ON A.university_code = B.university_code
     INNER JOIN shangshufang_customer.school C
     ON A.university_code = C.university_code
     AND A.school_id = C.school_id
-    WHERE A.university_code = #{arg0,jdbcType=INTEGER}
-    <if test="arg1 != 0">
-      AND A.school_id = #{arg1,jdbcType=INTEGER}
+    WHERE 1 = 1
+    <if test="arg2 != 0">
+      AND university_code = #{arg2,jdbcType=INTEGER}
     </if>
-    AND A.full_name LIKE #{arg2,jdbcType=VARCHAR}
-    ORDER BY A.customer_id;
+    <if test="arg3 != 0">
+      AND school_id = #{arg3,jdbcType=INTEGER}
+    </if>
+    <if test="arg4 != null">
+      AND full_name LIKE #{arg4,jdbcType=VARCHAR}
+    </if>
+    ORDER BY A.update_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
-
   <select id="search" resultMap="BaseResultMap">
     SELECT
-      A.account_id,
+      A.student_id,
       A.university_code,
       B.university_name,
       A.school_id,
@@ -59,49 +80,39 @@
       A.full_name,
       A.sex,
       A.birth,
+      A.enrollment_year,
       A.cellphone,
       A.email,
-      A.photo,
-      D.admin_name AS create_user,
-      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-      D.admin_name AS update_user,
-      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
-    FROM shangshufang_customer.university_customer A
+      A.photo
+    FROM shangshufang_customer.university_student A
     INNER JOIN shangshufang_customer.university B
     ON A.university_code = B.university_code
     INNER JOIN shangshufang_customer.school C
     ON A.university_code = C.university_code
     AND A.school_id = C.school_id
-    INNER JOIN shangshufang_base.system_admin D
-    ON A.create_user = D.admin_id
-    INNER JOIN shangshufang_base.system_admin E
-    ON A.update_user = E.admin_id
-    WHERE A.customer_id = #{arg0,jdbcType=INTEGER}
-    AND A.cellphone = #{arg1,jdbcType=VARCHAR};
+    WHERE university_code = #{arg0,jdbcType=INTEGER}
+    AND school_id = #{arg1,jdbcType=INTEGER}
+    AND student_id = #{arg2,jdbcType=INTEGER};
   </select>
   <select id="checkCellphoneExist" resultType="java.lang.Integer">
     SELECT
       COUNT(1) AS TotalCount
-    FROM shangshufang_customer.university_customer
+    FROM shangshufang_customer.university_student
     WHERE cellphone = #{cellphone,jdbcType=VARCHAR};
   </select>
   <select id="checkEmailExist" resultType="java.lang.Integer">
     SELECT
       COUNT(1) AS TotalCount
-    FROM shangshufang_customer.university_customer
+    FROM shangshufang_customer.university_student
     WHERE email = #{email,jdbcType=VARCHAR};
   </select>
-  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.UniversityCustomerEntity" >
-    INSERT INTO shangshufang_customer.university_customer (
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.UniversityStudentEntity" >
+    INSERT INTO shangshufang_customer.university_student (
       university_code,
       school_id,
       full_name,
-      sex,
-      birth,
       cellphone,
-      email,
-      photo,
-      customer_role,
+      password,
       create_user,
       update_user
     )
@@ -109,45 +120,40 @@
       #{universityCode, jdbcType=INTEGER},
       #{schoolID, jdbcType=INTEGER},
       #{fullName, jdbcType=VARCHAR},
-      #{sex, jdbcType=VARCHAR},
-      #{birth, jdbcType=VARCHAR},
       #{cellphone, jdbcType=VARCHAR},
-      #{email, jdbcType=VARCHAR},
-      #{photo, jdbcType=VARCHAR},
-      #{customerRole, jdbcType=VARCHAR},
+      #{password, jdbcType=VARCHAR},
       #{createUser, jdbcType=VARCHAR},
       #{updateUser, jdbcType=VARCHAR}
     )
   </insert>
-  <update id="update" parameterType="com.shangshufang.apiservice.entity.UniversityCustomerEntity" >
-    UPDATE shangshufang_customer.university_customer SET
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.UniversityStudentEntity" >
+    UPDATE shangshufang_customer.university_student SET
       full_name = #{fullName,jdbcType=VARCHAR},
       sex = #{sex,jdbcType=VARCHAR},
       birth = #{birth,jdbcType=VARCHAR},
+      enrollment_year = #{enrollmentYear,jdbcType=VARCHAR},
       cellphone = #{cellphone,jdbcType=VARCHAR},
       email = #{email,jdbcType=VARCHAR},
       photo = #{photo,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE university_code = #{universityCode,jdbcType=INTEGER}
     AND school_id = #{schoolID,jdbcType=INTEGER}
-    AND customer_id = #{customerID,jdbcType=INTEGER};
+    AND student_id = #{studentID,jdbcType=INTEGER};
   </update>
-  <update id="updateCellphone" parameterType="com.shangshufang.apiservice.entity.UniversityCustomerEntity" >
-    UPDATE shangshufang_customer.university_customer SET
-      cellphone = #{cellphone,jdbcType=VARCHAR},
+  <update id="updatePassword" parameterType="com.shangshufang.apiservice.entity.UniversityStudentEntity" >
+    UPDATE shangshufang_customer.university_student SET
+      password = #{password,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE university_code = #{universityCode,jdbcType=INTEGER}
     AND school_id = #{schoolID,jdbcType=INTEGER}
-    AND customer_id = #{customerID,jdbcType=INTEGER};
+    AND student_id = #{studentID,jdbcType=INTEGER};
   </update>
-  <delete id="deleteByCellphone">
-    DELETE FROM shangshufang_customer.university_customer
-    WHERE cellphone = #{arg0,jdbcType=VARCHAR};
-  </delete>
-  <delete id="delete" parameterType="java.lang.Integer" >
-    DELETE FROM shangshufang_customer.university_customer
-    WHERE university_code = #{arg0,jdbcType=INTEGER}
-    AND school_id = #{arg1,jdbcType=INTEGER}
-    AND customer_id = #{arg2,jdbcType=INTEGER};
-  </delete>
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.UniversityStudentEntity" >
+    UPDATE shangshufang_customer.university_student SET
+      data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE university_code = #{universityCode,jdbcType=INTEGER}
+    AND school_id = #{schoolID,jdbcType=INTEGER}
+    AND student_id = #{studentID,jdbcType=INTEGER};
+  </update>
 </mapper>

@@ -1,14 +1,15 @@
 package com.shangshufang.apiservice.service.impl;
 
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
+import com.shangshufang.apiservice.constant.ParameterConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
-import com.shangshufang.apiservice.dto.UniversityCustomerDTO;
-import com.shangshufang.apiservice.entity.UniversityCustomerEntity;
+import com.shangshufang.apiservice.dto.UniversityStudentDTO;
+import com.shangshufang.apiservice.entity.UniversityStudentEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
-import com.shangshufang.apiservice.mapper.UniversityCustomerMapper;
-import com.shangshufang.apiservice.service.UniversityCustomerService;
+import com.shangshufang.apiservice.mapper.UniversityStudentMapper;
+import com.shangshufang.apiservice.service.UniversityStudentService;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
-import com.shangshufang.apiservice.vo.UniversityCustomerVO;
+import com.shangshufang.apiservice.vo.UniversityStudentVO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,27 +19,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UniversityCustomerServiceImpl implements UniversityCustomerService {
+public class UniversityStudentServiceImpl implements UniversityStudentService {
     @Autowired
-    private UniversityCustomerMapper myMapper;
-    private Logger logger = LogManager.getLogger(UniversityCustomerServiceImpl.class);
+    private UniversityStudentMapper myMapper;
+    private Logger logger = LogManager.getLogger(UniversityStudentServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int universityCode, int schoolID, String fullName) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, int universityCode, int schoolID, String fullName) {
         try {
-            List<UniversityCustomerVO> modelList = new ArrayList<>();
-
-            fullName = "%" + fullName + "%";
-            List<UniversityCustomerEntity> entityList =  myMapper.searchList(universityCode, schoolID, fullName);
-            if(entityList.isEmpty()){
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<UniversityStudentVO> modelList = new ArrayList<>();
+            fullName = fullName.equals(ParameterConstant.NO_PARAMETER) ? null : "%" + fullName + "%";
+            int totalCount = myMapper.searchTotalCount(universityCode, schoolID, fullName);
+            if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            for (UniversityCustomerEntity entity : entityList) {
-                UniversityCustomerVO model = new UniversityCustomerVO();
+            List<UniversityStudentEntity> entityList =  myMapper.searchList(startIndex, pageSize, universityCode, schoolID, fullName);
+            for (UniversityStudentEntity entity : entityList) {
+                UniversityStudentVO model = new UniversityStudentVO();
                 ObjectConvertUtils.toBean(entity, model);
                 modelList.add(model);
             }
-            return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.ONE_SEARCH_COUNT, modelList);
+            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
         } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();
@@ -46,13 +48,13 @@ public class UniversityCustomerServiceImpl implements UniversityCustomerService 
     }
 
     @Override
-    public UnifiedResponse find(int customerID, String cellphone) {
+    public UnifiedResponse find(int universityCode, int schoolID, int studentID) {
         try {
-            UniversityCustomerEntity entity =  myMapper.search(customerID, cellphone);
+            UniversityStudentEntity entity =  myMapper.search(universityCode, schoolID, studentID);
             if(entity == null){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            UniversityCustomerVO model = new UniversityCustomerVO();
+            UniversityStudentVO model = new UniversityStudentVO();
             ObjectConvertUtils.toBean(entity, model);
             return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.ONE_SEARCH_COUNT, model);
         } catch (Exception ex) {
@@ -86,9 +88,12 @@ public class UniversityCustomerServiceImpl implements UniversityCustomerService 
     }
 
     @Override
-    public UnifiedResponse delete(int universityCode, int schoolID, int customerID) {
+    public UnifiedResponse changePassword(UniversityStudentDTO dto) {
         try {
-            int affectRow = myMapper.delete(universityCode, schoolID, customerID);
+            UniversityStudentEntity entity = new UniversityStudentEntity();
+            ObjectConvertUtils.toBean(dto, entity);
+            entity.setUpdateUser(dto.getLoginUser());
+            int affectRow = myMapper.updatePassword(entity);
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
         } catch (Exception ex) {
             logger.error(ex.toString());
@@ -97,9 +102,9 @@ public class UniversityCustomerServiceImpl implements UniversityCustomerService 
     }
 
     @Override
-    public UnifiedResponse add(UniversityCustomerDTO dto) {
+    public UnifiedResponse add(UniversityStudentDTO dto) {
         try {
-            UniversityCustomerEntity entity = new UniversityCustomerEntity();
+            UniversityStudentEntity entity = new UniversityStudentEntity();
             ObjectConvertUtils.toBean(dto, entity);
             entity.setCreateUser(dto.getLoginUser());
             entity.setUpdateUser(dto.getLoginUser());
@@ -112,9 +117,9 @@ public class UniversityCustomerServiceImpl implements UniversityCustomerService 
     }
 
     @Override
-    public UnifiedResponse change(UniversityCustomerDTO dto) {
+    public UnifiedResponse change(UniversityStudentDTO dto) {
         try {
-            UniversityCustomerEntity entity = new UniversityCustomerEntity();
+            UniversityStudentEntity entity = new UniversityStudentEntity();
             ObjectConvertUtils.toBean(dto, entity);
             entity.setUpdateUser(dto.getLoginUser());
             int affectRow = myMapper.update(entity);
@@ -126,7 +131,16 @@ public class UniversityCustomerServiceImpl implements UniversityCustomerService 
     }
 
     @Override
-    public UnifiedResponse changeDataStatus(UniversityCustomerDTO dto) {
-        return null;
+    public UnifiedResponse changeDataStatus(UniversityStudentDTO dto) {
+        try {
+            UniversityStudentEntity entity = new UniversityStudentEntity();
+            ObjectConvertUtils.toBean(dto, entity);
+            entity.setUpdateUser(dto.getLoginUser());
+            int affectRow = myMapper.updateDataStatus(entity);
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
     }
 }

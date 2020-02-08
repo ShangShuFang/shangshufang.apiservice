@@ -12,12 +12,11 @@ public class UniversityCustomerController {
     @Autowired
     private UniversityCustomerServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/{universityCode}/{schoolID}/{customerRole}/{fullName}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{universityCode}/{schoolID}/{fullName}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("universityCode") int universityCode,
                                     @PathVariable("schoolID") int schoolID,
-                                    @PathVariable("customerRole") String customerRole,
                                     @PathVariable("fullName") String fullName){
-        return serviceImpl.findList(universityCode, schoolID, customerRole, fullName);
+        return serviceImpl.findList(universityCode, schoolID, fullName);
     }
 
     @RequestMapping(value = "/{customerID}/{cellphone}", method = RequestMethod.GET)
