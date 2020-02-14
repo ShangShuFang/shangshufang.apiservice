@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.UniversityStudentExercisesMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.UniversityStudentExercisesEntity" >
+    <id column="student_exercises_id" property="studentExercisesID" jdbcType="INTEGER" />
+
+    <result column="student_university_code" property="studentUniversityCode" jdbcType="INTEGER" />
+    <result column="student_university_name" property="studentUniversityName" jdbcType="VARCHAR" />
+    <result column="student_school_id" property="studentSchoolID" jdbcType="INTEGER" />
+    <result column="student_school_name" property="studentSchoolName" jdbcType="VARCHAR" />
+    <result column="student_id" property="studentID" jdbcType="INTEGER" />
+    <result column="student_name" property="studentName" jdbcType="VARCHAR" />
+    <result column="student_photo" property="studentPhoto" jdbcType="VARCHAR" />
+    <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
+    <result column="enrollment_year" property="enrollmentYear" jdbcType="VARCHAR" />
+
+    <result column="course_university_code" property="courseUniversityCode" jdbcType="INTEGER" />
+    <result column="course_university_name" property="courseUniversityName" jdbcType="VARCHAR" />
+    <result column="course_school_id" property="courseSchoolID" jdbcType="INTEGER" />
+    <result column="course_school_name" property="courseSchoolName" jdbcType="VARCHAR" />
+    <result column="course_id" property="courseID" jdbcType="INTEGER" />
+    <result column="course_name" property="courseName" jdbcType="VARCHAR" />
+    <result column="course_class" property="courseClass" jdbcType="INTEGER" />
+
+    <result column="exercises_id" property="exercisesID" jdbcType="INTEGER" />
+    <result column="exercises_name" property="exercisesName" jdbcType="VARCHAR" />
+    <result column="exercises_code" property="exercisesCode" jdbcType="VARCHAR" />
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
+    <result column="learning_phase_id" property="learningPhaseID" jdbcType="INTEGER" />
+    <result column="learning_phase_name" property="learningPhaseName" jdbcType="VARCHAR" />
+    <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER" />
+    <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR" />
+    <result column="exercises_document_id" property="exercisesDocumentID" jdbcType="INTEGER" />
+    <result column="exercises_document_url" property="exercisesDocumentUrl" jdbcType="VARCHAR" />
+    <result column="source_code_git_url" property="sourceCodeGitUrl" jdbcType="VARCHAR" />
+
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+        COUNT(1) AS TotalCount
+    FROM shangshufang_customer.university_student_exercises A
+    INNER JOIN shangshufang_customer.course G
+    ON A.course_university_code = G.university_code
+    AND A.course_school_id = G.school_id
+    AND A.course_id = G.course_id
+    INNER JOIN shangshufang_base.exercises H
+    ON A.exercises_id = H.exercises_id
+    AND H.exercises_type = 'S'
+    INNER JOIN shangshufang_base.technology I
+    ON A.technology_id = I.technology_id
+    INNER JOIN shangshufang_base.learning_phase J
+    ON A.learning_phase_id = J.learning_phase_id
+    INNER JOIN shangshufang_base.technology_knowledge K
+    ON A.technology_id = K.technology_id
+    AND A.learning_phase_id = K.learning_phase_id
+    AND A.knowledge_id = K.knowledge_id
+    AND K.data_status = 'A'
+    INNER JOIN shangshufang_base.exercises_document L
+    ON A.exercises_id = L.exercises_id
+    AND A.exercises_document_id = L.exercises_document_id
+    WHERE A.course_university_code = #{arg0,jdbcType=INTEGER}
+    AND A.course_school_id = #{arg1,jdbcType=INTEGER}
+    AND A.course_id = #{arg2,jdbcType=INTEGER}
+    <if test="arg3 != null">
+      AND A.data_status = #{arg3,jdbcType=VARCHAR}
+    </if>;
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.student_exercises_id,
+      A.student_university_code,
+      B.university_name AS student_university_name,
+      A.student_school_id,
+      C.school_name AS student_school_name,
+      A.student_id,
+      F.full_name AS student_name,
+      F.photo AS student_photo,
+      F.cellphone,
+      F.enrollment_year,
+      A.course_university_code,
+      D.university_name AS course_university_name,
+      A.course_school_id,
+      E.school_name AS course_school_name,
+      A.course_id,
+      G.course_name,
+      A.course_class,
+      A.exercises_id,
+      H.exercises_name,
+      H.exercises_code,
+      A.technology_id,
+      I.technology_name,
+      A.learning_phase_id,
+      J.learning_phase_name,
+      A.knowledge_id,
+      K.knowledge_name,
+      A.exercises_document_id,
+      L.document_url AS exercises_document_url,
+      A.source_code_git_url,
+      A.data_status,
+      CASE WHEN A.data_status = 'P' THEN '未完成'
+          WHEN A.data_status = 'W' THEN '待批改'
+          WHEN A.data_status = 'R' THEN '已批改'
+          WHEN A.data_status = 'S' THEN '批改通过'
+          ELSE '未知数据状态'
+      END AS data_status_text,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.university_student_exercises A
+    INNER JOIN shangshufang_customer.university B
+    ON A.student_university_code = B.university_code
+    INNER JOIN shangshufang_customer.school C
+    ON A.student_university_code = C.university_code
+    AND A.student_school_id = C.school_id
+    INNER JOIN shangshufang_customer.university D
+    ON A.course_university_code = D.university_code
+    INNER JOIN shangshufang_customer.school E
+    ON A.course_university_code = E.university_code
+    AND A.course_school_id = E.school_id
+    INNER JOIN shangshufang_customer.university_student F
+    ON A.student_university_code = F.university_code
+    AND A.student_school_id = F.school_id
+    AND A.student_id = F.student_id
+    INNER JOIN shangshufang_customer.course G
+    ON A.course_university_code = G.university_code
+    AND A.course_school_id = G.school_id
+    AND A.course_id = G.course_id
+    INNER JOIN shangshufang_base.exercises H
+    ON A.exercises_id = H.exercises_id
+    AND H.exercises_type = 'S'
+    INNER JOIN shangshufang_base.technology I
+    ON A.technology_id = I.technology_id
+    INNER JOIN shangshufang_base.learning_phase J
+    ON A.learning_phase_id = J.learning_phase_id
+    INNER JOIN shangshufang_base.technology_knowledge K
+    ON A.technology_id = K.technology_id
+    AND A.learning_phase_id = K.learning_phase_id
+    AND A.knowledge_id = K.knowledge_id
+    AND K.data_status = 'A'
+    INNER JOIN shangshufang_base.exercises_document L
+    ON A.exercises_id = L.exercises_id
+    AND A.exercises_document_id = L.exercises_document_id
+    WHERE A.course_university_code = #{arg2,jdbcType=INTEGER}
+    AND A.course_school_id = #{arg3,jdbcType=INTEGER}
+    AND A.course_id = #{arg4,jdbcType=INTEGER}
+    <if test="arg5 != null">
+      AND A.data_status = #{arg5,jdbcType=VARCHAR}
+    </if>
+    ORDER BY A.update_time DESC, A.student_id, A.course_class, A.knowledge_id
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.UniversityStudentExercisesEntity" >
+    INSERT INTO shangshufang_customer.university_student_exercises (
+      student_university_code,
+      student_school_id,
+      student_id,
+      course_university_code,
+      course_school_id,
+      course_id,
+      course_class,
+      exercises_id,
+      technology_id,
+      learning_phase_id,
+      knowledge_id,
+      exercises_document_id,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{studentUniversityCode, jdbcType=INTEGER},
+      #{studentSchoolID, jdbcType=INTEGER},
+      #{studentID, jdbcType=INTEGER},
+      #{courseUniversityCode, jdbcType=INTEGER},
+      #{courseSchoolID, jdbcType=INTEGER},
+      #{courseID, jdbcType=INTEGER},
+      #{courseClass, jdbcType=INTEGER},
+      #{exercisesID, jdbcType=INTEGER},
+      #{technologyID, jdbcType=INTEGER},
+      #{learningPhaseID, jdbcType=INTEGER},
+      #{knowledgeID, jdbcType=INTEGER},
+      #{exercisesDocumentID, jdbcType=INTEGER},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.UniversityStudentExercisesEntity" >
+    UPDATE shangshufang_customer.university_student_exercises SET
+      source_code_git_url = #{sourceCodeGitUrl,jdbcType=VARCHAR},
+      data_status = 'W',
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE course_university_code = #{courseUniversityCode,jdbcType=INTEGER}
+    AND course_school_id = #{courseSchoolID,jdbcType=INTEGER}
+    AND course_id = #{courseID,jdbcType=INTEGER};
+    AND course_class = #{courseClass,jdbcType=INTEGER};
+    AND student_exercises_id = #{studentExercisesID,jdbcType=INTEGER};
+  </update>
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.SchoolEntity" >
+    UPDATE shangshufang_customer.university_student_exercises SET
+      data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE course_university_code = #{courseUniversityCode,jdbcType=INTEGER}
+    AND course_school_id = #{courseSchoolID,jdbcType=INTEGER}
+    AND course_id = #{courseID,jdbcType=INTEGER};
+    AND course_class = #{courseClass,jdbcType=INTEGER};
+    AND student_exercises_id = #{studentExercisesID,jdbcType=INTEGER};
+  </update>
+</mapper>

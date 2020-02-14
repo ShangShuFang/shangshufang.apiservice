@@ -170,6 +170,42 @@
     ORDER BY A.course_class;
   </select>
 
+  <select id="searchClassExercisesList" resultMap="CourseResultMap">
+    SELECT
+      A.course_class,
+      A.technology_id,
+      B.technology_name,
+      A.learning_phase_id,
+      C.learning_phase_name,
+      A.knowledge_id,
+      D.knowledge_name,
+      E.exercises_id,
+      F.exercises_name,
+      F.exercises_code,
+      F.exercises_type,
+      A.data_status
+    FROM shangshufang_customer.course_plan A
+    INNER JOIN shangshufang_base.technology B
+      ON A.technology_id = B.technology_id
+    INNER JOIN shangshufang_base.learning_phase C
+      ON A.learning_phase_id = C.learning_phase_id
+    INNER JOIN shangshufang_base.technology_knowledge D
+      ON A.technology_id = D.technology_id
+      AND A.learning_phase_id = D.learning_phase_id
+      AND A.knowledge_id = D.knowledge_id
+    LEFT JOIN shangshufang_base.exercises_knowledge E
+      ON A.technology_id = E.technology_id
+      AND A.learning_phase_id = E.learning_phase_id
+      AND A.knowledge_id = E.knowledge_id
+      AND E.exercises_type = 'S'
+    LEFT JOIN shangshufang_base.exercises F
+      ON E.exercises_id = F.exercises_id
+    WHERE A.university_code = #{arg0,jdbcType=INTEGER}
+      AND A.school_id = #{arg1,jdbcType=INTEGER}
+      AND A.course_id = #{arg2,jdbcType=INTEGER}
+      AND A.course_class = #{arg3,jdbcType=INTEGER};
+  </select>
+
   <select id="search" resultMap="SingleResultMap">
     SELECT
       exercises_id,

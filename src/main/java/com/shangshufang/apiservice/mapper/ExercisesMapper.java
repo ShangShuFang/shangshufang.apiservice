@@ -14,6 +14,8 @@ public interface ExercisesMapper extends BaseMapper<ExercisesSingleEntity> {
 
     List<CourseExercisesEntity> searchCourseExercisesList(int universityCode, int schoolID, int courseID);
 
+    List<CourseExercisesEntity> searchClassExercisesList(int universityCode, int schoolID, int courseID, int courseClass);
+
     ExercisesSingleEntity search(int exercisesID);
 
     int checkExercisesCodeExist(String exercisesCode);

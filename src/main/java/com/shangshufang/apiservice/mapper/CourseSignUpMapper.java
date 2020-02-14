@@ -11,6 +11,8 @@ public interface CourseSignUpMapper extends BaseMapper<CourseSignUpEntity> {
 
     List<CourseSignUpEntity> searchCourseSignUpList(int startIndex, int pageSize, int universityCode, int schoolID, int courseID);
 
+    List<CourseSignUpEntity> searchAllCourseSignUpList(int universityCode, int schoolID, int courseID);
+
     int searchStudentSignUpTotalCount(int universityCode, int schoolID, int studentID);
 
     List<CourseSignUpEntity> searchStudentSignUpList(int startIndex, int pageSize, int universityCode, int schoolID, int studentID);

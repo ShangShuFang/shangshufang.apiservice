@@ -84,6 +84,57 @@
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 
+  <select id="searchAllCourseSignUpList" resultMap="BaseResultMap">
+    SELECT
+    A.sign_up_id,
+    A.student_university_code,
+    B.university_name AS student_university_name,
+    A.student_school_id,
+    C.school_name AS student_school_name,
+    A.student_id,
+    F.full_name AS student_name,
+    F.photo AS student_photo,
+    F.cellphone,
+    F.enrollment_year,
+    A.course_university_code,
+    D.university_name AS course_university_name,
+    A.course_school_id,
+    E.school_name AS course_school_name,
+    A.course_id,
+    G.course_name,
+    A.data_status,
+    CASE WHEN A.data_status = 'A' THEN '报名成功'
+        WHEN A.data_status = 'C' THEN '报名取消'
+        ELSE '未知数据状态'
+    END AS data_status_text,
+    DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+    DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.course_sign_up A
+    INNER JOIN shangshufang_customer.university B
+    ON A.student_university_code = B.university_code
+    INNER JOIN shangshufang_customer.school C
+    ON A.student_university_code = C.university_code
+    AND A.student_school_id = C.school_id
+    INNER JOIN shangshufang_customer.university D
+    ON A.course_university_code = D.university_code
+    INNER JOIN shangshufang_customer.school E
+    ON A.course_university_code = E.university_code
+    AND A.course_school_id = E.school_id
+    INNER JOIN shangshufang_customer.university_student F
+    ON A.student_university_code = F.university_code
+    AND A.student_school_id = F.school_id
+    AND A.student_id = F.student_id
+    INNER JOIN shangshufang_customer.course G
+    ON A.course_university_code = G.university_code
+    AND A.course_school_id = G.school_id
+    AND A.course_id = G.course_id
+    WHERE A.course_university_code = #{arg0,jdbcType=INTEGER}
+    AND A.course_school_id = #{arg1,jdbcType=INTEGER}
+    AND A.course_id = #{arg2,jdbcType=INTEGER}
+    AND A.data_status = 'A'
+    ORDER BY A.update_time;
+  </select>
+
   <select id="searchStudentSignUpTotalCount" resultType="java.lang.Integer">
     SELECT
     COUNT(1) AS TotalCount
