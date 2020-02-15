@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.UniversityStudentExercisesReviewMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.UniversityStudentExercisesReviewEntity" >
+    <id column="review_id" property="reviewID" jdbcType="INTEGER" />
+    <result column="student_exercises_id" property="studentExercisesID" jdbcType="INTEGER" />
+    <result column="reviewer_id" property="reviewerID" jdbcType="INTEGER" />
+    <result column="reviewer_name" property="reviewerName" jdbcType="VARCHAR" />
+    <result column="reviewer_teacher_photo" property="reviewerTeacherPhoto" jdbcType="VARCHAR" />
+    <result column="reviewer_student_photo" property="reviewerStudentPhoto" jdbcType="VARCHAR" />
+    <result column="reviewer_university_code" property="reviewerUniversityCode" jdbcType="INTEGER" />
+    <result column="reviewer_university_name" property="reviewerUniversityName" jdbcType="VARCHAR" />
+    <result column="reviewer_school_id" property="reviewerSchoolID" jdbcType="INTEGER" />
+    <result column="reviewer_school_name" property="reviewerSchoolName" jdbcType="VARCHAR" />
+    <result column="reviewer_type" property="reviewerType" jdbcType="VARCHAR" />
+    <result column="reviewer_type_text" property="reviewerTypeText" jdbcType="VARCHAR" />
+    <result column="compilation_result" property="compilationResult" jdbcType="VARCHAR" />
+    <result column="compilation_result_text" property="compilationResultText" jdbcType="VARCHAR" />
+    <result column="run_result" property="runResult" jdbcType="VARCHAR" />
+    <result column="run_result_text" property="runResultText" jdbcType="VARCHAR" />
+    <result column="code_standards_score" property="codeStandardsScore" jdbcType="INTEGER" />
+    <result column="review_result" property="reviewResult" jdbcType="VARCHAR" />
+    <result column="review_result_text" property="reviewResultText" jdbcType="VARCHAR" />
+    <result column="review_memo" property="reviewMemo" jdbcType="VARCHAR" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+        COUNT(1) AS total_count
+    FROM shangshufang_customer.university_student_exercises_review
+    WHERE student_exercises_id = #{arg0,jdbcType=INTEGER}
+    AND data_status = 'A';
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.review_id,
+      A.student_exercises_id,
+      A.reviewer_id,
+      B.full_name AS reviewer_name,
+      B.photo AS reviewer_teacher_photo,
+      C.photo AS reviewer_student_photo,
+      A.reviewer_university_code,
+      D.university_name AS reviewer_university_name,
+      A.reviewer_school_id,
+      E.school_name AS reviewer_school_name,
+      A.reviewer_type,
+      CASE WHEN A.reviewer_type = 'S' THEN '学生'
+        WHEN A.reviewer_type = 'T' THEN '老师'
+        ELSE '未知数据状态'
+      END AS reviewer_type_text,
+      A.compilation_result,
+      CASE WHEN A.compilation_result = 'S' THEN '通过'
+        WHEN A.compilation_result = 'N' THEN '未通过'
+        ELSE '未知数据状态'
+      END AS compilation_result_text,
+      A.run_result,
+      CASE WHEN A.run_result = 'S' THEN '通过'
+        WHEN A.run_result = 'N' THEN '未通过'
+        ELSE '未知数据状态'
+      END AS run_result_text,
+      A.code_standards_score,
+      A.review_result,
+      CASE WHEN A.review_result = 'S' THEN '通过'
+        WHEN A.review_result = 'N' THEN '未通过'
+        ELSE '未知数据状态'
+      END AS review_result_text,
+      A.review_memo,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.university_student_exercises_review A
+    LEFT JOIN shangshufang_customer.university_customer B
+    ON A.reviewer_university_code = B.university_code
+    AND A.reviewer_school_id = B.school_id
+    AND A.reviewer_id = B.customer_id
+    AND A.reviewer_type = 'T'
+    LEFT JOIN shangshufang_customer.university_student C
+    ON A.reviewer_university_code = C.university_code
+    AND A.reviewer_school_id = C.school_id
+    AND A.reviewer_id = C.student_id
+    AND A.reviewer_type = 'S'
+    INNER JOIN shangshufang_customer.university D
+    ON A.reviewer_university_code = D.university_code
+    INNER JOIN shangshufang_customer.school E
+    ON A.reviewer_university_code = E.university_code
+    AND A.reviewer_school_id = E.school_id
+    WHERE A.student_exercises_id = #{arg2,jdbcType=INTEGER}
+    AND A.data_status = 'A'
+    ORDER BY A.update_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.UniversityStudentExercisesReviewEntity" >
+    INSERT INTO shangshufang_customer.university_student_exercises_review (
+      student_exercises_id,
+      reviewer_id,
+      reviewer_university_code,
+      reviewer_school_id,
+      reviewer_type,
+      compilation_result,
+      run_result,
+      code_standards_score,
+      review_result,
+      review_memo,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{studentExercisesID, jdbcType=INTEGER},
+      #{reviewerID, jdbcType=INTEGER},
+      #{reviewerUniversityCode, jdbcType=INTEGER},
+      #{reviewerSchoolID, jdbcType=INTEGER},
+      #{reviewerType, jdbcType=VARCHAR},
+      #{compilationResult, jdbcType=VARCHAR},
+      #{runResult, jdbcType=VARCHAR},
+      #{codeStandardsScore, jdbcType=INTEGER},
+      #{reviewResult, jdbcType=VARCHAR},
+      #{reviewMemo, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.UniversityStudentExercisesReviewEntity" >
+    UPDATE shangshufang_customer.university_student_exercises_review SET
+      data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE reviewer_university_code = #{reviewerUniversityCode,jdbcType=INTEGER}
+    AND reviewer_school_id = #{reviewerSchoolID,jdbcType=INTEGER}
+    AND reviewer_id = #{reviewerID,jdbcType=INTEGER}
+    AND review_id = #{reviewID,jdbcType=INTEGER};
+  </update>
+</mapper>

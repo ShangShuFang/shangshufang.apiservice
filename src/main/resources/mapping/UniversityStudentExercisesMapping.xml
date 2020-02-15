@@ -37,6 +37,14 @@
 
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+
+    <result column="reviewer_id" property="reviewerID" jdbcType="INTEGER" />
+    <result column="reviewer_name_teacher" property="reviewerNameTeacher" jdbcType="VARCHAR" />
+    <result column="reviewer_name_student" property="reviewerNameStudent" jdbcType="VARCHAR" />
+    <result column="reviewer_type" property="reviewerType" jdbcType="VARCHAR" />
+    <result column="review_time" property="reviewTime" jdbcType="TIMESTAMP" />
+
+
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_user" property="updateUser" jdbcType="INTEGER" />
@@ -106,10 +114,15 @@
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未完成'
           WHEN A.data_status = 'W' THEN '待批改'
-          WHEN A.data_status = 'R' THEN '已批改'
-          WHEN A.data_status = 'S' THEN '批改通过'
+          WHEN A.data_status = 'R' THEN '待修改'
+          WHEN A.data_status = 'S' THEN '已通过'
           ELSE '未知数据状态'
       END AS data_status_text,
+      M.reviewer_id,
+      M.reviewer_name_teacher,
+      M.reviewer_name_student,
+      M.reviewer_type,
+      DATE_FORMAT(M.update_time, '%Y-%m-%d %H:%i:%s') AS review_time,
       DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
       DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
     FROM shangshufang_customer.university_student_exercises A
@@ -146,6 +159,50 @@
     INNER JOIN shangshufang_base.exercises_document L
     ON A.exercises_id = L.exercises_id
     AND A.exercises_document_id = L.exercises_document_id
+    LEFT JOIN
+    (
+      SELECT
+      C.student_exercises_id,
+      C.reviewer_id,
+      C.reviewer_type,
+      D.full_name AS reviewer_name_teacher,
+      E.full_name AS reviewer_name_student,
+      C.update_time
+      FROM
+      (
+        SELECT
+        A.review_id,
+        A.student_exercises_id,
+        A.update_time,
+        B.reviewer_id,
+        B.reviewer_university_code,
+        B.reviewer_school_id,
+        B.reviewer_type
+        FROM
+        (
+          SELECT
+          student_exercises_id,
+          MAX(review_id) AS review_id,
+          MAX(update_time) AS update_time
+          FROM shangshufang_customer.university_student_exercises_review
+          GROUP BY student_exercises_id
+        ) A
+        INNER JOIN shangshufang_customer.university_student_exercises_review B
+        ON A.review_id = B.review_id
+        AND A.student_exercises_id = B.student_exercises_id
+      ) C
+      LEFT JOIN shangshufang_customer.university_customer D
+      ON C.reviewer_university_code = D.university_code
+      AND C.reviewer_school_id = D.school_id
+      AND C.reviewer_id = D.customer_id
+      AND C.reviewer_type = 'T'
+      LEFT JOIN shangshufang_customer.university_student E
+      ON C.reviewer_university_code = E.university_code
+      AND C.reviewer_school_id = E.school_id
+      AND C.reviewer_id = E.student_id
+      AND C.reviewer_type = 'S'
+    ) M
+    ON A.student_exercises_id = M.student_exercises_id
     WHERE A.course_university_code = #{arg2,jdbcType=INTEGER}
     AND A.course_school_id = #{arg3,jdbcType=INTEGER}
     AND A.course_id = #{arg4,jdbcType=INTEGER}
@@ -201,14 +258,14 @@
     AND course_class = #{courseClass,jdbcType=INTEGER};
     AND student_exercises_id = #{studentExercisesID,jdbcType=INTEGER};
   </update>
-  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.SchoolEntity" >
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.UniversityStudentExercisesEntity" >
     UPDATE shangshufang_customer.university_student_exercises SET
       data_status = #{dataStatus,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE course_university_code = #{courseUniversityCode,jdbcType=INTEGER}
     AND course_school_id = #{courseSchoolID,jdbcType=INTEGER}
-    AND course_id = #{courseID,jdbcType=INTEGER};
-    AND course_class = #{courseClass,jdbcType=INTEGER};
+    AND course_id = #{courseID,jdbcType=INTEGER}
+    AND course_class = #{courseClass,jdbcType=INTEGER}
     AND student_exercises_id = #{studentExercisesID,jdbcType=INTEGER};
   </update>
 </mapper>

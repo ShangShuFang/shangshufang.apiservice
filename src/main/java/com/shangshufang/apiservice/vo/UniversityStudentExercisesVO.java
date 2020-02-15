@@ -36,4 +36,10 @@ public class UniversityStudentExercisesVO extends BaseVO {
     private String exercisesDocumentUrl;
 
     private String sourceCodeGitUrl;
+
+    private int reviewerID;
+    private String reviewerNameTeacher;
+    private String reviewerNameStudent;
+    private String reviewerType;
+    private String reviewTime;
 }

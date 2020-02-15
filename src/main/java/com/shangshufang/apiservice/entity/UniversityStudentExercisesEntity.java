@@ -37,4 +37,10 @@ public class UniversityStudentExercisesEntity extends BaseEntity {
     private String exercisesDocumentUrl;
 
     private String sourceCodeGitUrl;
+
+    private int reviewerID;
+    private String reviewerNameTeacher;
+    private String reviewerNameStudent;
+    private String reviewerType;
+    private String reviewTime;
 }
