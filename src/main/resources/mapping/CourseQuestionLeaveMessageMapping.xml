@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.CourseQuestionLeaveMessageMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.CourseQuestionLeaveMessageEntity" >
+    <id column="message_id" property="messageID" jdbcType="INTEGER" />
+    <result column="question_id" property="questionID" jdbcType="INTEGER" />
+    <result column="commenter_university_code" property="commenterUniversityCode" jdbcType="INTEGER" />
+    <result column="commenter_university_name" property="commenterUniversityName" jdbcType="VARCHAR" />
+    <result column="commenter_school_id" property="commenterSchoolID" jdbcType="INTEGER" />
+    <result column="commenter_school_name" property="commenterSchoolName" jdbcType="VARCHAR" />
+    <result column="commenter_id" property="commenterID" jdbcType="INTEGER" />
+    <result column="commenter_name" property="commenterName" jdbcType="VARCHAR" />
+    <result column="commenter_photo" property="commenterPhoto" jdbcType="VARCHAR" />
+    <result column="commenter_type" property="commenterType" jdbcType="VARCHAR" />
+    <result column="commenter_type_text" property="commenterTypeText" jdbcType="VARCHAR" />
+    <result column="message_content" property="messageContent" jdbcType="VARCHAR" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.message_id,
+      A.question_id,
+      A.commenter_university_code,
+      B.university_name AS commenter_university_name,
+      A.commenter_school_id,
+      C.school_name AS commenter_school_name,
+      A.commenter_id,
+      IFNULL(D.full_name, E.full_name) AS commenter_name,
+      IFNULL(D.photo, E.photo) AS commenter_photo,
+      A.commenter_type,
+      CASE WHEN A.commenter_type = 'T' THEN '老师'
+          WHEN A.commenter_type = 'S' THEN '同学'
+          ELSE '未知数据状态'
+      END AS commenter_type_text,
+      A.message_content,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.course_question_leave_message A
+    INNER JOIN shangshufang_customer.university B
+    ON A.commenter_university_code = B.university_code
+    INNER JOIN shangshufang_customer.school C
+    ON A.commenter_university_code = C.university_code
+    AND A.commenter_school_id = C.school_id
+    LEFT JOIN shangshufang_customer.university_customer D
+    ON A.commenter_university_code =D.university_code
+    AND A.commenter_school_id = D.school_id
+    AND A.commenter_id = D.customer_id
+    AND A.commenter_type = 'T'
+    LEFT JOIN shangshufang_customer.university_student E
+    ON A.commenter_university_code =E.university_code
+    AND A.commenter_school_id = E.school_id
+    AND A.commenter_id = E.student_id
+    AND A.commenter_type = 'S'
+    WHERE A.question_id = #{arg0,jdbcType=INTEGER}
+    ORDER BY A.update_time DESC;
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.CourseQuestionLeaveMessageEntity" >
+    INSERT INTO shangshufang_customer.course_question_leave_message (
+      question_id,
+      commenter_university_code,
+      commenter_school_id,
+      commenter_id,
+      commenter_type,
+      message_content,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{questionID, jdbcType=INTEGER},
+      #{commenterUniversityCode, jdbcType=INTEGER},
+      #{commenterSchoolID, jdbcType=INTEGER},
+      #{commenterID, jdbcType=INTEGER},
+      #{commenterType, jdbcType=VARCHAR},
+      #{messageContent, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.CourseQuestionEntity" >
+    UPDATE shangshufang_customer.course_question_leave_message SET
+      data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE commenter_university_code = #{commenterUniversityCode,jdbcType=INTEGER}
+    AND commenter_school_id = #{commenterSchoolID,jdbcType=INTEGER}
+    AND commenter_id = #{commenterID,jdbcType=INTEGER}
+    AND question_id = #{questionID,jdbcType=INTEGER}
+    AND message_id = #{messageID,jdbcType=INTEGER}
+  </update>
+</mapper>

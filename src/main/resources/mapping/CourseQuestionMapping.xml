@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.CourseQuestionMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.CourseQuestionEntity" >
+    <id column="question_id" property="questionID" jdbcType="INTEGER" />
+    <result column="course_university_code" property="courseUniversityCode" jdbcType="INTEGER" />
+    <result column="course_school_id" property="courseSchoolID" jdbcType="INTEGER" />
+    <result column="course_id" property="courseID" jdbcType="INTEGER" />
+    <result column="questioner_university_code" property="questionerUniversityCode" jdbcType="INTEGER" />
+    <result column="questioner_university_name" property="questionerUniversityName" jdbcType="VARCHAR" />
+    <result column="questioner_school_id" property="questionerSchoolID" jdbcType="INTEGER" />
+    <result column="questioner_school_name" property="questionerSchoolName" jdbcType="VARCHAR" />
+    <result column="questioner_id" property="questionerID" jdbcType="INTEGER" />
+    <result column="questioner_name" property="questionerName" jdbcType="VARCHAR" />
+    <result column="questioner_photo" property="questionerPhoto" jdbcType="VARCHAR" />
+    <result column="question_content" property="questionContent" jdbcType="VARCHAR" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS total_count
+    FROM shangshufang_customer.course_question
+    WHERE course_university_code = #{arg0,jdbcType=INTEGER}
+    AND course_school_id = #{arg1,jdbcType=INTEGER}
+    AND course_id = #{arg2,jdbcType=INTEGER}
+    AND data_status = 'A';
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.question_id,
+      A.course_university_code,
+      A.course_school_id,
+      A.course_id,
+      A.questioner_university_code,
+      B.university_name AS questioner_university_name,
+      A.questioner_school_id,
+      C.school_name AS questioner_school_name,
+      A.questioner_id,
+      D.full_name AS questioner_name,
+      D.photo AS questioner_photo,
+      A.question_content,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.course_question A
+    INNER JOIN shangshufang_customer.university B
+    ON A.questioner_university_code = B.university_code
+    INNER JOIN shangshufang_customer.school C
+    ON A.questioner_university_code = C.university_code
+    AND A.questioner_school_id = C.school_id
+    INNER JOIN shangshufang_customer.university_student D
+    ON A.questioner_university_code =D.university_code
+    AND A.questioner_school_id = D.school_id
+    AND A.questioner_id = D.student_id
+    WHERE A.course_university_code = #{arg2,jdbcType=INTEGER}
+    AND A.course_school_id = #{arg3,jdbcType=INTEGER}
+    AND A.course_id = #{arg4,jdbcType=INTEGER}
+    AND A.data_status = 'A'
+    ORDER BY A.update_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.CourseQuestionEntity" >
+    INSERT INTO shangshufang_customer.course_question (
+      course_university_code,
+      course_school_id,
+      course_id,
+      questioner_university_code,
+      questioner_school_id,
+      questioner_id,
+      question_content,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{courseUniversityCode, jdbcType=INTEGER},
+      #{courseSchoolID, jdbcType=INTEGER},
+      #{courseID, jdbcType=INTEGER},
+      #{questionerUniversityCode, jdbcType=INTEGER},
+      #{questionerSchoolID, jdbcType=INTEGER},
+      #{questionerID, jdbcType=INTEGER},
+      #{questionContent, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    );
+  </insert>
+
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.CourseQuestionEntity" >
+    UPDATE shangshufang_customer.course_question SET
+      data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE course_university_code = #{courseUniversityCode,jdbcType=INTEGER}
+    AND course_school_id = #{courseSchoolID,jdbcType=INTEGER}
+    AND course_id = #{courseID,jdbcType=INTEGER}
+    AND question_id = #{questionID,jdbcType=INTEGER};
+  </update>
+</mapper>
