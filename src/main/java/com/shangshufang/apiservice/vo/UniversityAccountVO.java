@@ -14,6 +14,7 @@ public class UniversityAccountVO extends BaseVO {
     private String cellphone;
     private String email;
     private String photo;
+    private String sex;
     private String accountRole;
     private String accountRoleText;
 }

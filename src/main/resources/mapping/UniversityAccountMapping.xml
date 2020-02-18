@@ -13,6 +13,7 @@
     <result column="password" property="password" jdbcType="VARCHAR" />
     <result column="email" property="email" jdbcType="VARCHAR" />
     <result column="photo" property="photo" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="VARCHAR" />
     <result column="account_role" property="accountRole" jdbcType="VARCHAR" />
     <result column="account_role_text" property="accountRoleText" jdbcType="VARCHAR" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
@@ -104,6 +105,7 @@
       D.full_name,
       D.email,
       D.photo,
+      D.sex,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '待审批'
           WHEN A.data_status = 'A' THEN '正常'
