@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class UniversityCustomerDTO extends BaseDTO {
+    private int accountID;
     private int customerID;
     private int universityCode;
     private int schoolID;

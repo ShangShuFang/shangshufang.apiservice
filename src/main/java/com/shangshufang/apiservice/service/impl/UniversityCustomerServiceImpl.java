@@ -3,8 +3,10 @@ package com.shangshufang.apiservice.service.impl;
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.UniversityCustomerDTO;
+import com.shangshufang.apiservice.entity.UniversityAccountEntity;
 import com.shangshufang.apiservice.entity.UniversityCustomerEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
+import com.shangshufang.apiservice.mapper.UniversityAccountMapper;
 import com.shangshufang.apiservice.mapper.UniversityCustomerMapper;
 import com.shangshufang.apiservice.service.UniversityCustomerService;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
@@ -21,6 +23,9 @@ import java.util.List;
 public class UniversityCustomerServiceImpl implements UniversityCustomerService {
     @Autowired
     private UniversityCustomerMapper myMapper;
+    @Autowired
+    private UniversityAccountMapper accountMapper;
+
     private Logger logger = LogManager.getLogger(UniversityCustomerServiceImpl.class);
 
     @Override
@@ -114,10 +119,17 @@ public class UniversityCustomerServiceImpl implements UniversityCustomerService 
     @Override
     public UnifiedResponse change(UniversityCustomerDTO dto) {
         try {
+            UniversityAccountEntity accountEntity = new UniversityAccountEntity();
             UniversityCustomerEntity entity = new UniversityCustomerEntity();
+
+            ObjectConvertUtils.toBean(dto, accountEntity);
             ObjectConvertUtils.toBean(dto, entity);
             entity.setUpdateUser(dto.getLoginUser());
+            accountEntity.setUpdateUser(dto.getLoginUser());
+
             int affectRow = myMapper.update(entity);
+            affectRow += accountMapper.update(accountEntity);
+
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
         } catch (Exception ex) {
             logger.error(ex.toString());
