@@ -10,7 +10,12 @@
     <result column="portal" property="portal" jdbcType="INTEGER" />
     <result column="device" property="device" jdbcType="VARCHAR" />
     <result column="page_name" property="pageName" jdbcType="VARCHAR" />
-    <result column="operation" property="operation" jdbcType="VARCHAR" />
+
+    <result column="operation_name" property="operationName" jdbcType="VARCHAR" />
+    <result column="operation_result" property="operationResult" jdbcType="VARCHAR" />
+    <result column="operation_type" property="operationType" jdbcType="VARCHAR" />
+
+
     <result column="memo" property="memo" jdbcType="VARCHAR" />
     <result column="customer_id" property="customerID" jdbcType="INTEGER" />
     <result column="customer_name" property="customerName" jdbcType="VARCHAR" />
@@ -34,16 +39,18 @@
       portal,
       device,
       page_name,
-      operation,
+      operation_name,
+      operation_result,
+      operation_type,
       memo,
       customer_id
-    FROM shangshufang_base.business_analyse_log
+    FROM shangshufang_log.business_analyse_log
     ORDER BY update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.BusinessAnalyseLogEntity" >
-    INSERT INTO shangshufang_base.business_analyse_log (
+    INSERT INTO shangshufang_log.business_analyse_log (
       city_ip,
       city_id,
       city_name,
@@ -51,7 +58,9 @@
       portal,
       device,
       page_name,
-      operation,
+      operation_name,
+      operation_result,
+      operation_type,
       memo,
       customer_id
     )
@@ -63,7 +72,9 @@
       #{portal, jdbcType=VARCHAR},
       #{device, jdbcType=VARCHAR},
       #{pageName, jdbcType=VARCHAR},
-      #{operation, jdbcType=VARCHAR},
+      #{operationName, jdbcType=VARCHAR},
+      #{operationResult, jdbcType=VARCHAR},
+      #{operationType, jdbcType=VARCHAR},
       #{memo, jdbcType=VARCHAR},
       #{customerID, jdbcType=INTEGER}
     );

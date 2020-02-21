@@ -2,8 +2,8 @@
 <configuration status="warn">
   <properties>
 
-    <Property name="app_name">bank-worker-service</Property>
-    <Property name="log_path">logs/${app_name}</Property>
+    <Property name="app_name">ShangShuFang-service</Property>
+    <Property name="log_path">shs_logs/${app_name}</Property>
 
   </properties>
   <appenders>

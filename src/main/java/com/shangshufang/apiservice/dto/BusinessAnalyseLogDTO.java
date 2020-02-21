@@ -12,7 +12,9 @@ public class BusinessAnalyseLogDTO extends BaseDTO {
     private String portal;
     private String device;
     private String pageName;
-    private String operation;
+    private String operationName;
+    private String operationResult;
+    private String operationType;
     private String memo;
     private int customerID;
 }
