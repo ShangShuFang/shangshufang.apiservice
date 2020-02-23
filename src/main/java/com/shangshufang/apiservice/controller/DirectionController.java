@@ -12,10 +12,11 @@ public class DirectionController {
     @Autowired
     private DirectionServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/{pageNumber}/{pageSize}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{pageNumber}/{pageSize}/{dataStatus}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
-                                    @PathVariable("pageSize") int pageSize){
-        return serviceImpl.findList(pageNumber, pageSize);
+                                    @PathVariable("pageSize") int pageSize,
+                                    @PathVariable("dataStatus") String dataStatus){
+        return serviceImpl.findList(pageNumber, pageSize, dataStatus);
     }
 
     @RequestMapping(value = "/{directionID}", method = RequestMethod.GET)

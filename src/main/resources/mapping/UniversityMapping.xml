@@ -31,6 +31,9 @@
     </if>
     <if test="arg1 != 0">
       AND city_code = #{arg1,jdbcType=INTEGER}
+    </if>
+    <if test="arg2 != null">
+      AND data_status = #{arg2,jdbcType=INTEGER}
     </if>;
   </select>
   <select id="searchList" resultMap="BaseResultMap">
@@ -74,6 +77,9 @@
     </if>
     <if test="arg3 != 0">
       AND A.city_code = #{arg3,jdbcType=INTEGER}
+    </if>
+    <if test="arg4 != null">
+      AND A.data_status = #{arg4,jdbcType=INTEGER}
     </if>
     ORDER BY A.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};

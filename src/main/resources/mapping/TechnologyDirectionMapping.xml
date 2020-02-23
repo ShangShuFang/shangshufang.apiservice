@@ -40,6 +40,7 @@
     ON A.technology_id = B.technology_id
     INNER JOIN shangshufang_base.direction C
     ON A.direction_id = C.direction_id
+    AND C.data_status = 'A'
     ORDER BY C.direction_stars DESC;
   </select>
 

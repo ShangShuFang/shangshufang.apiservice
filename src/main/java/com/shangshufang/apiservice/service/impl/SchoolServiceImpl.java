@@ -1,6 +1,7 @@
 package com.shangshufang.apiservice.service.impl;
 
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
+import com.shangshufang.apiservice.constant.ParameterConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.SchoolDTO;
 import com.shangshufang.apiservice.entity.SchoolEntity;
@@ -24,15 +25,16 @@ public class SchoolServiceImpl implements SchoolService {
     private Logger logger = LogManager.getLogger(SchoolServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, int universityCode) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, int universityCode, String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<SchoolVO> modelList = new ArrayList<>();
-            int totalCount = myMapper.searchTotalCount(universityCode);
+            dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
+            int totalCount = myMapper.searchTotalCount(universityCode, dataStatus);
             if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<SchoolEntity> entityList =  myMapper.searchList(startIndex, pageSize, universityCode);
+            List<SchoolEntity> entityList =  myMapper.searchList(startIndex, pageSize, universityCode, dataStatus);
             for (SchoolEntity entity : entityList) {
                 SchoolVO model = new SchoolVO();
                 ObjectConvertUtils.toBean(entity, model);

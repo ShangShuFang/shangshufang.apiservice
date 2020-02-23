@@ -4,7 +4,7 @@ import com.shangshufang.apiservice.dto.SchoolDTO;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
 
 public interface SchoolService extends BaseService<SchoolDTO> {
-    UnifiedResponse findList(int startIndex, int pageSize, int universityCode);
+    UnifiedResponse findList(int startIndex, int pageSize, int universityCode, String dataStatus);
 
     UnifiedResponse find(int universityCode, int schoolID);
 

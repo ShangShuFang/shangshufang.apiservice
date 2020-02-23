@@ -1,6 +1,7 @@
 package com.shangshufang.apiservice.service.impl;
 
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
+import com.shangshufang.apiservice.constant.ParameterConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.DirectionDTO;
 import com.shangshufang.apiservice.entity.DirectionEntity;
@@ -24,15 +25,16 @@ public class DirectionServiceImpl implements DirectionService {
     private Logger logger = LogManager.getLogger(DirectionServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
+            dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
             List<DirectionVO> modelList = new ArrayList<>();
-            int totalCount = myMapper.searchTotalCount();
+            int totalCount = myMapper.searchTotalCount(dataStatus);
             if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<DirectionEntity> entityList =  myMapper.searchList(startIndex, pageSize);
+            List<DirectionEntity> entityList =  myMapper.searchList(startIndex, pageSize, dataStatus);
             for (DirectionEntity entity : entityList) {
                 DirectionVO model = new DirectionVO();
                 ObjectConvertUtils.toBean(entity, model);

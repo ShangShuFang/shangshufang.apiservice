@@ -178,6 +178,7 @@
       technology_id,
       COUNT(1) AS technology_knowledge_count
       FROM shangshufang_base.technology_knowledge
+      WHERE data_status = 'A'
       GROUP BY technology_id
     ) H
     ON A.technology_id = H.technology_id
@@ -370,6 +371,7 @@
         technology_id,
       COUNT(1) AS technology_knowledge_count
       FROM shangshufang_base.technology_knowledge
+      WHERE data_status = 'A'
       GROUP BY technology_id
     ) H
     ON A.technology_id = H.technology_id

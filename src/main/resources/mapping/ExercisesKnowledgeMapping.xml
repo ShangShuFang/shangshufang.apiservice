@@ -51,6 +51,7 @@
     FROM shangshufang_base.exercises_knowledge A
     INNER JOIN shangshufang_base.exercises B
     ON A.exercises_id = B.exercises_id
+    AND B.data_status = 'A'
     INNER JOIN shangshufang_base.technology C
     ON A.technology_id = C.technology_id
     INNER JOIN shangshufang_base.learning_phase D
@@ -58,6 +59,7 @@
     INNER JOIN shangshufang_base.technology_knowledge E
     ON A.technology_id = E.technology_id
     AND A.knowledge_id = E.knowledge_id
+    AND E.data_status = 'A'
     INNER JOIN shangshufang_base.system_admin F
     ON A.create_user = F.admin_id
     INNER JOIN shangshufang_base.system_admin G

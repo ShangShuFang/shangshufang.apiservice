@@ -20,8 +20,11 @@
     COUNT(1) AS TotalCount
     FROM shangshufang_customer.school
     WHERE 1=1
-    <if test="universityCode != 0">
-      AND university_code = #{universityCode,jdbcType=INTEGER}
+    <if test="arg0 != 0">
+      AND university_code = #{arg0,jdbcType=INTEGER}
+    </if>
+    <if test="arg1 != null">
+      AND data_status = #{arg1,jdbcType=VARCHAR}
     </if>;
   </select>
   <select id="searchList" resultMap="BaseResultMap">
@@ -51,6 +54,9 @@
     WHERE 1=1
     <if test="arg2 != 0">
       AND A.university_code = #{arg2,jdbcType=INTEGER}
+    </if>
+    <if test="arg3 != null">
+      AND A.data_status = #{arg3,jdbcType=VARCHAR}
     </if>
     ORDER BY A.university_code, A.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};

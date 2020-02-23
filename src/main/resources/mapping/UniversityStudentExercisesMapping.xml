@@ -61,6 +61,7 @@
     INNER JOIN shangshufang_base.exercises H
     ON A.exercises_id = H.exercises_id
     AND H.exercises_type = 'S'
+    AND H.data_status = 'A'
     INNER JOIN shangshufang_base.technology I
     ON A.technology_id = I.technology_id
     INNER JOIN shangshufang_base.learning_phase J
@@ -147,6 +148,7 @@
     INNER JOIN shangshufang_base.exercises H
     ON A.exercises_id = H.exercises_id
     AND H.exercises_type = 'S'
+    AND H.data_status = 'A'
     INNER JOIN shangshufang_base.technology I
     ON A.technology_id = I.technology_id
     INNER JOIN shangshufang_base.learning_phase J

@@ -12,9 +12,11 @@ public class TechnologyController {
     @Autowired
     private TechnologyServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/{pageNumber}/{pageSize}", method = RequestMethod.GET)
-    public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber, @PathVariable("pageSize") int pageSize){
-        return serviceImpl.findList(pageNumber, pageSize);
+    @RequestMapping(value = "/{pageNumber}/{pageSize}/{dataStatus}", method = RequestMethod.GET)
+    public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
+                                    @PathVariable("pageSize") int pageSize,
+                                    @PathVariable("dataStatus") String dataStatus){
+        return serviceImpl.findList(pageNumber, pageSize, dataStatus);
     }
 
     @RequestMapping(value = "/client/{pageNumber}/{pageSize}", method = RequestMethod.GET)

@@ -1,6 +1,8 @@
 package com.shangshufang.apiservice.service.impl;
 
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
+import com.shangshufang.apiservice.constant.DataStatusConstant;
+import com.shangshufang.apiservice.constant.ParameterConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.TechnologyDTO;
 import com.shangshufang.apiservice.entity.TechnologyDirectionEntity;
@@ -28,15 +30,16 @@ public class TechnologyServiceImpl implements TechnologyService {
     private Logger logger = LogManager.getLogger(TechnologyServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<TechnologyVO> modelList = new ArrayList<>();
-            int totalCount = myMapper.searchTotalCount();
+            dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
+            int totalCount = myMapper.searchTotalCount(dataStatus);
             if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<TechnologyEntity> entityList =  myMapper.searchList(startIndex, pageSize);
+            List<TechnologyEntity> entityList =  myMapper.searchList(startIndex, pageSize, dataStatus);
             for (TechnologyEntity entity : entityList) {
                 TechnologyVO model = new TechnologyVO();
                 ObjectConvertUtils.toBean(entity, model);
@@ -54,11 +57,11 @@ public class TechnologyServiceImpl implements TechnologyService {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<TechnologyVO> modelList = new ArrayList<>();
-            int totalCount = myMapper.searchTotalCount();
+            int totalCount = myMapper.searchTotalCount(DataStatusConstant.ACTIVE);
             if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<TechnologyEntity> entityList =  myMapper.searchList4Client(startIndex, pageSize);
+            List<TechnologyEntity> entityList =  myMapper.searchList4Client(startIndex, pageSize, DataStatusConstant.ACTIVE);
             for (TechnologyEntity entity : entityList) {
                 TechnologyVO model = new TechnologyVO();
                 ObjectConvertUtils.toBean(entity, model);

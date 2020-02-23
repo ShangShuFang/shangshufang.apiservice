@@ -4,7 +4,7 @@ import com.shangshufang.apiservice.dto.DirectionDTO;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
 
 public interface DirectionService extends BaseService<DirectionDTO> {
-    UnifiedResponse findList(int pageNumber, int pageSize);
+    UnifiedResponse findList(int pageNumber, int pageSize, String dataStatus);
 
     UnifiedResponse find(int directionID);
 

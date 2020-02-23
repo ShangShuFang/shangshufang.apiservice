@@ -7,9 +7,9 @@ import java.util.List;
 
 @Mapper
 public interface UniversityMapper extends BaseMapper<UniversityEntity> {
-    int searchTotalCount(int provinceCode, int cityCode);
+    int searchTotalCount(int provinceCode, int cityCode, String dataStatus);
 
-    List<UniversityEntity> searchList(int startIndex, int pageSize, int provinceCode, int cityCode);
+    List<UniversityEntity> searchList(int startIndex, int pageSize, int provinceCode, int cityCode, String dataStatus);
 
     UniversityEntity searchByID(int universityCode);
 

@@ -8,9 +8,9 @@ import java.util.List;
 
 @Mapper
 public interface SchoolMapper extends BaseMapper<SchoolEntity> {
-    int searchTotalCount(@Param("universityCode") int universityCode);
+    int searchTotalCount(int universityCode, String dataStatus);
 
-    List<SchoolEntity> searchList(int startIndex, int pageSize, int universityCode);
+    List<SchoolEntity> searchList(int startIndex, int pageSize, int universityCode, String dataStatus);
 
     SchoolEntity searchByID(int universityCode, int schoolID);
 

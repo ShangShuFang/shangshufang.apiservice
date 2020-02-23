@@ -1,6 +1,8 @@
 package com.shangshufang.apiservice.service.impl;
 
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
+import com.shangshufang.apiservice.constant.DataStatusConstant;
+import com.shangshufang.apiservice.constant.ParameterConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.UniversityDTO;
 import com.shangshufang.apiservice.entity.UniversityEntity;
@@ -24,15 +26,16 @@ public class UniversityServiceImpl implements UniversityService {
     private Logger logger = LogManager.getLogger(UniversityServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, int provinceCode, int cityCode) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, int provinceCode, int cityCode, String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<UniversityVO> modelList = new ArrayList<>();
-            int totalCount = myMapper.searchTotalCount(provinceCode, cityCode);
+            dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
+            int totalCount = myMapper.searchTotalCount(provinceCode, cityCode, dataStatus);
             if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<UniversityEntity> entityList =  myMapper.searchList(startIndex, pageSize, provinceCode, cityCode);
+            List<UniversityEntity> entityList =  myMapper.searchList(startIndex, pageSize, provinceCode, cityCode, dataStatus);
             for (UniversityEntity entity : entityList) {
                 UniversityVO model = new UniversityVO();
                 ObjectConvertUtils.toBean(entity, model);

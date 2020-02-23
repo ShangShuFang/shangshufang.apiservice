@@ -2,16 +2,17 @@ package com.shangshufang.apiservice.mapper;
 
 import com.shangshufang.apiservice.entity.TechnologyEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 @Mapper
 public interface TechnologyMapper extends BaseMapper<TechnologyEntity> {
-    int searchTotalCount();
+    int searchTotalCount(@Param("dataStatus") String dataStatus);
 
-    List<TechnologyEntity> searchList(int startIndex, int pageSize);
+    List<TechnologyEntity> searchList(int startIndex, int pageSize, String dataStatus);
 
-    List<TechnologyEntity> searchList4Client(int startIndex, int pageSize);
+    List<TechnologyEntity> searchList4Client(int startIndex, int pageSize, String dataStatus);
 
     TechnologyEntity searchByID(int technologyID);
 

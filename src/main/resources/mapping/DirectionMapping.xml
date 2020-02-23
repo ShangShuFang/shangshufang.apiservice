@@ -18,7 +18,11 @@
   <select id="searchTotalCount" resultType="java.lang.Integer">
     SELECT
     COUNT(1) AS TotalCount
-    FROM shangshufang_base.direction;
+    FROM shangshufang_base.direction
+    WHERE 1 = 1
+    <if test="dataStatus != null">
+      AND data_status = #{dataStatus,jdbcType=VARCHAR}
+    </if>;
   </select>
   <select id="searchList" resultMap="BaseResultMap">
     SELECT
@@ -52,6 +56,10 @@
       GROUP BY direction_id
     ) D
     ON A.direction_id = D.direction_id
+    WHERE 1 = 1
+    <if test="arg2 != null">
+      AND A.data_status = #{arg2,jdbcType=VARCHAR}
+    </if>
     ORDER BY A.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>

@@ -26,9 +26,11 @@
       SELECT
       DISTINCT technology_id
       FROM shangshufang_base.technology_knowledge
+      WHERE data_status = 'A'
     ) A
     INNER JOIN shangshufang_base.technology B
     ON A.technology_id = B.technology_id
+    AND B.data_status = 'A'
     ORDER BY A.technology_id;
   </select>
 
@@ -42,6 +44,7 @@
       DISTINCT learning_phase_id
       FROM shangshufang_base.technology_knowledge
       WHERE technology_id = #{arg0,jdbcType=INTEGER}
+      AND data_status = 'A'
     ) A
     INNER JOIN shangshufang_base.learning_phase B
     ON A.learning_phase_id = B.learning_phase_id
@@ -55,6 +58,7 @@
     FROM shangshufang_base.technology_knowledge
     WHERE technology_id = #{arg0,jdbcType=INTEGER}
     AND learning_phase_id = #{arg1,jdbcType=INTEGER}
+    AND data_status = 'A'
     ORDER BY knowledge_id;
   </select>
 </mapper>

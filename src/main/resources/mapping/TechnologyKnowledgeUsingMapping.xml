@@ -37,6 +37,7 @@
     INNER JOIN shangshufang_base.technology_knowledge E
     ON A.technology_id = E.technology_id
     AND A.knowledge_id = E.knowledge_id
+    AND E.data_status = 'A'
     WHERE A.company_id = #{arg0,jdbcType=INTEGER}
     ORDER BY A.technology_id, A.learning_phase_id, A.knowledge_id;
   </select>
@@ -107,10 +108,12 @@
     ON A.company_id = B.company_id
     INNER JOIN shangshufang_base.technology C
     ON A.technology_id = C.technology_id
+    AND C.data_status = 'A'
     INNER JOIN shangshufang_base.learning_phase D
     ON A.learning_phase_id = D.learning_phase_id
     INNER JOIN shangshufang_base.technology_knowledge E
     ON A.knowledge_id = E.knowledge_id
+    AND E.data_status = 'A'
   </select>
 
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.TechnologyKnowledgeUsingEntity" >

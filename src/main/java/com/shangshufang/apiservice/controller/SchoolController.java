@@ -12,11 +12,12 @@ public class SchoolController {
     @Autowired
     private SchoolServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/{pageNumber}/{pageSize}/{universityCode}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{pageNumber}/{pageSize}/{universityCode}/{dataStatus}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
-                                    @PathVariable("universityCode") int universityCode){
-        return serviceImpl.findList(pageNumber, pageSize, universityCode);
+                                    @PathVariable("universityCode") int universityCode,
+                                    @PathVariable("dataStatus") String dataStatus){
+        return serviceImpl.findList(pageNumber, pageSize, universityCode, dataStatus);
     }
 
     @RequestMapping(value = "/{universityCode}/{schoolID}", method = RequestMethod.GET)
