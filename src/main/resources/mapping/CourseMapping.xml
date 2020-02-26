@@ -378,32 +378,29 @@
     INNER JOIN
     (
       SELECT
-        C.course_id,
-        COUNT(DISTINCT D.exercises_id) AS course_knowledge_exercises_count
-      FROM
-      (
-        SELECT
-          A.course_id,
-          A.technology_id,
-          B.knowledge_id
-        FROM shangshufang_customer.course A
-        INNER JOIN shangshufang_customer.course_plan B
+        A.course_id,
+        COUNT(1) AS course_knowledge_exercises_count
+      FROM shangshufang_customer.course A
+      INNER JOIN shangshufang_customer.course_plan B
         ON A.university_code = B.university_code
         AND A.school_id = B.school_id
         AND A.course_id = B.course_id
         AND A.technology_id = B.technology_id
-        WHERE A.data_status != 'D'
+      INNER JOIN shangshufang_base.exercises_knowledge C
+        ON B.technology_id = C.technology_id
+        AND B.knowledge_id = C.knowledge_id
+        AND C.exercises_type = 'S'
+        AND C.data_status = 'A'
+      INNER JOIN shangshufang_base.exercises_document D
+        ON C.exercises_id = D.exercises_id
+      WHERE A.data_status != 'D'
         AND A.university_code = #{arg0,jdbcType=INTEGER}
         AND A.school_id = #{arg1,jdbcType=INTEGER}
         AND A.course_id = #{arg2,jdbcType=INTEGER}
         <if test="arg3 != null">
           AND A.data_status = #{arg3,jdbcType=VARCHAR}
         </if>
-      ) C
-      INNER JOIN shangshufang_base.exercises_knowledge D
-      ON C.technology_id = D.technology_id
-      AND C.knowledge_id = D.knowledge_id
-      GROUP BY C.course_id
+      GROUP BY A.course_id
     ) I
     ON A.course_id = I.course_id
     LEFT JOIN
@@ -415,16 +412,30 @@
     ON A.course_id = J.course_id
     LEFT JOIN
     (
-      SELECT course_id, COUNT(1) AS course_question_finish
-      FROM shangshufang_customer.course_question
-      WHERE data_status = 'F'
-      GROUP BY course_id
+      SELECT
+        A.course_id,
+        COUNT(DISTINCT A.question_id) AS course_question_finish
+      FROM shangshufang_customer.course_question A
+      INNER JOIN shangshufang_customer.course_question_leave_message B
+        ON A.question_id = B.question_id
+        AND B.data_status = 'A'
+      WHERE A.data_status = 'A'
+        AND A.course_university_code = #{arg0,jdbcType=INTEGER}
+        AND A.course_school_id = #{arg1,jdbcType=INTEGER}
+        AND A.course_id = #{arg2,jdbcType=INTEGER}
+      GROUP BY A.course_id
     ) K
     ON A.course_id = K.course_id
     LEFT JOIN
     (
-      SELECT course_id, COUNT(1) AS course_question
+      SELECT
+        course_id,
+        COUNT(1) AS course_question
       FROM shangshufang_customer.course_question
+      WHERE course_university_code = #{arg0,jdbcType=INTEGER}
+        AND course_school_id = #{arg1,jdbcType=INTEGER}
+        AND course_id = #{arg2,jdbcType=INTEGER}
+        AND data_status = 'A'
       GROUP BY course_id
     ) L
     ON A.course_id = L.course_id
