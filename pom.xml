@@ -9,8 +9,8 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>com.shangshufang</groupId>
-  <artifactId>apiservice</artifactId>
-  <version>0.0.6</version>
+  <artifactId>shangshufang.apiservice</artifactId>
+  <version>0.0.7</version>
   <name>shangshufang.apiservice</name>
   <description>shangshufang apiservice project for Spring Boot</description>
 

@@ -134,8 +134,11 @@
       SELECT
         technology_id,
         COUNT(1) AS using_company_count
-      FROM shangshufang_customer.technology_using
-      GROUP BY technology_id
+      FROM shangshufang_customer.technology_using A
+      INNER JOIN shangshufang_customer.company B
+      ON A.company_id = B.company_id
+      AND B.data_status = 'A'
+    GROUP BY technology_id
     ) E
     ON A.technology_id = E.technology_id
     INNER JOIN shangshufang_base.programming_language F
