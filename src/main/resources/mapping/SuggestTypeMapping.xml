@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.SuggestTypeMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.SuggestTypeEntity" >
+    <id column="suggest_type_id" property="suggestTypeID" jdbcType="INTEGER" />
+    <result column="suggest_type" property="suggestType" jdbcType="VARCHAR" />
+    <result column="portal" property="portal" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      suggest_type_id,
+      suggest_type,
+      portal
+    FROM shangshufang_base.suggest_type
+    WHERE data_status = 'A'
+    AND portal = #{portal,jdbcType=VARCHAR};
+  </select>
+</mapper>

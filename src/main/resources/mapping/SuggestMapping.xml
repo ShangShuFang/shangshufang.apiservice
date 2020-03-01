@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.SuggestMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.SuggestEntity" >
+    <id column="suggest_id" property="suggestID" jdbcType="INTEGER" />
+    <result column="suggest_type_id" property="suggestTypeID" jdbcType="INTEGER" />
+    <result column="suggest_type" property="suggestType" jdbcType="VARCHAR" />
+    <result column="suggest_content" property="suggestContent" jdbcType="VARCHAR" />
+    <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
+    <result column="portal" property="portal" jdbcType="VARCHAR" />
+    <result column="portal_text" property="portalText" jdbcType="VARCHAR" />
+    <result column="memo" property="memo" jdbcType="VARCHAR" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS TotalCount
+    FROM shangshufang_base.suggest
+    WHERE 1=1
+    <if test="arg0 != null">
+      AND portal = #{arg0,jdbcType=VARCHAR}
+    </if>
+    <if test="arg1 != null">
+      AND cellphone = #{arg1,jdbcType=VARCHAR}
+    </if>
+    <if test="arg2 != null">
+      AND data_status = #{arg2,jdbcType=VARCHAR}
+    </if>;
+  </select>
+
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.suggest_id,
+      A.suggest_type_id,
+      B.suggest_type,
+      A.portal,
+      CASE WHEN A.portal = 'T' THEN '教师端'
+          WHEN A.portal = 'S' THEN '学生端'
+          WHEN A.portal = 'C' THEN '企业端'
+          ELSE '未知数据状态'
+      END AS portal_text,
+      A.suggest_content,
+      A.cellphone,
+      A.data_status,
+      CASE WHEN A.data_status = 'P' THEN '待处理'
+          WHEN A.data_status = 'C' THEN '已处理'
+          ELSE '未知数据状态'
+      END AS data_status_text,
+      A.memo,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_base.suggest A
+    INNER JOIN shangshufang_base.suggest_type B
+    ON A.suggest_type_id = B.suggest_type_id
+    WHERE 1=1
+    <if test="arg2 != null">
+      AND A.portal = #{arg2,jdbcType=VARCHAR}
+    </if>
+    <if test="arg3 != null">
+      AND A.cellphone = #{arg3,jdbcType=VARCHAR}
+    </if>
+    <if test="arg4 != null">
+      AND A.data_status = #{arg4,jdbcType=VARCHAR}
+    </if>
+    ORDER BY A.create_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.SuggestEntity" >
+    INSERT INTO shangshufang_base.suggest (
+      suggest_type_id,
+      suggest_content,
+      cellphone,
+      portal,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{suggestTypeID, jdbcType=INTEGER},
+      #{suggestContent, jdbcType=VARCHAR},
+      #{cellphone, jdbcType=VARCHAR},
+      #{portal, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.SuggestEntity" >
+    UPDATE shangshufang_base.suggest SET
+      memo = #{memo,jdbcType=VARCHAR},
+      data_status = 'C'
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE suggest_id = #{suggestID,jdbcType=INTEGER};
+  </update>
+</mapper>
