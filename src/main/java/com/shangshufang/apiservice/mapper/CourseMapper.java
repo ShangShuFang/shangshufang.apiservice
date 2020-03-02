@@ -25,6 +25,24 @@ public interface CourseMapper extends BaseMapper<CourseEntity> {
                                   int pageSize,
                                   boolean isSelf);
 
+    int searchStartedTotalCount(int universityCode,
+                         int schoolID,
+                         int teacherID,
+                         int technologyID,
+                         String courseTimeBegin,
+                         String dataStatus,
+                         boolean isSelf);
+
+    List<CourseEntity> searchStartedList(int universityCode,
+                                  int schoolID,
+                                  int teacherID,
+                                  int technologyID,
+                                  String courseTimeBegin,
+                                  String dataStatus,
+                                  int startIndex,
+                                  int pageSize,
+                                  boolean isSelf);
+
     CourseEntity search(int universityCode,
                         int schoolID,
                         int courseID,

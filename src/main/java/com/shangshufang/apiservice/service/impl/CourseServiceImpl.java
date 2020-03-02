@@ -3,6 +3,7 @@ package com.shangshufang.apiservice.service.impl;
 import com.shangshufang.apiservice.common.DateUtils;
 import com.shangshufang.apiservice.common.JsonUtils;
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
+import com.shangshufang.apiservice.constant.CourseSearchTypeConstant;
 import com.shangshufang.apiservice.constant.CourseStatus;
 import com.shangshufang.apiservice.constant.ParameterConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
@@ -43,37 +44,67 @@ public class CourseServiceImpl implements CourseService {
                                     int technologyID,
                                     String courseTimeBegin,
                                     String dataStatus,
-                                    boolean isSelf) {
+                                    boolean isSelf,
+                                    String searchType) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
+            int totalCount = 0;
+            List<CourseEntity> entityList = null;
+
             List<CourseVO> modelList = new ArrayList<>();
 
             courseTimeBegin = courseTimeBegin.equals(ParameterConstant.NO_PARAMETER) ? null : courseTimeBegin;
             dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
 
-            int totalCount = courseMapper.searchTotalCount(
-                    universityCode,
-                    schoolID,
-                    teacherID,
-                    technologyID,
-                    courseTimeBegin,
-                    dataStatus,
-                    isSelf);
+            if(searchType.equals(CourseSearchTypeConstant.STARTED)){
+                totalCount = courseMapper.searchStartedTotalCount(
+                        universityCode,
+                        schoolID,
+                        teacherID,
+                        technologyID,
+                        courseTimeBegin,
+                        dataStatus,
+                        isSelf);
+            }else{
+                totalCount = courseMapper.searchTotalCount(
+                        universityCode,
+                        schoolID,
+                        teacherID,
+                        technologyID,
+                        courseTimeBegin,
+                        dataStatus,
+                        isSelf);
+            }
+
             if(totalCount == 0) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
 
             //取得课程基本信息
-            List<CourseEntity> entityList =  courseMapper.searchList(
-                    universityCode,
-                    schoolID,
-                    teacherID,
-                    technologyID,
-                    courseTimeBegin,
-                    dataStatus,
-                    startIndex,
-                    pageSize,
-                    isSelf);
+            if(searchType.equals(CourseSearchTypeConstant.STARTED)) {
+                entityList =  courseMapper.searchStartedList(
+                        universityCode,
+                        schoolID,
+                        teacherID,
+                        technologyID,
+                        courseTimeBegin,
+                        dataStatus,
+                        startIndex,
+                        pageSize,
+                        isSelf);
+            }else {
+                entityList =  courseMapper.searchList(
+                        universityCode,
+                        schoolID,
+                        teacherID,
+                        technologyID,
+                        courseTimeBegin,
+                        dataStatus,
+                        startIndex,
+                        pageSize,
+                        isSelf);
+            }
+
 
             for (CourseEntity entity : entityList) {
                 //取得课程的课表

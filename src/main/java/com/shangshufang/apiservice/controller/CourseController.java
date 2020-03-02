@@ -12,7 +12,7 @@ public class CourseController {
     @Autowired
     private CourseServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{teacherID}/{technologyID}/{courseTimeBegin}/{dataStatus}/{isSelf}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{teacherID}/{technologyID}/{courseTimeBegin}/{dataStatus}/{isSelf}/{searchType}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
                                     @PathVariable("universityCode") int universityCode,
@@ -21,8 +21,9 @@ public class CourseController {
                                     @PathVariable("technologyID") int technologyID,
                                     @PathVariable("courseTimeBegin") String courseTimeBegin,
                                     @PathVariable("dataStatus") String dataStatus,
-                                    @PathVariable("isSelf") boolean isSelf) {
-        return serviceImpl.findList(pageNumber, pageSize, universityCode, schoolID, teacherID, technologyID, courseTimeBegin, dataStatus, isSelf);
+                                    @PathVariable("isSelf") boolean isSelf,
+                                    @PathVariable("searchType") String searchType) {
+        return serviceImpl.findList(pageNumber, pageSize, universityCode, schoolID, teacherID, technologyID, courseTimeBegin, dataStatus, isSelf, searchType);
     }
 
     @RequestMapping(value = "/{universityCode}/{schoolID}/{courseID}/{dataStatus}", method = RequestMethod.GET)

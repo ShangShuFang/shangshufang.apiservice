@@ -12,7 +12,8 @@ public interface CourseService extends BaseService<CourseDTO> {
                              int technologyID,
                              String courseTimeBegin,
                              String dataStatus,
-                             boolean isSelf);
+                             boolean isSelf,
+                             String searchType);
 
     UnifiedResponse find(int universityCode,
                          int schoolID,
