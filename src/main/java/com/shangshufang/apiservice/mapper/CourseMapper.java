@@ -54,9 +54,5 @@ public interface CourseMapper extends BaseMapper<CourseEntity> {
                              String courseTimeBegin,
                              String courseTimeEnd);
 
-    int updateCourseBaseInfo(CourseEntity entity);
-
-    int updateCourseSchedule(CourseEntity entity);
-
-    int updateCoursePlan(CourseEntity entity);
+    int updateCourseToStart();
 }

@@ -72,4 +72,10 @@ public class CourseController {
     public UnifiedResponse changeStatus(@RequestBody CourseDTO dto){
         return serviceImpl.changeDataStatus(dto);
     }
+
+    @RequestMapping(value="/start", method = RequestMethod.PUT)
+    public UnifiedResponse startCourse(){
+        return serviceImpl.startCourse();
+    }
+
 }

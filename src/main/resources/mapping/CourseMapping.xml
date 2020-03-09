@@ -767,4 +767,13 @@
     AND teacher_id = #{teacherID,jdbcType=INTEGER}
     AND course_id = #{courseID,jdbcType=INTEGER};
   </update>
+
+  <update id="updateCourseToStart">
+    UPDATE shangshufang_customer.course SET
+      data_status = 'A',
+      update_user = 0
+    WHERE DATE_FORMAT(course_time_begin, '%Y-%m-%d') &lt;= date_format(now(),'%Y-%m-%d')
+    AND data_status = 'P';
+  </update>
+
 </mapper>

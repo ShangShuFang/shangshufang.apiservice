@@ -31,4 +31,6 @@ public interface CourseService extends BaseService<CourseDTO> {
     UnifiedResponse changeCourseSchedule(CourseDTO dto);
 
     UnifiedResponse changeCoursePlan(CourseDTO dto);
+
+    UnifiedResponse startCourse();
 }

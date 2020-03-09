@@ -31,7 +31,8 @@ public class UnifiedResponseManager {
     }
 
     public static <T> UnifiedResponse buildSubmitSuccessResponse(int affectCount){
-        return buildUnifiedResponse(ResponseCodeConstant.SUCCESS,
+        return buildUnifiedResponse(
+                ResponseCodeConstant.SUCCESS,
                 ResponseMessageConstant.SUCCESS,
                 ResponseResultConstant.SUCCESS,
                 ResponseTypeConstant.SUCCESS,
@@ -64,7 +65,8 @@ public class UnifiedResponseManager {
     }
 
     public static UnifiedResponse buildExceptionResponse(String exMessage){
-        return buildUnifiedResponse(ResponseCodeConstant.EXCEPTION,
+        return buildUnifiedResponse(
+                ResponseCodeConstant.EXCEPTION,
                 exMessage,
                 ResponseResultConstant.EXCEPTION,
                 ResponseTypeConstant.EXCEPTION,
@@ -74,7 +76,14 @@ public class UnifiedResponseManager {
                 ResponseDataConstant.NO_DATA);
     }
 
-    private static <T> UnifiedResponse buildUnifiedResponse(String responseCode, String responseMessage, Boolean responseResult, String responseType, String responseOption, int affectCount, int totalCount, T data){
+    private static <T> UnifiedResponse buildUnifiedResponse(String responseCode,
+                                                            String responseMessage,
+                                                            Boolean responseResult,
+                                                            String responseType,
+                                                            String responseOption,
+                                                            int affectCount,
+                                                            int totalCount,
+                                                            T data){
         UnifiedResponse<T> unifiedResponse = new UnifiedResponse<>();
         unifiedResponse.setResponseCode(responseCode);
         unifiedResponse.setResponseMessage(responseMessage);
@@ -82,6 +91,7 @@ public class UnifiedResponseManager {
         unifiedResponse.setResponseType(responseType);
         unifiedResponse.setResponseOption(responseOption);
         unifiedResponse.setTotalCount(totalCount);
+        unifiedResponse.setAffectCount(affectCount);
         unifiedResponse.setResponseData(data);
         return unifiedResponse;
     }

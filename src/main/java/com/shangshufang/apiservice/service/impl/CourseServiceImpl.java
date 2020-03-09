@@ -243,6 +243,17 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public UnifiedResponse startCourse() {
+        try {
+            int affectRow = courseMapper.updateCourseToStart();
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse add(CourseDTO dto) {
         try {
             int affectRow = 0;
