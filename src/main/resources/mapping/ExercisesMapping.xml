@@ -44,13 +44,13 @@
     FROM
     (
       SELECT exercises_id
-      FROM shangshufang_base.exercises
+      FROM shangshufang_base.exercises1
       WHERE exercises_type = 'S'
     ) A
     INNER JOIN
     (
       SELECT DISTINCT exercises_id
-      FROM shangshufang_base.exercises_knowledge
+      FROM shangshufang_base.exercises_knowledge1
       WHERE exercises_type = 'S'
       <if test="arg0 != 0">
         AND technology_id = #{arg0,jdbcType=INTEGER}
@@ -95,7 +95,7 @@
         create_time,
         update_user,
         update_time
-      FROM shangshufang_base.exercises
+      FROM shangshufang_base.exercises1
       WHERE exercises_type = 'S'
     ) A
     INNER JOIN
@@ -108,7 +108,7 @@
         N3.learning_phase_name,
         N1.knowledge_id,
         N4.knowledge_name
-      FROM shangshufang_base.exercises_knowledge N1
+      FROM shangshufang_base.exercises_knowledge1 N1
       INNER JOIN shangshufang_base.technology N2
       ON N1.technology_id = N2.technology_id
       INNER JOIN shangshufang_base.learning_phase N3
@@ -159,12 +159,12 @@
       AND A.learning_phase_id = D.learning_phase_id
       AND A.knowledge_id = D.knowledge_id
       AND D.data_status = 'A'
-    LEFT JOIN shangshufang_base.exercises_knowledge E
+    LEFT JOIN shangshufang_base.exercises_knowledge1 E
       ON A.technology_id = E.technology_id
       AND A.learning_phase_id = E.learning_phase_id
       AND A.knowledge_id = E.knowledge_id
       AND E.exercises_type = 'S'
-    LEFT JOIN shangshufang_base.exercises F
+    LEFT JOIN shangshufang_base.exercises1 F
       ON E.exercises_id = F.exercises_id
       AND F.data_status = 'A'
     WHERE A.university_code = #{arg0,jdbcType=INTEGER}
@@ -197,12 +197,12 @@
       AND A.learning_phase_id = D.learning_phase_id
       AND A.knowledge_id = D.knowledge_id
       AND D.data_status = 'A'
-    LEFT JOIN shangshufang_base.exercises_knowledge E
+    LEFT JOIN shangshufang_base.exercises_knowledge1 E
       ON A.technology_id = E.technology_id
       AND A.learning_phase_id = E.learning_phase_id
       AND A.knowledge_id = E.knowledge_id
       AND E.exercises_type = 'S'
-    LEFT JOIN shangshufang_base.exercises F
+    LEFT JOIN shangshufang_base.exercises1 F
       ON E.exercises_id = F.exercises_id
       AND F.data_status = 'A'
     WHERE A.university_code = #{arg0,jdbcType=INTEGER}
@@ -217,17 +217,17 @@
       exercises_name,
       exercises_code,
       exercises_type
-    FROM shangshufang_base.exercises
+    FROM shangshufang_base.exercises1
     WHERE exercises_id = #{arg0,jdbcType=INTEGER};
   </select>
   <select id="checkExercisesCodeExist" resultType="java.lang.Integer">
     SELECT
       COUNT(1) AS TotalCount
-    FROM shangshufang_base.exercises
+    FROM shangshufang_base.exercises1
     WHERE exercises_code = #{arg0,jdbcType=VARCHAR};
   </select>
   <insert id="insert" useGeneratedKeys="true" keyProperty="exercisesID" parameterType="com.shangshufang.apiservice.entity.ExercisesSingleEntity" >
-    INSERT INTO shangshufang_base.exercises (
+    INSERT INTO shangshufang_base.exercises1 (
       exercises_name,
       exercises_code,
       exercises_type,
@@ -243,19 +243,19 @@
     )
   </insert>
   <update id="update" parameterType="com.shangshufang.apiservice.entity.ExercisesSingleEntity" >
-    UPDATE shangshufang_base.exercises SET
+    UPDATE shangshufang_base.exercises1 SET
       exercises_name = #{exercisesName,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE exercises_id = #{exercisesID,jdbcType=VARCHAR};
   </update>
   <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.ExercisesSingleEntity" >
-    UPDATE shangshufang_base.exercises SET
+    UPDATE shangshufang_base.exercises1 SET
       data_status = #{dataStatus,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=INTEGER}
     WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
   </update>
   <delete id="delete" parameterType="java.lang.Integer" >
-    DELETE FROM shangshufang_base.exercises
+    DELETE FROM shangshufang_base.exercises1
     WHERE exercises_id = #{arg0,jdbcType=INTEGER};
   </delete>
 </mapper>

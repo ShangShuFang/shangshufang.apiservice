@@ -24,6 +24,9 @@ import java.util.Random;
 public class UniversityStudentExercisesServiceImpl implements UniversityStudentExercisesService {
     @Autowired
     private ExercisesMapper exercisesMapper;
+
+    @Autowired
+    private TechnologyKnowledgeExercisesMapper knowledgeExercisesMapper;
     @Autowired
     private ExercisesDocumentMapper exercisesDocumentMapper;
     @Autowired
@@ -63,41 +66,36 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
     @Override
     public UnifiedResponse assign(UniversityStudentExercisesDTO dto) {
         try{
+            int affectRow = 0;
             //取得当前课程所有报名的学生列表
             List<CourseSignUpEntity> courseSignUpEntityList = courseSignUpMapper.searchAllCourseSignUpList(
                     dto.getCourseUniversityCode(),
                     dto.getCourseSchoolID(),
                     dto.getCourseID());
-            if(courseSignUpEntityList == null){
+            if(courseSignUpEntityList.isEmpty()){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
 
-            //取得当前课程、当前节次、每个知识点的习题列表
-            List<CourseExercisesEntity> courseClassExercisesEntityList =  exercisesMapper.searchClassExercisesList(
-                    dto.getCourseUniversityCode(),
-                    dto.getCourseSchoolID(),
-                    dto.getCourseID(),
-                    dto.getCourseClass());
-            if(courseClassExercisesEntityList == null){
+            //取得当前节次的所有知识点
+            List<CoursePlanEntity> courseKnowledgeList = coursePlanMapper.searchKnowledgeList4CourseClass(dto.getCourseUniversityCode(), dto.getCourseSchoolID(), dto.getCourseID(), dto.getCourseClass());
+            if(courseKnowledgeList.isEmpty()) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
 
-            //循环习题列表，根据习题编号查询对应的练习题列表
-            int affectRow = 0;
-            for (CourseExercisesEntity courseExercisesEntity : courseClassExercisesEntityList) {
-                if(courseExercisesEntity.getExercisesID() == 0){
-                    continue;
-                }
+            //循环已报名的学生列表，给每个学生添加分配的练习题
+            for (CourseSignUpEntity courseSignUpEntity : courseSignUpEntityList) {
+                //循环当节课每个知识点
+                for (CoursePlanEntity coursePlanEntity : courseKnowledgeList) {
+                    //取得当前课程当前节次每个知识点的习题列表
+                    List<TechnologyKnowledgeExercisesEntity> knowledgeExercisesEntityList = knowledgeExercisesMapper.searchList4CourseKnowledge(dto.getCourseUniversityCode(), dto.getCourseSchoolID(), dto.getCourseID(), dto.getCourseClass(), coursePlanEntity.getKnowledgeID());
+                    if(knowledgeExercisesEntityList.isEmpty()) {
+                        return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+                    }
 
-                //取得当前课程练习编号对应的练习题列表
-                List<ExercisesDocumentEntity> taskEntityList = exercisesDocumentMapper.searchList(courseExercisesEntity.getExercisesID());
-
-                //循环已报名的学生列表，给每个学生添加分配的练习题
-                for (CourseSignUpEntity courseSignUpEntity : courseSignUpEntityList) {
                     //随机取得指定数量的练习题
-                    List<ExercisesDocumentEntity> assignTaskList = getRandomAssignTaskList(dto.getAssignCount(), taskEntityList);
+                    List<TechnologyKnowledgeExercisesEntity> assignTaskList = getRandomAssignTaskList(dto.getAssignCount(), knowledgeExercisesEntityList);
 
-                    for (ExercisesDocumentEntity documentEntity : assignTaskList) {
+                    for (TechnologyKnowledgeExercisesEntity assignEntity : assignTaskList) {
                         UniversityStudentExercisesEntity entity = new UniversityStudentExercisesEntity();
                         entity.setStudentUniversityCode(courseSignUpEntity.getStudentUniversityCode());
                         entity.setStudentSchoolID(courseSignUpEntity.getStudentSchoolID());
@@ -106,11 +104,10 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                         entity.setCourseSchoolID(dto.getCourseSchoolID());
                         entity.setCourseID(dto.getCourseID());
                         entity.setCourseClass(dto.getCourseClass());
-                        entity.setExercisesID(courseExercisesEntity.getExercisesID());
-                        entity.setTechnologyID(courseExercisesEntity.getTechnologyID());
-                        entity.setLearningPhaseID(courseExercisesEntity.getLearningPhaseID());
-                        entity.setKnowledgeID(courseExercisesEntity.getKnowledgeID());
-                        entity.setExercisesDocumentID(documentEntity.getExercisesDocumentID());
+                        entity.setTechnologyID(assignEntity.getTechnologyID());
+                        entity.setLearningPhaseID(assignEntity.getLearningPhaseID());
+                        entity.setKnowledgeID(assignEntity.getKnowledgeID());
+                        entity.setExercisesDocumentID(assignEntity.getExercisesID());
                         entity.setCreateUser(dto.getLoginUser());
                         entity.setUpdateUser(dto.getLoginUser());
                         affectRow += universityStudentExercisesMapper.insert(entity);
@@ -150,8 +147,8 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
         return null;
     }
 
-    private List<ExercisesDocumentEntity> getRandomAssignTaskList(int assignCount, List<ExercisesDocumentEntity> taskEntityList) {
-        List<ExercisesDocumentEntity> assignTaskList = new ArrayList<>();
+    private List<TechnologyKnowledgeExercisesEntity> getRandomAssignTaskList(int assignCount, List<TechnologyKnowledgeExercisesEntity> taskEntityList) {
+        List<TechnologyKnowledgeExercisesEntity> assignTaskList = new ArrayList<>();
         if(assignCount >= taskEntityList.size()){
             assignTaskList.addAll(taskEntityList);
         }else{

@@ -20,7 +20,8 @@ public class UniversityStudentExercisesReviewEntity extends BaseEntity {
     private String compilationResultText;
     private String runResult;
     private String runResultText;
-    private int codeStandardsScore;
+    private String codeStandardResult;
+    private String codeStandardResultText;
     private String reviewResult;
     private String reviewResultText;
     private String reviewMemo;

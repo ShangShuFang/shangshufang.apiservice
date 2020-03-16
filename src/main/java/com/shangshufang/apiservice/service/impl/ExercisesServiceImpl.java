@@ -62,32 +62,33 @@ public class ExercisesServiceImpl implements ExercisesService {
 
     @Override
     public UnifiedResponse findCourseExercisesList(int universityCode, int schoolID, int courseID) {
-        try{
-            List<CourseExercisesVO> modelList = new ArrayList<>();
-            List<CourseExercisesEntity> entityList =  myMapper.searchCourseExercisesList(universityCode, schoolID, courseID);
-            if(entityList == null){
-                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
-            }
-            for (CourseExercisesEntity entity : entityList) {
-                List<ExercisesDocumentVO> taskModelList = new ArrayList<>();
-                List<ExercisesDocumentEntity> taskEntityList = exercisesDocumentMapper.searchList(entity.getExercisesID());
-                if(!taskEntityList.isEmpty()){
-                    for (ExercisesDocumentEntity exercisesDocumentEntity : taskEntityList) {
-                        ExercisesDocumentVO taskModel = new ExercisesDocumentVO();
-                        ObjectConvertUtils.toBean(exercisesDocumentEntity, taskModel);
-                        taskModelList.add(taskModel);
-                    }
-                }
-                CourseExercisesVO model = new CourseExercisesVO();
-                ObjectConvertUtils.toBean(entity, model);
-                model.setDocumentList(taskModelList);
-                modelList.add(model);
-            }
-            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
-        }catch (Exception ex){
-            logger.error(ex.toString());
-            return UnifiedResponseManager.buildExceptionResponse();
-        }
+        return null;
+//        try{
+//            List<CourseExercisesVO> modelList = new ArrayList<>();
+//            List<CourseExercisesEntity> entityList =  myMapper.searchCourseExercisesList(universityCode, schoolID, courseID);
+//            if(entityList == null){
+//                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+//            }
+//            for (CourseExercisesEntity entity : entityList) {
+//                List<ExercisesDocumentVO> taskModelList = new ArrayList<>();
+//                List<ExercisesDocumentEntity> taskEntityList = exercisesDocumentMapper.searchList(entity.getExercisesID());
+//                if(!taskEntityList.isEmpty()){
+//                    for (ExercisesDocumentEntity exercisesDocumentEntity : taskEntityList) {
+//                        ExercisesDocumentVO taskModel = new ExercisesDocumentVO();
+//                        ObjectConvertUtils.toBean(exercisesDocumentEntity, taskModel);
+//                        taskModelList.add(taskModel);
+//                    }
+//                }
+//                CourseExercisesVO model = new CourseExercisesVO();
+//                ObjectConvertUtils.toBean(entity, model);
+//                model.setDocumentList(taskModelList);
+//                modelList.add(model);
+//            }
+//            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+//        }catch (Exception ex){
+//            logger.error(ex.toString());
+//            return UnifiedResponseManager.buildExceptionResponse();
+//        }
     }
 
     @Override

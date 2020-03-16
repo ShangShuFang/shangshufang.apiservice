@@ -24,8 +24,6 @@ public class UniversityStudentExercisesVO extends BaseVO {
     private String courseName;
     private int courseClass;
 
-    private int exercisesID;
-    private String exercisesName;
     private int technologyID;
     private String technologyName;
     private int learningPhaseID;

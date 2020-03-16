@@ -9,6 +9,10 @@ import java.util.List;
 public interface CoursePlanMapper extends BaseMapper<CoursePlanEntity> {
     List<CoursePlanEntity> searchList(int universityCode, int schoolID, int courseID);
 
+    List<CoursePlanEntity> searchCourseClassList(int universityCode, int schoolID, int courseID);
+
+    List<CoursePlanEntity> searchKnowledgeList4CourseClass(int universityCode, int schoolID, int courseID, int courseClass);
+
     int delete(int universityCode, int schoolID, int courseID);
 
     int delete4Class(int universityCode, int schoolID, int courseID);

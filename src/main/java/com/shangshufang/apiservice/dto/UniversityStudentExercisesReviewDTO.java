@@ -18,7 +18,8 @@ public class UniversityStudentExercisesReviewDTO extends BaseDTO {
     private String reviewerType;
     private String compilationResult;
     private String runResult;
-    private int codeStandardsScore;
+    private String codeStandardResult;
+    private String codeStandardErrorListJson;
     private String reviewResult;
     private String reviewMemo;
 }

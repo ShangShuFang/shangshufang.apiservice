@@ -186,6 +186,23 @@
     ON A.technology_id = D.technology_id
     WHERE A.technology_id = #{arg0,jdbcType=INTEGER};
   </select>
+
+  <select id="searchStudentLearning" resultMap="BaseResultMap">
+    SELECT A.technology_id,
+        B.technology_name,
+        B.technology_thumbnail
+    FROM
+    (
+        SELECT DISTINCT technology_id
+        FROM shangshufang_customer.university_student_exercises
+        WHERE student_university_code = #{arg0,jdbcType=INTEGER}
+          AND student_school_id = #{arg1,jdbcType=INTEGER}
+          AND student_id = #{arg2,jdbcType=INTEGER}
+    ) A
+    INNER JOIN shangshufang_base.technology B
+    ON A.technology_id = B.technology_id;
+  </select>
+
   <select id="checkTechnologyNameExist" resultType="java.lang.Integer">
     SELECT
       COUNT(1) AS TotalCount

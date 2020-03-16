@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.TechnologyKnowledgeExercisesMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.TechnologyKnowledgeExercisesEntity" >
+    <id column="exercises_id" property="exercisesID" jdbcType="INTEGER" />
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="learning_phase_id" property="learningPhaseID" jdbcType="INTEGER" />
+    <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER" />
+    <result column="document_url" property="documentUrl" jdbcType="VARCHAR" />
+    <result column="answer_url" property="answerUrl" jdbcType="VARCHAR" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS total_count
+    FROM shangshufang_base.technology_knowledge_exercises
+    WHERE technology_id = #{arg0,jdbcType=INTEGER}
+    AND learning_phase_id = #{arg1,jdbcType=VARCHAR}
+    AND knowledge_id = #{arg2,jdbcType=VARCHAR};
+  </select>
+
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.exercises_id,
+      A.technology_id,
+      A.learning_phase_id,
+      A.knowledge_id,
+      A.document_url,
+      A.answer_url,
+      A.data_status,
+      CASE WHEN A.data_status = 'P' THEN '待审阅'
+          WHEN A.data_status = 'A' THEN '正常'
+          WHEN A.data_status = 'D' THEN '不可用'
+      ELSE '未知数据状态'
+      END AS data_status_text,
+      B.admin_name AS create_user,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      C.admin_name AS update_user,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_base.technology_knowledge_exercises A
+    INNER JOIN shangshufang_base.system_admin B
+    ON A.create_user = B.admin_id
+    INNER JOIN shangshufang_base.system_admin C
+    ON A.update_user = C.admin_id
+    WHERE technology_id = #{arg2,jdbcType=INTEGER}
+    AND learning_phase_id = #{arg3,jdbcType=VARCHAR}
+    AND knowledge_id = #{arg4,jdbcType=VARCHAR}
+    ORDER BY A.document_url
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+
+  <select id="searchList4Knowledge" resultMap="BaseResultMap">
+    SELECT A.exercises_id,
+           A.technology_id,
+           A.learning_phase_id,
+           A.knowledge_id,
+           B.knowledge_name,
+           A.document_url,
+           A.answer_url
+    FROM shangshufang_base.technology_knowledge_exercises A
+    INNER JOIN shangshufang_base.technology_knowledge B
+    ON A.technology_id = B.technology_id
+    AND A.learning_phase_id = B.learning_phase_id
+    AND A.knowledge_id = B.knowledge_id
+    WHERE A.technology_id = #{arg0,jdbcType=INTEGER}
+    AND A.learning_phase_id = #{arg1,jdbcType=INTEGER}
+    AND A.knowledge_id = #{arg2,jdbcType=INTEGER}
+    AND A.data_status = 'A'
+    ORDER BY A.exercises_id;
+  </select>
+
+  <select id="searchList4CourseKnowledge" resultMap="BaseResultMap">
+    SELECT B.exercises_id,
+           B.technology_id,
+           B.learning_phase_id,
+           B.knowledge_id,
+           B.document_url,
+           B.answer_url
+    FROM
+    (
+        SELECT technology_id,
+               learning_phase_id,
+               knowledge_id
+        FROM shangshufang_customer.course_plan
+        WHERE university_code = #{arg0,jdbcType=INTEGER}
+          AND school_id = #{arg1,jdbcType=INTEGER}
+          AND course_id = #{arg2,jdbcType=INTEGER}
+          AND course_class = #{arg3,jdbcType=INTEGER}
+    ) A
+    INNER JOIN shangshufang_base.technology_knowledge_exercises B
+    ON A.technology_id = B.technology_id
+    AND A.learning_phase_id = B.learning_phase_id
+    AND A.knowledge_id = B.knowledge_id
+    AND B.data_status = 'A'
+    WHERE B.knowledge_id = #{arg4,jdbcType=INTEGER}
+    ORDER BY B.exercises_id;
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.TechnologyKnowledgeExercisesEntity" >
+    INSERT INTO shangshufang_base.technology_knowledge_exercises (
+      technology_id,
+      learning_phase_id,
+      knowledge_id,
+      document_url,
+      answer_url,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{technologyID, jdbcType=INTEGER},
+      #{learningPhaseID, jdbcType=INTEGER},
+      #{knowledgeID, jdbcType=INTEGER},
+      #{documentUrl, jdbcType=VARCHAR},
+      #{answerUrl, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+  <delete id="delete" parameterType="java.lang.Integer" >
+    DELETE FROM shangshufang_base.technology_knowledge_exercises
+    WHERE technology_id = #{arg0,jdbcType=INTEGER}
+    AND learning_phase_id = #{arg1,jdbcType=VARCHAR}
+    AND knowledge_id = #{arg2,jdbcType=VARCHAR};
+  </delete>
+</mapper>

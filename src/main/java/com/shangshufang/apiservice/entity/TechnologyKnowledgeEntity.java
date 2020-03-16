@@ -11,4 +11,5 @@ public class TechnologyKnowledgeEntity extends BaseEntity {
     private String learningPhaseName;
     private String knowledgeName;
     private int usingCompanyCount;
+    private int knowledgeExercisesCount;
 }

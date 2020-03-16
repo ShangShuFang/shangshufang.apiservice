@@ -10,6 +10,8 @@ public interface TechnologyService extends BaseService<TechnologyDTO> {
 
     UnifiedResponse find(int technologyID);
 
+    UnifiedResponse findStudentLearning(int studentUniversityCode, int studentSchoolID, int studentID);
+
     UnifiedResponse checkTechnologyNameExist(String technologyName);
 
     UnifiedResponse changeThumbnail(TechnologyDTO dto);

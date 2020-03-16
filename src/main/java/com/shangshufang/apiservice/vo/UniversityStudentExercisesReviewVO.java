@@ -2,6 +2,8 @@ package com.shangshufang.apiservice.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class UniversityStudentExercisesReviewVO extends BaseVO {
     private int reviewID;
@@ -20,7 +22,9 @@ public class UniversityStudentExercisesReviewVO extends BaseVO {
     private String compilationResultText;
     private String runResult;
     private String runResultText;
-    private int codeStandardsScore;
+    private String codeStandardResult;
+    private String codeStandardResultText;
+    private List<UniversityStudentExercisesReviewCodeStandardVO> codeStandardErrorList;
     private String reviewResult;
     private String reviewResultText;
     private String reviewMemo;

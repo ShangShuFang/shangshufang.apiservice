@@ -24,9 +24,6 @@ public class UniversityStudentExercisesEntity extends BaseEntity {
     private String courseName;
     private int courseClass;
 
-    private int exercisesID;
-    private String exercisesName;
-    private String exercisesCode;
     private int technologyID;
     private String technologyName;
     private int learningPhaseID;

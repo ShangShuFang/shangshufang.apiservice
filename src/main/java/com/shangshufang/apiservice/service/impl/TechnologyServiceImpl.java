@@ -91,6 +91,26 @@ public class TechnologyServiceImpl implements TechnologyService {
     }
 
     @Override
+    public UnifiedResponse findStudentLearning(int studentUniversityCode, int studentSchoolID, int studentID) {
+        try {
+            List<TechnologyVO> modelList = new ArrayList<>();
+            List<TechnologyEntity> entityList =  myMapper.searchStudentLearning(studentUniversityCode, studentSchoolID, studentID);
+            if(entityList.isEmpty()){
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            for (TechnologyEntity entity : entityList) {
+                TechnologyVO model = new TechnologyVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse checkTechnologyNameExist(String technologyName) {
         try {
             int count =  myMapper.checkTechnologyNameExist(technologyName);

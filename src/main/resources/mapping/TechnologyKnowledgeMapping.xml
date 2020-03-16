@@ -9,6 +9,7 @@
     <result column="learning_phase_name" property="learningPhaseName" jdbcType="VARCHAR" />
     <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR" />
     <result column="using_company_count" property="usingCompanyCount" jdbcType="INTEGER" />
+    <result column="knowledge_exercises_count" property="knowledgeExercisesCount" jdbcType="INTEGER" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -46,9 +47,10 @@
       ELSE '未知数据状态'
       END AS data_status_text,
       IFNULL(D.using_company_count, 0) AS using_company_count,
-      E.admin_name AS create_user,
+      IFNULL(E.knowledge_exercises_count, 0) AS knowledge_exercises_count,
+      F.admin_name AS create_user,
       DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-      F.admin_name AS update_user,
+      G.admin_name AS update_user,
       DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
     FROM shangshufang_base.technology_knowledge A
     INNER JOIN shangshufang_base.technology B
@@ -75,10 +77,29 @@
     ON A.technology_id = D.technology_id
     AND A.learning_phase_id = D.learning_phase_id
     AND A.knowledge_id = D.knowledge_id
-    INNER JOIN shangshufang_base.system_admin E
-    ON A.create_user = E.admin_id
+    LEFT JOIN
+    (
+      SELECT technology_id,
+      learning_phase_id,
+      knowledge_id,
+      COUNT(1) AS knowledge_exercises_count
+      FROM shangshufang_base.technology_knowledge_exercises
+      WHERE 1 = 1
+      <if test="arg2 != 0">
+        AND technology_id = #{arg2,jdbcType=INTEGER}
+      </if>
+      <if test="arg3 != 0">
+        AND learning_phase_id = #{arg3,jdbcType=INTEGER}
+      </if>
+      GROUP BY technology_id, learning_phase_id, knowledge_id
+    ) E
+    ON A.technology_id = E.technology_id
+    AND A.learning_phase_id = E.learning_phase_id
+    AND A.knowledge_id = E.knowledge_id
     INNER JOIN shangshufang_base.system_admin F
-    ON A.update_user = F.admin_id
+    ON A.create_user = F.admin_id
+    INNER JOIN shangshufang_base.system_admin G
+    ON A.update_user = G.admin_id
     WHERE 1=1
     <if test="arg2 != 0">
       AND A.technology_id = #{arg2,jdbcType=INTEGER}

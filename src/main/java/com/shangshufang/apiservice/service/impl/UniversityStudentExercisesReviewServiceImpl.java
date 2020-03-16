@@ -1,17 +1,22 @@
 package com.shangshufang.apiservice.service.impl;
 
+import com.shangshufang.apiservice.common.JsonUtils;
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
 import com.shangshufang.apiservice.constant.ExercisesReviewResultConstant;
 import com.shangshufang.apiservice.constant.ExercisesStatusConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.UniversityStudentExercisesReviewDTO;
+import com.shangshufang.apiservice.entity.CourseScheduleEntity;
 import com.shangshufang.apiservice.entity.UniversityStudentExercisesEntity;
+import com.shangshufang.apiservice.entity.UniversityStudentExercisesReviewCodeStandardEntity;
 import com.shangshufang.apiservice.entity.UniversityStudentExercisesReviewEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
 import com.shangshufang.apiservice.mapper.UniversityStudentExercisesMapper;
+import com.shangshufang.apiservice.mapper.UniversityStudentExercisesReviewCodeStandardMapper;
 import com.shangshufang.apiservice.mapper.UniversityStudentExercisesReviewMapper;
 import com.shangshufang.apiservice.service.UniversityStudentExercisesReviewService;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
+import com.shangshufang.apiservice.vo.UniversityStudentExercisesReviewCodeStandardVO;
 import com.shangshufang.apiservice.vo.UniversityStudentExercisesReviewVO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +32,8 @@ public class UniversityStudentExercisesReviewServiceImpl implements UniversitySt
     private UniversityStudentExercisesReviewMapper myMapper;
     @Autowired
     private UniversityStudentExercisesMapper universityStudentExercisesMapper;
+    @Autowired
+    private UniversityStudentExercisesReviewCodeStandardMapper reviewCodeStandardMapper;
 
     private Logger logger = LogManager.getLogger(UniversityStudentExercisesReviewServiceImpl.class);
 
@@ -43,6 +50,18 @@ public class UniversityStudentExercisesReviewServiceImpl implements UniversitySt
             for (UniversityStudentExercisesReviewEntity entity : entityList) {
                 UniversityStudentExercisesReviewVO model = new UniversityStudentExercisesReviewVO();
                 ObjectConvertUtils.toBean(entity, model);
+
+                //取得代码规范问题
+                List<UniversityStudentExercisesReviewCodeStandardEntity> reviewCodeStandardEntityList = reviewCodeStandardMapper.searchList(entity.getReviewID());
+                List<UniversityStudentExercisesReviewCodeStandardVO> reviewCodeStandardModelList = new ArrayList<>();
+                if(!reviewCodeStandardEntityList.isEmpty()) {
+                    for (UniversityStudentExercisesReviewCodeStandardEntity reviewCodeStandardEntity : reviewCodeStandardEntityList) {
+                        UniversityStudentExercisesReviewCodeStandardVO reviewCodeStandardVO = new UniversityStudentExercisesReviewCodeStandardVO();
+                        ObjectConvertUtils.toBean(reviewCodeStandardEntity, reviewCodeStandardVO);
+                        reviewCodeStandardModelList.add(reviewCodeStandardVO);
+                    }
+                }
+                model.setCodeStandardErrorList(reviewCodeStandardModelList);
                 modelList.add(model);
             }
             return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
@@ -58,12 +77,26 @@ public class UniversityStudentExercisesReviewServiceImpl implements UniversitySt
             int affectRow = 0;
             UniversityStudentExercisesEntity exercisesEntity = new UniversityStudentExercisesEntity();
             UniversityStudentExercisesReviewEntity entity = new UniversityStudentExercisesReviewEntity();
+            List<UniversityStudentExercisesReviewCodeStandardEntity> reviewCodeStandardEntityList =
+                    JsonUtils.deserializationToObject(dto.getCodeStandardErrorListJson(), UniversityStudentExercisesReviewCodeStandardEntity.class);
 
+            //保存练习批改的详细信息
             ObjectConvertUtils.toBean(dto, entity);
             entity.setCreateUser(dto.getLoginUser());
             entity.setUpdateUser(dto.getLoginUser());
             affectRow += myMapper.insert(entity);
 
+            //保存练习批改中代码不规范的详细信息
+            if(reviewCodeStandardEntityList != null){
+                for (UniversityStudentExercisesReviewCodeStandardEntity codeStandardEntity : reviewCodeStandardEntityList) {
+                    codeStandardEntity.setReviewID(entity.getReviewID());
+                    codeStandardEntity.setCreateUser(dto.getLoginUser());
+                    codeStandardEntity.setUpdateUser(dto.getLoginUser());
+                    affectRow += reviewCodeStandardMapper.insert(codeStandardEntity);
+                }
+            }
+
+            //更新练习的状态
             ObjectConvertUtils.toBean(dto, exercisesEntity);
             if(dto.getReviewResult().equals(ExercisesReviewResultConstant.PASS)){
                 exercisesEntity.setDataStatus(ExercisesStatusConstant.Pass);

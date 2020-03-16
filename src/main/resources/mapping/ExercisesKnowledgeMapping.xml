@@ -22,7 +22,7 @@
   <select id="searchTotalCount" resultType="java.lang.Integer">
     SELECT
     COUNT(1) AS TotalCount
-    FROM shangshufang_base.exercises_knowledge
+    FROM shangshufang_base.exercises_knowledge1
     WHERE 1=1
     <if test="exercisesID != 0">
       AND exercises_id = #{exercisesID,jdbcType=VARCHAR}
@@ -48,8 +48,8 @@
       DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
       G.admin_name AS update_user,
       DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
-    FROM shangshufang_base.exercises_knowledge A
-    INNER JOIN shangshufang_base.exercises B
+    FROM shangshufang_base.exercises_knowledge1 A
+    INNER JOIN shangshufang_base.exercises1 B
     ON A.exercises_id = B.exercises_id
     AND B.data_status = 'A'
     INNER JOIN shangshufang_base.technology C
@@ -68,7 +68,7 @@
     ORDER BY A.update_time DESC;
   </select>
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.ExercisesKnowledgeEntity" >
-    INSERT INTO shangshufang_base.exercises_knowledge (
+    INSERT INTO shangshufang_base.exercises_knowledge1 (
       exercises_id,
       technology_id,
       learning_phase_id,
@@ -88,7 +88,7 @@
     )
   </insert>
   <delete id="delete" parameterType="java.lang.Integer" >
-    DELETE FROM shangshufang_base.exercises_knowledge
+    DELETE FROM shangshufang_base.exercises_knowledge1
     WHERE exercises_id = #{arg0,jdbcType=INTEGER};
   </delete>
 </mapper>

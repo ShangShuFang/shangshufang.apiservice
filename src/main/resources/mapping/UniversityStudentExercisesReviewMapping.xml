@@ -18,7 +18,10 @@
     <result column="compilation_result_text" property="compilationResultText" jdbcType="VARCHAR" />
     <result column="run_result" property="runResult" jdbcType="VARCHAR" />
     <result column="run_result_text" property="runResultText" jdbcType="VARCHAR" />
-    <result column="code_standards_score" property="codeStandardsScore" jdbcType="INTEGER" />
+
+    <result column="code_standard_result" property="codeStandardResult" jdbcType="VARCHAR" />
+    <result column="code_standard_result_text" property="codeStandardResultText" jdbcType="VARCHAR" />
+
     <result column="review_result" property="reviewResult" jdbcType="VARCHAR" />
     <result column="review_result_text" property="reviewResultText" jdbcType="VARCHAR" />
     <result column="review_memo" property="reviewMemo" jdbcType="VARCHAR" />
@@ -63,7 +66,11 @@
         WHEN A.run_result = 'N' THEN '未通过'
         ELSE '未知数据状态'
       END AS run_result_text,
-      A.code_standards_score,
+      A.code_standard_result,
+      CASE WHEN A.code_standard_result = 'S' THEN '通过'
+        WHEN A.code_standard_result = 'N' THEN '未通过'
+        ELSE '未知数据状态'
+      END AS code_standard_result_text,
       A.review_result,
       CASE WHEN A.review_result = 'S' THEN '通过'
         WHEN A.review_result = 'N' THEN '未通过'
@@ -94,7 +101,7 @@
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 
-  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.UniversityStudentExercisesReviewEntity" >
+  <insert id="insert" useGeneratedKeys="true" keyProperty="reviewID"  parameterType="com.shangshufang.apiservice.entity.UniversityStudentExercisesReviewEntity" >
     INSERT INTO shangshufang_customer.university_student_exercises_review (
       student_exercises_id,
       reviewer_id,
@@ -103,7 +110,7 @@
       reviewer_type,
       compilation_result,
       run_result,
-      code_standards_score,
+      code_standard_result,
       review_result,
       review_memo,
       create_user,
@@ -117,7 +124,7 @@
       #{reviewerType, jdbcType=VARCHAR},
       #{compilationResult, jdbcType=VARCHAR},
       #{runResult, jdbcType=VARCHAR},
-      #{codeStandardsScore, jdbcType=INTEGER},
+      #{codeStandardResult, jdbcType=VARCHAR},
       #{reviewResult, jdbcType=VARCHAR},
       #{reviewMemo, jdbcType=VARCHAR},
       #{createUser, jdbcType=VARCHAR},

@@ -90,9 +90,9 @@
     INNER JOIN shangshufang_customer.school C
     ON A.university_code = C.university_code
     AND A.school_id = C.school_id
-    WHERE university_code = #{arg0,jdbcType=INTEGER}
-    AND school_id = #{arg1,jdbcType=INTEGER}
-    AND student_id = #{arg2,jdbcType=INTEGER};
+    WHERE A.university_code = #{arg0,jdbcType=INTEGER}
+    AND A.school_id = #{arg1,jdbcType=INTEGER}
+    AND A.student_id = #{arg2,jdbcType=INTEGER};
   </select>
   <select id="checkCellphoneExist" resultType="java.lang.Integer">
     SELECT

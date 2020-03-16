@@ -24,6 +24,13 @@ public class TechnologyController {
         return serviceImpl.findList4Client(pageNumber, pageSize);
     }
 
+    @RequestMapping(value = "/learning/{studentUniversityCode}/{studentSchoolID}/{studentID}", method = RequestMethod.GET)
+    public UnifiedResponse findStudentLearning(@PathVariable("studentUniversityCode") int studentUniversityCode,
+                                               @PathVariable("studentSchoolID") int studentSchoolID,
+                                               @PathVariable("studentID") int studentID){
+        return serviceImpl.findStudentLearning(studentUniversityCode, studentSchoolID, studentID);
+    }
+
     @RequestMapping(value = "/{technologyID}", method = RequestMethod.GET)
     public UnifiedResponse find(@PathVariable("technologyID") int technologyID){
         return serviceImpl.find(technologyID);

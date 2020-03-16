@@ -53,6 +53,55 @@
     AND A.course_id = #{arg2,jdbcType=INTEGER}
     ORDER BY A.course_class;
   </select>
+
+  <select id="searchCourseClassList" resultMap="BaseResultMap">
+    SELECT A.university_code,
+           A.school_id,
+           A.course_id,
+           A.course_class,
+           A.technology_id,
+           B.technology_name,
+           A.data_status
+    FROM
+    (
+      SELECT DISTINCT university_code,
+                  school_id,
+                  course_id,
+                  course_class,
+                  technology_id,
+                  data_status
+      FROM shangshufang_customer.course_plan
+      WHERE university_code = #{arg0,jdbcType=INTEGER}
+      AND school_id = #{arg1,jdbcType=INTEGER}
+      AND course_id = #{arg2,jdbcType=INTEGER}
+    ) A
+    INNER JOIN shangshufang_base.technology B
+    ON A.technology_id = B.technology_id
+    AND B.data_status = 'A'
+    AND A.course_class;
+  </select>
+
+  <select id="searchKnowledgeList4CourseClass" resultMap="BaseResultMap">
+    SELECT A.university_code,
+           A.school_id,
+           A.course_id,
+           A.course_class,
+           A.technology_id,
+           A.learning_phase_id,
+           A.knowledge_id,
+           B.knowledge_name
+    FROM shangshufang_customer.course_plan A
+    INNER JOIN shangshufang_base.technology_knowledge B
+    ON A.technology_id = B.technology_id
+    AND A.learning_phase_id = B.learning_phase_id
+    AND A.knowledge_id = B.knowledge_id
+    WHERE A.university_code = #{arg0,jdbcType=INTEGER}
+    AND A.school_id = #{arg1,jdbcType=INTEGER}
+    AND A.course_id = #{arg2,jdbcType=INTEGER}
+    AND A.course_class = #{arg3,jdbcType=INTEGER}
+    ORDER BY A.knowledge_id;
+  </select>
+
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.CoursePlanEntity" >
     INSERT INTO shangshufang_customer.course_plan (
       university_code,

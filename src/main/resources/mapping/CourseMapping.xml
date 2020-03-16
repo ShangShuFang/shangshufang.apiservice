@@ -194,13 +194,11 @@
         AND A.school_id = B.school_id
         AND A.course_id = B.course_id
         AND A.technology_id = B.technology_id
-      INNER JOIN shangshufang_base.exercises_knowledge C
+      INNER JOIN shangshufang_base.technology_knowledge_exercises C
         ON B.technology_id = C.technology_id
+        AND B.learning_phase_id = C.learning_phase_id
         AND B.knowledge_id = C.knowledge_id
-        AND C.exercises_type = 'S'
         AND C.data_status = 'A'
-      INNER JOIN shangshufang_base.exercises_document D
-        ON C.exercises_id = D.exercises_id
       WHERE A.data_status != 'D'
       <if test="arg8 == true">
         AND A.university_code = #{arg0,jdbcType=INTEGER}
@@ -425,23 +423,20 @@
     ON A.technology_id = H.technology_id
     LEFT JOIN
     (
-
     SELECT
-    A.course_id,
-    COUNT(1) AS course_knowledge_exercises_count
+      A.course_id,
+      COUNT(1) AS course_knowledge_exercises_count
     FROM shangshufang_customer.course A
     INNER JOIN shangshufang_customer.course_plan B
     ON A.university_code = B.university_code
     AND A.school_id = B.school_id
     AND A.course_id = B.course_id
     AND A.technology_id = B.technology_id
-    INNER JOIN shangshufang_base.exercises_knowledge C
+    INNER JOIN shangshufang_base.technology_knowledge_exercises C
     ON B.technology_id = C.technology_id
+    AND B.learning_phase_id = C.learning_phase_id
     AND B.knowledge_id = C.knowledge_id
-    AND C.exercises_type = 'S'
     AND C.data_status = 'A'
-    INNER JOIN shangshufang_base.exercises_document D
-    ON C.exercises_id = D.exercises_id
     WHERE A.data_status != 'D'
     <if test="arg8 == true">
       AND A.university_code = #{arg0,jdbcType=INTEGER}
@@ -631,13 +626,11 @@
         AND A.school_id = B.school_id
         AND A.course_id = B.course_id
         AND A.technology_id = B.technology_id
-      INNER JOIN shangshufang_base.exercises_knowledge C
+      INNER JOIN shangshufang_base.technology_knowledge_exercises C
         ON B.technology_id = C.technology_id
+        AND B.learning_phase_id = C.learning_phase_id
         AND B.knowledge_id = C.knowledge_id
-        AND C.exercises_type = 'S'
         AND C.data_status = 'A'
-      INNER JOIN shangshufang_base.exercises_document D
-        ON C.exercises_id = D.exercises_id
       WHERE A.data_status != 'D'
         AND A.university_code = #{arg0,jdbcType=INTEGER}
         AND A.school_id = #{arg1,jdbcType=INTEGER}

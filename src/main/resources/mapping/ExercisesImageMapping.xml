@@ -26,7 +26,7 @@
       DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
       C.admin_name AS update_user,
       DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
-    FROM shangshufang_base.exercises_image A
+    FROM shangshufang_base.exercises_image1 A
     INNER JOIN shangshufang_base.system_admin B
     ON A.create_user = B.admin_id
     INNER JOIN shangshufang_base.system_admin C
@@ -36,7 +36,7 @@
   </select>
 
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.ExercisesImageEntity" >
-    INSERT INTO shangshufang_base.exercises_image (
+    INSERT INTO shangshufang_base.exercises_image1 (
       exercises_id,
       image_url,
       create_user,
@@ -50,7 +50,7 @@
     )
   </insert>
   <delete id="delete" parameterType="java.lang.Integer" >
-    DELETE FROM shangshufang_base.exercises_image
+    DELETE FROM shangshufang_base.exercises_image1
     WHERE exercises_id = #{arg0,jdbcType=INTEGER};
   </delete>
 </mapper>

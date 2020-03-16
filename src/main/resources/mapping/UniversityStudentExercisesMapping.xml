@@ -22,9 +22,6 @@
     <result column="course_name" property="courseName" jdbcType="VARCHAR" />
     <result column="course_class" property="courseClass" jdbcType="INTEGER" />
 
-    <result column="exercises_id" property="exercisesID" jdbcType="INTEGER" />
-    <result column="exercises_name" property="exercisesName" jdbcType="VARCHAR" />
-    <result column="exercises_code" property="exercisesCode" jdbcType="VARCHAR" />
     <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
     <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
     <result column="learning_phase_id" property="learningPhaseID" jdbcType="INTEGER" />
@@ -54,26 +51,24 @@
     SELECT
         COUNT(1) AS TotalCount
     FROM shangshufang_customer.university_student_exercises A
-    INNER JOIN shangshufang_customer.course G
-    ON A.course_university_code = G.university_code
-    AND A.course_school_id = G.school_id
-    AND A.course_id = G.course_id
-    INNER JOIN shangshufang_base.exercises H
-    ON A.exercises_id = H.exercises_id
-    AND H.exercises_type = 'S'
-    AND H.data_status = 'A'
-    INNER JOIN shangshufang_base.technology I
-    ON A.technology_id = I.technology_id
-    INNER JOIN shangshufang_base.learning_phase J
-    ON A.learning_phase_id = J.learning_phase_id
-    INNER JOIN shangshufang_base.technology_knowledge K
-    ON A.technology_id = K.technology_id
-    AND A.learning_phase_id = K.learning_phase_id
-    AND A.knowledge_id = K.knowledge_id
-    AND K.data_status = 'A'
-    INNER JOIN shangshufang_base.exercises_document L
-    ON A.exercises_id = L.exercises_id
-    AND A.exercises_document_id = L.exercises_document_id
+    INNER JOIN shangshufang_customer.course B
+    ON A.course_university_code = B.university_code
+    AND A.course_school_id = B.school_id
+    AND A.course_id = B.course_id
+    INNER JOIN shangshufang_base.technology C
+    ON A.technology_id = C.technology_id
+    INNER JOIN shangshufang_base.learning_phase D
+    ON A.learning_phase_id = D.learning_phase_id
+    INNER JOIN shangshufang_base.technology_knowledge E
+    ON A.technology_id = E.technology_id
+    AND A.learning_phase_id = E.learning_phase_id
+    AND A.knowledge_id = E.knowledge_id
+    AND E.data_status = 'A'
+    INNER JOIN shangshufang_base.technology_knowledge_exercises F
+    ON A.technology_id = F.technology_id
+    AND A.learning_phase_id = F.learning_phase_id
+    AND A.knowledge_id = F.knowledge_id
+    AND A.exercises_document_id = F.exercises_id
     WHERE A.course_university_code = #{arg0,jdbcType=INTEGER}
     AND A.course_school_id = #{arg1,jdbcType=INTEGER}
     AND A.course_id = #{arg2,jdbcType=INTEGER}
@@ -100,9 +95,6 @@
       A.course_id,
       G.course_name,
       A.course_class,
-      A.exercises_id,
-      H.exercises_name,
-      H.exercises_code,
       A.technology_id,
       I.technology_name,
       A.learning_phase_id,
@@ -110,7 +102,7 @@
       A.knowledge_id,
       K.knowledge_name,
       A.exercises_document_id,
-      L.document_url AS exercises_document_url,
+      H.document_url AS exercises_document_url,
       A.source_code_git_url,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未完成'
@@ -145,10 +137,11 @@
     ON A.course_university_code = G.university_code
     AND A.course_school_id = G.school_id
     AND A.course_id = G.course_id
-    INNER JOIN shangshufang_base.exercises H
-    ON A.exercises_id = H.exercises_id
-    AND H.exercises_type = 'S'
-    AND H.data_status = 'A'
+    INNER JOIN shangshufang_base.technology_knowledge_exercises H
+    ON A.technology_id = H.technology_id
+    AND A.learning_phase_id = H.learning_phase_id
+    AND A.knowledge_id = H.knowledge_id
+    AND A.exercises_document_id = H.exercises_id
     INNER JOIN shangshufang_base.technology I
     ON A.technology_id = I.technology_id
     INNER JOIN shangshufang_base.learning_phase J
@@ -158,9 +151,6 @@
     AND A.learning_phase_id = K.learning_phase_id
     AND A.knowledge_id = K.knowledge_id
     AND K.data_status = 'A'
-    INNER JOIN shangshufang_base.exercises_document L
-    ON A.exercises_id = L.exercises_id
-    AND A.exercises_document_id = L.exercises_document_id
     LEFT JOIN
     (
       SELECT
@@ -224,7 +214,6 @@
       course_school_id,
       course_id,
       course_class,
-      exercises_id,
       technology_id,
       learning_phase_id,
       knowledge_id,
@@ -240,7 +229,6 @@
       #{courseSchoolID, jdbcType=INTEGER},
       #{courseID, jdbcType=INTEGER},
       #{courseClass, jdbcType=INTEGER},
-      #{exercisesID, jdbcType=INTEGER},
       #{technologyID, jdbcType=INTEGER},
       #{learningPhaseID, jdbcType=INTEGER},
       #{knowledgeID, jdbcType=INTEGER},
