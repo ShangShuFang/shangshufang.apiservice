@@ -113,9 +113,9 @@
           WHEN A.data_status = 'D' THEN '冻结'
       ELSE '未知数据状态'
       END AS data_status_text,
-      E.admin_name AS create_user,
+--       E.admin_name AS create_user,
       DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-      F.admin_name AS update_user,
+--       F.admin_name AS update_user,
       DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
     FROM shangshufang_customer.university_account A
     INNER JOIN shangshufang_customer.university B
@@ -127,10 +127,10 @@
     ON A.university_code = D.university_code
     AND A.school_id = D.school_id
     AND A.cellphone = D.cellphone
-    INNER JOIN shangshufang_base.system_admin E
-    ON A.create_user = E.admin_id
-    INNER JOIN shangshufang_base.system_admin F
-    ON A.update_user = F.admin_id
+--     INNER JOIN shangshufang_base.system_admin E
+--     ON A.create_user = E.admin_id
+--     INNER JOIN shangshufang_base.system_admin F
+--     ON A.update_user = F.admin_id
     WHERE A.cellphone = #{arg0,jdbcType=VARCHAR}
     AND A.password = #{arg1,jdbcType=VARCHAR}
     AND A.account_role IN ('A', 'T');

@@ -8,6 +8,8 @@ public interface TechnologyService extends BaseService<TechnologyDTO> {
 
     UnifiedResponse findList4Client(int pageNumber, int pageSize);
 
+    UnifiedResponse findSimpleList();
+
     UnifiedResponse find(int technologyID);
 
     UnifiedResponse findStudentLearning(int studentUniversityCode, int studentSchoolID, int studentID);

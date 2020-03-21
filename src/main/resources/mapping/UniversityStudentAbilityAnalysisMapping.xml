@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.UniversityStudentAbilityAnalysisMapper" >
+  <parameterMap id="abilityParameterMap" type="java.util.Map">
+    <parameter property="f_start_index" jdbcType="INTEGER" mode="IN"/>
+    <parameter property="f_page_size" jdbcType="INTEGER" mode="IN"/>
+  </parameterMap>
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.UniversityStudentAbilityAnalysisEntity" >
+    <id column="analysis_id" property="analysisID" jdbcType="INTEGER" />
+    <result column="student_university_code" property="studentUniversityCode" jdbcType="INTEGER" />
+    <result column="student_university_name" property="studentUniversityName" jdbcType="VARCHAR" />
+    <result column="student_school_id" property="studentSchoolID" jdbcType="INTEGER" />
+    <result column="student_school_name" property="studentSchoolName" jdbcType="VARCHAR" />
+    <result column="student_id" property="studentID" jdbcType="INTEGER" />
+    <result column="student_name" property="studentName" jdbcType="VARCHAR" />
+    <result column="photo" property="studentPhoto" jdbcType="VARCHAR" />
+    <result column="cellphone" property="studentCellphone" jdbcType="VARCHAR" />
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="knowledge_total_count" property="knowledgeTotalCount" jdbcType="INTEGER" />
+    <result column="finish_knowledge_count" property="finishKnowledgeCount" jdbcType="INTEGER" />
+    <result column="finish_knowledge_percent" property="finishKnowledgePercent" jdbcType="FLOAT" />
+    <result column="finish_exercises_count" property="finishExercisesCount" jdbcType="INTEGER" />
+    <result column="once_compilation_success_rate" property="onceCompilationSuccessRate" jdbcType="FLOAT" />
+    <result column="once_run_success_rate" property="onceRunSuccessRate" jdbcType="FLOAT" />
+    <result column="position_site" property="positionSite" jdbcType="FLOAT" />
+    <result column="ability_level" property="abilityLevel" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.course a
+        INNER JOIN shangshufang_customer.course_sign_up b
+          ON a.university_code = b.course_university_code
+          AND a.school_id = b.course_school_id
+          AND a.course_id = b.course_id
+          AND b.data_status = 'A'
+        INNER JOIN shangshufang_customer.university_student c
+          ON b.student_university_code = c.university_code
+          AND b.student_school_id = c.school_id
+          AND b.student_id = c.student_id
+    WHERE a.technology_id = #{arg0,jdbcType=INTEGER}
+    <if test="arg1 != 0">
+      AND b.student_university_code = #{arg1,jdbcType=INTEGER}
+    </if>
+    <if test="arg2 != 0">
+      AND b.student_school_id = #{arg2,jdbcType=INTEGER}
+    </if>
+    <if test="arg3 != 0">
+      AND a.university_code = #{arg3,jdbcType=INTEGER}
+    </if>
+    <if test="arg4 != 0">
+      AND a.school_id = #{arg4,jdbcType=INTEGER}
+    </if>
+    <if test="arg5 != 0">
+      AND a.teacher_id = #{arg5,jdbcType=INTEGER}
+    </if>
+    <if test="arg6 != null">
+      AND c.cellphone = #{arg6,jdbcType=VARCHAR}
+    </if>;
+  </select>
+
+  <select id="searchStudentAbilityAnalysisList" resultMap="BaseResultMap">
+    SELECT B.analysis_id,
+           B.student_university_code,
+           A.university_name AS student_university_name,
+           B.student_school_id,
+           A.school_name AS student_school_name,
+           a.student_id,
+           A.full_name AS student_name,
+           A.cellphone,
+           A.photo,
+           B.technology_id,
+           B.knowledge_total_count,
+           B.finish_knowledge_count,
+           B.finish_knowledge_percent,
+           B.finish_exercises_count,
+           B.once_compilation_success_rate,
+           B.once_run_success_rate,
+           B.position_site,
+           B.ability_level
+    FROM
+    (
+        SELECT b.student_university_code,
+               d.university_name,
+               b.student_school_id,
+               e.school_name,
+               b.student_id,
+               c.full_name,
+               c.enrollment_year,
+               c.cellphone,
+               c.photo
+        FROM shangshufang_customer.course a
+            INNER JOIN shangshufang_customer.course_sign_up b
+                ON a.university_code = b.course_university_code
+                AND a.school_id = b.course_school_id
+                AND a.course_id = b.course_id
+                AND b.data_status = 'A'
+            INNER JOIN shangshufang_customer.university_student c
+                ON b.student_university_code = c.university_code
+                AND b.student_school_id = c.school_id
+                AND b.student_id = c.student_id
+            INNER JOIN shangshufang_customer.university d
+                ON b.student_university_code = d.university_code
+            INNER JOIN shangshufang_customer.school e
+                ON b.student_university_code = e.university_code
+                AND b.student_school_id = e.school_id
+        WHERE a.technology_id = #{arg2,jdbcType=INTEGER}
+        <if test="arg3 != 0">
+          AND b.student_university_code = #{arg3,jdbcType=INTEGER}
+        </if>
+        <if test="arg4 != 0">
+          AND b.student_school_id = #{arg4,jdbcType=INTEGER}
+        </if>
+        <if test="arg5 != 0">
+          AND a.university_code = #{arg5,jdbcType=INTEGER}
+        </if>
+        <if test="arg6 != 0">
+          AND a.school_id = #{arg6,jdbcType=INTEGER}
+        </if>
+        <if test="arg7 != 0">
+          AND a.teacher_id = #{arg7,jdbcType=INTEGER}
+        </if>
+        <if test="arg8 != null">
+          AND c.cellphone = #{arg8,jdbcType=VARCHAR}
+        </if>
+        LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER}
+    ) A
+    INNER JOIN shangshufang_customer.university_student_ability_analysis B
+    ON A.student_university_code = B.student_university_code
+    AND A.student_school_id = B.student_school_id
+    AND A.student_id = B.student_id
+    ORDER BY B.position_site DESC;
+  </select>
+
+  <select id="searchAnalysisList" parameterMap="abilityParameterMap" statementType="CALLABLE" resultMap="BaseResultMap">
+    CALL shangshufang_customer.pro_get_student_professional_analysis_result(
+    #{f_start_index, mode=IN},
+    #{f_page_size, mode=IN});
+  </select>
+  <select id="searchAbilityAnalysisTotalCount" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS TotalCount
+    FROM shangshufang_customer.university_student_ability_analysis
+    WHERE student_university_code = #{arg0,jdbcType=INTEGER}
+      AND student_school_id = #{arg1,jdbcType=INTEGER}
+      AND student_id = #{arg2,jdbcType=INTEGER}
+      AND technology_id = #{arg3,jdbcType=INTEGER};
+  </select>
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.UniversityStudentAbilityAnalysisEntity" >
+    INSERT INTO shangshufang_customer.university_student_ability_analysis (
+      student_university_code,
+      student_school_id,
+      student_id,
+      technology_id,
+      knowledge_total_count,
+      finish_knowledge_count,
+      finish_knowledge_percent,
+      finish_exercises_count,
+      once_compilation_success_rate,
+      once_run_success_rate,
+      position_site,
+      ability_level
+    )
+    VALUES (
+      #{studentUniversityCode, jdbcType=INTEGER},
+      #{studentSchoolID, jdbcType=INTEGER},
+      #{studentID, jdbcType=INTEGER},
+      #{technologyID, jdbcType=INTEGER},
+      #{knowledgeTotalCount, jdbcType=INTEGER},
+      #{finishKnowledgeCount, jdbcType=INTEGER},
+      #{finishKnowledgePercent, jdbcType=FLOAT},
+      #{finishExercisesCount, jdbcType=INTEGER},
+      #{onceCompilationSuccessRate, jdbcType=FLOAT},
+      #{onceRunSuccessRate, jdbcType=FLOAT},
+      #{positionSite, jdbcType=FLOAT},
+      #{abilityLevel, jdbcType=VARCHAR}
+    )
+  </insert>
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.UniversityStudentAbilityAnalysisEntity" >
+    UPDATE shangshufang_customer.university_student_ability_analysis SET
+      knowledge_total_count = #{knowledgeTotalCount,jdbcType=INTEGER},
+      finish_knowledge_count = #{finishKnowledgeCount,jdbcType=INTEGER},
+      finish_knowledge_percent = #{finishKnowledgePercent,jdbcType=FLOAT},
+      finish_exercises_count = #{finishExercisesCount,jdbcType=INTEGER},
+      once_compilation_success_rate = #{onceCompilationSuccessRate,jdbcType=FLOAT},
+      once_run_success_rate = #{onceRunSuccessRate,jdbcType=FLOAT},
+      position_site = #{positionSite,jdbcType=FLOAT},
+      ability_level = #{abilityLevel,jdbcType=VARCHAR}
+    WHERE student_university_code = #{studentUniversityCode,jdbcType=INTEGER}
+      AND student_school_id = #{studentSchoolID,jdbcType=INTEGER}
+      AND student_id = #{studentID,jdbcType=INTEGER}
+      AND technology_id = #{technologyID,jdbcType=INTEGER};
+  </update>
+</mapper>

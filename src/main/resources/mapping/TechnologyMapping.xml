@@ -84,6 +84,18 @@
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 
+  <select id="searchSimpleList" resultMap="BaseResultMap">
+    SELECT  technology_id,
+            technology_name,
+            technology_stars,
+            technology_thumbnail,
+            technology_memo,
+            language_id
+    FROM shangshufang_base.technology
+    WHERE data_status = 'A'
+    ORDER BY update_time DESC;
+  </select>
+
   <select id="searchList4Client" resultMap="BaseResultMap">
     SELECT
       A.technology_id,
