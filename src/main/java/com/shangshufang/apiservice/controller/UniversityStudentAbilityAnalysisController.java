@@ -27,7 +27,30 @@ public class UniversityStudentAbilityAnalysisController {
         return serviceImpl.findList(pageNumber, pageSize, technologyID, studentUniversityCode, studentSchoolID, teacherUniversityCode, teacherSchoolID, teacherID, studentCellphone);
     }
 
-    @RequestMapping(value = "/analysis", method = RequestMethod.GET)
+    @RequestMapping(value = "/{universityCode}/{schoolID}/{studentID}", method = RequestMethod.GET)
+    public UnifiedResponse findStudentAbilityInfo(@PathVariable("universityCode") int universityCode,
+                                    @PathVariable("schoolID") int schoolID,
+                                    @PathVariable("studentID") int studentID) {
+        return serviceImpl.findStudentAbilityInfo(universityCode, schoolID, studentID);
+    }
+
+    @RequestMapping(value = "/technology/{universityCode}/{schoolID}/{studentID}/{technologyID}", method = RequestMethod.GET)
+    public UnifiedResponse findStudentTechnologyAbility(@PathVariable("universityCode") int universityCode,
+                                                  @PathVariable("schoolID") int schoolID,
+                                                  @PathVariable("studentID") int studentID,
+                                                  @PathVariable("technologyID") int technologyID) {
+        return serviceImpl.findStudentTechnologyAbility(universityCode, schoolID, studentID, technologyID);
+    }
+
+    @RequestMapping(value = "/codeStandard/{universityCode}/{schoolID}/{studentID}/{technologyID}", method = RequestMethod.GET)
+    public UnifiedResponse findCodeStandardAnalysis(@PathVariable("universityCode") int universityCode,
+                                                        @PathVariable("schoolID") int schoolID,
+                                                        @PathVariable("studentID") int studentID,
+                                                        @PathVariable("technologyID") int technologyID) {
+        return serviceImpl.findCodeStandardAnalysis(universityCode, schoolID, studentID, technologyID);
+    }
+
+    @RequestMapping(value = "/analysis", method = RequestMethod.POST)
     public UnifiedResponse analysis(){
         return serviceImpl.ability();
     }

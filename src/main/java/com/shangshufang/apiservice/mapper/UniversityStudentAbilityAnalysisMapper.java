@@ -1,6 +1,8 @@
 package com.shangshufang.apiservice.mapper;
 
+import com.shangshufang.apiservice.entity.StudentCodeStandardAnalysisEntity;
 import com.shangshufang.apiservice.entity.UniversityStudentAbilityAnalysisEntity;
+import com.shangshufang.apiservice.entity.UniversityStudentAbilityEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -35,6 +37,12 @@ public interface UniversityStudentAbilityAnalysisMapper {
                          int studentSchoolID,
                          int studentID,
                          int technologyID);
+
+    UniversityStudentAbilityEntity searchStudentAbilityInfo(int universityCode, int schoolID, int studentID);
+
+    UniversityStudentAbilityAnalysisEntity searchStudentTechnologyAbility(int universityCode, int schoolID, int studentID, int technologyID);
+
+    List<StudentCodeStandardAnalysisEntity> searchCodeStandardAnalysis(int studentUniversityCode, int studentSchoolID, int studentID, int technologyID);
 
     int insert(UniversityStudentAbilityAnalysisEntity entity);
 

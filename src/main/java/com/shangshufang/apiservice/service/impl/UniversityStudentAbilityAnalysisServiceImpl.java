@@ -3,12 +3,16 @@ package com.shangshufang.apiservice.service.impl;
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
 import com.shangshufang.apiservice.constant.ParameterConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
+import com.shangshufang.apiservice.entity.StudentCodeStandardAnalysisEntity;
 import com.shangshufang.apiservice.entity.UniversityStudentAbilityAnalysisEntity;
+import com.shangshufang.apiservice.entity.UniversityStudentAbilityEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
 import com.shangshufang.apiservice.mapper.UniversityStudentAbilityAnalysisMapper;
 import com.shangshufang.apiservice.service.UniversityStudentAbilityAnalysisService;
+import com.shangshufang.apiservice.vo.StudentCodeStandardAnalysisVO;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
 import com.shangshufang.apiservice.vo.UniversityStudentAbilityAnalysisVO;
+import com.shangshufang.apiservice.vo.UniversityStudentAbilityVO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +87,58 @@ public class UniversityStudentAbilityAnalysisServiceImpl implements UniversitySt
                 modelList.add(model);
             }
             return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse findStudentAbilityInfo(int universityCode, int schoolID, int studentID) {
+        try {
+            UniversityStudentAbilityVO model = new UniversityStudentAbilityVO();
+            UniversityStudentAbilityEntity entity =  myMapper.searchStudentAbilityInfo(universityCode, schoolID, studentID);
+            if (entity == null) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            ObjectConvertUtils.toBean(entity, model);
+            return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.ONE_SEARCH_COUNT, model);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse findStudentTechnologyAbility(int universityCode, int schoolID, int studentID, int technologyID) {
+        try {
+            UniversityStudentAbilityAnalysisVO model = new UniversityStudentAbilityAnalysisVO();
+            UniversityStudentAbilityAnalysisEntity entity =  myMapper.searchStudentTechnologyAbility(universityCode, schoolID, studentID, technologyID);
+            if (entity == null) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            ObjectConvertUtils.toBean(entity, model);
+            return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.ONE_SEARCH_COUNT, model);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse findCodeStandardAnalysis(int universityCode, int schoolID, int studentID, int technologyID) {
+        try {
+            List<StudentCodeStandardAnalysisVO> modelList = new ArrayList<>();
+            List<StudentCodeStandardAnalysisEntity> entityList =  myMapper.searchCodeStandardAnalysis(universityCode, schoolID, studentID, technologyID);
+            if(entityList.isEmpty()) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            for (StudentCodeStandardAnalysisEntity entity : entityList) {
+                StudentCodeStandardAnalysisVO model = new StudentCodeStandardAnalysisVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
         } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();

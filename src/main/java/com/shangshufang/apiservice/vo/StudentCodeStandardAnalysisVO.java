@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class StudentCodeStandardAnalysisVO {
-    private int codeStandardID;
-    private String codeStandardContent;
-    private boolean codeStandardResult;
+    private String codeStandardName;
+    private int codeStandardCount;
 }

@@ -14,4 +14,10 @@ public interface UniversityStudentAbilityAnalysisService {
                              int teacherSchoolID,
                              int teacherID,
                              String studentCellphone);
+
+    UnifiedResponse findStudentAbilityInfo(int universityCode, int schoolID, int studentID);
+
+    UnifiedResponse findStudentTechnologyAbility(int universityCode, int schoolID, int studentID, int technologyID);
+
+    UnifiedResponse findCodeStandardAnalysis(int universityCode, int schoolID, int studentID, int technologyID);
 }

@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ public class StudentTechnologyDetailAnalysisServiceImpl implements StudentTechno
     @Override
     public UnifiedResponse findKnowledgeAnalysisInfo(int studentUniversityCode, int studentSchoolID, int studentID, int technologyID) {
         try {
+            DecimalFormat df = new DecimalFormat("#.00");
             StudentKnowledgeAnalysisVO model = new StudentKnowledgeAnalysisVO();
             Map<String, Object> param = new HashMap<>();
             param.put("f_student_university_code", studentUniversityCode);
@@ -42,7 +44,9 @@ public class StudentTechnologyDetailAnalysisServiceImpl implements StudentTechno
             int weaknessKnowledgeCount = (int) param.get("f_weakness_knowledge_count");
             int graspKnowledgeCount = (int) param.get("f_grasp_knowledge_count");
 
-            float learningPercentCount =(float)Math.round(((float) (weaknessKnowledgeCount + graspKnowledgeCount) / technologyKnowledgeCount) * 100);
+            //float learningPercentCount =(float)Math.round(((float) (weaknessKnowledgeCount + graspKnowledgeCount) / technologyKnowledgeCount) * 100);
+
+            float learningPercentCount =Float.parseFloat(df.format(( (float)(weaknessKnowledgeCount + graspKnowledgeCount) / technologyKnowledgeCount) * 100));
             NumberFormat numberFormat = NumberFormat.getNumberInstance();
             numberFormat.setMaximumFractionDigits(2);
             model.setTechnologyKnowledgeCount(technologyKnowledgeCount);

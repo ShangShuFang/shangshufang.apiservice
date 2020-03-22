@@ -20,9 +20,9 @@
   </resultMap>
   <resultMap id="StudentExercisePercentAnalysisMap" type="com.shangshufang.apiservice.entity.StudentExercisePercentAnalysisEntity" >
     <result column="months" property="months" jdbcType="VARCHAR" />
-    <result column="finish_percent" property="finishPercent" jdbcType="INTEGER" />
-    <result column="once_compilation_success_percent" property="onceCompilationSuccessPercent" jdbcType="INTEGER" />
-    <result column="once_run_correct_percent" property="onceRunCorrectPercent" jdbcType="INTEGER" />
+    <result column="finish_percent" property="finishPercent" jdbcType="FLOAT" />
+    <result column="once_compilation_success_percent" property="onceCompilationSuccessPercent" jdbcType="FLOAT" />
+    <result column="once_run_correct_percent" property="onceRunCorrectPercent" jdbcType="FLOAT" />
   </resultMap>
 
   <select id="searchKnowledgeAnalysisInfo" parameterMap="StudentKnowledgeAnalysisMap" statementType="CALLABLE">
