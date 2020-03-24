@@ -20,6 +20,15 @@ public class UniversityAccountController {
         return serviceImpl.findList(pageNumber, pageSize, universityCode, schoolID);
     }
 
+    @RequestMapping(value = "/client/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{accountID}", method = RequestMethod.GET)
+    public UnifiedResponse findList4Client(@PathVariable("pageNumber") int pageNumber,
+                                           @PathVariable("pageSize") int pageSize,
+                                           @PathVariable("universityCode") int universityCode,
+                                           @PathVariable("schoolID") int schoolID,
+                                           @PathVariable("accountID") int accountID){
+        return serviceImpl.findList4Client(pageNumber, pageSize, universityCode, schoolID, accountID);
+    }
+
     @RequestMapping(value = "/login/{cellphone}/{password}/{accountRole}", method = RequestMethod.GET)
     public UnifiedResponse login(@PathVariable("cellphone") String cellphone,
                                  @PathVariable("password") String password,

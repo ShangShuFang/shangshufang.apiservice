@@ -24,69 +24,265 @@
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT SUM(A.total_count) AS total_count
+    FROM
+    (
+      SELECT COUNT(1) AS total_count
+      FROM shangshufang_customer.university_account
+      WHERE 1=1
+      <if test="arg0 != 0">
+        AND university_code = #{arg0,jdbcType=INTEGER}
+      </if>
+      <if test="arg1 != 0">
+        AND school_id = #{arg1,jdbcType=INTEGER}
+      </if>
+
+      UNION
+
+      SELECT COUNT(1) AS total_count
+      FROM shangshufang_customer.university_student
+      WHERE 1 = 1
+      <if test="arg0 != 0">
+        AND university_code = #{arg0,jdbcType=INTEGER}
+      </if>
+      <if test="arg1 != 0">
+        AND school_id = #{arg1,jdbcType=INTEGER}
+      </if>
+    ) A;
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
     SELECT
-    COUNT(1) AS TotalCount
+      a.account_id,
+      a.university_code,
+      b.university_name,
+      a.school_id,
+      c.school_name,
+      d.customer_id,
+      d.full_name,
+      a.cellphone,
+      a.account_role,
+      CASE
+      WHEN a.account_role = 'A' THEN '管理员'
+      WHEN a.account_role = 'T' THEN '教师'
+      ELSE '未知数据状态'
+      END AS account_role_text,
+      d.email,
+      d.photo,
+      a.data_status,
+      CASE
+      WHEN a.data_status = 'P' THEN '待审核'
+      WHEN a.data_status = 'A' THEN '正常'
+      WHEN a.data_status = 'N' THEN '驳回'
+      WHEN a.data_status = 'D' THEN '冻结'
+      ELSE '未知数据状态'
+      END AS data_status_text,
+      IFNULL(e.admin_name, g.full_name) AS create_user,
+      DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      IFNULL(f.admin_name, h.full_name) AS update_user,
+      DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.university_account a
+    INNER JOIN shangshufang_customer.university b
+    ON a.university_code = b.university_code
+    INNER JOIN shangshufang_customer.school c
+    ON a.university_code = c.university_code
+    AND a.school_id = c.school_id
+    INNER JOIN shangshufang_customer.university_customer d
+    ON a.university_code = d.university_code
+    AND a.school_id = d.school_id
+    AND a.cellphone = d.cellphone
+    LEFT JOIN shangshufang_base.system_admin e
+    ON a.create_user = e.admin_id
+    LEFT JOIN shangshufang_base.system_admin f
+    ON a.update_user = f.admin_id
+    LEFT JOIN shangshufang_customer.university_customer g
+    ON a.create_user = g.customer_id
+    LEFT JOIN shangshufang_customer.university_customer h
+    ON a.update_user = h.customer_id
+    WHERE 1 = 1
+    <if test="arg2 != 0">
+      AND a.university_code = #{arg2,jdbcType=INTEGER}
+    </if>
+    <if test="arg3 != 0">
+      AND a.school_id = #{arg3,jdbcType=INTEGER}
+    </if>
+
+    UNION
+
+    SELECT
+      a.student_id AS account_id,
+      a.university_code,
+      b.university_name,
+      a.school_id,
+      c.school_name,
+      a.student_id AS customer_id,
+      a.full_name,
+      a.cellphone,
+      'S' AS account_role,
+      '学生' AS account_role_text,
+      a.email,
+      a.photo,
+      a.data_status,
+      CASE
+      WHEN a.data_status = 'P' THEN '待审核'
+      WHEN a.data_status = 'A' THEN '正常'
+      WHEN a.data_status = 'N' THEN '驳回'
+      WHEN a.data_status = 'D' THEN '冻结'
+      ELSE '未知数据状态'
+      END AS data_status_text,
+      '' AS create_user,
+      DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      IFNULL(d.full_name, '') AS update_user,
+      DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.university_student a
+    INNER JOIN shangshufang_customer.university b
+    ON a.university_code = b.university_code
+    INNER JOIN shangshufang_customer.school c
+    ON a.university_code = c.university_code
+    AND a.school_id = c.school_id
+    LEFT JOIN shangshufang_customer.university_customer d
+    ON a.update_user = d.customer_id
+    WHERE 1 = 1
+    <if test="arg2 != 0">
+      AND a.university_code = #{arg2,jdbcType=INTEGER}
+    </if>
+    <if test="arg3 != 0">
+      AND a.school_id = #{arg3,jdbcType=INTEGER}
+    </if>
+    ORDER BY data_status DESC, university_code, school_id, update_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+
+  <select id="searchTotalCount4Client" resultType="java.lang.Integer">
+    SELECT SUM(A.total_count) AS total_count
+    FROM
+    (
+    SELECT COUNT(1) AS total_count
     FROM shangshufang_customer.university_account
-    WHERE 1=1
+    WHERE account_role = 'T'
+      AND account_id != #{arg2,jdbcType=INTEGER}
     <if test="arg0 != 0">
       AND university_code = #{arg0,jdbcType=INTEGER}
     </if>
     <if test="arg1 != 0">
       AND school_id = #{arg1,jdbcType=INTEGER}
-    </if>;
+    </if>
+
+    UNION
+
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.university_student
+    WHERE 1 = 1
+    <if test="arg0 != 0">
+      AND university_code = #{arg0,jdbcType=INTEGER}
+    </if>
+    <if test="arg1 != 0">
+      AND school_id = #{arg1,jdbcType=INTEGER}
+    </if>
+    ) A;
   </select>
-  <select id="searchList" resultMap="BaseResultMap">
+  <select id="searchList4Client" resultMap="BaseResultMap">
     SELECT
-      A.account_id,
-      A.university_code,
-      B.university_name,
-      A.school_id,
-      C.school_name,
-      A.cellphone,
-      A.account_role,
-      CASE WHEN A.account_role = 'A' THEN '管理员'
-        WHEN A.account_role = 'T' THEN '教师'
-        WHEN A.account_role = 'S' THEN '学生'
-        ELSE '未知数据状态'
-      END AS account_role_text,
-      D.customer_id,
-      D.full_name,
-      D.email,
-      A.data_status,
-      CASE WHEN A.data_status = 'P' THEN '待审核'
-          WHEN A.data_status = 'A' THEN '正常'
-          WHEN A.data_status = 'N' THEN '驳回'
-          WHEN A.data_status = 'D' THEN '冻结'
-      ELSE '未知数据状态'
-      END AS data_status_text,
-      E.admin_name AS create_user,
-      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-      F.admin_name AS update_user,
-      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
-    FROM shangshufang_customer.university_account A
-    INNER JOIN shangshufang_customer.university B
-    ON A.university_code = B.university_code
-    INNER JOIN shangshufang_customer.school C
-    ON A.university_code = C.university_code
-    AND A.school_id = C.school_id
-    INNER JOIN shangshufang_customer.university_customer D
-    ON A.university_code = D.university_code
-    AND A.school_id = D.school_id
-    AND A.cellphone = D.cellphone
-    INNER JOIN shangshufang_base.system_admin E
-    ON A.create_user = E.admin_id
-    INNER JOIN shangshufang_base.system_admin F
-    ON A.update_user = F.admin_id
-    WHERE 1=1
+    a.account_id,
+    a.university_code,
+    b.university_name,
+    a.school_id,
+    c.school_name,
+    d.customer_id,
+    d.full_name,
+    a.cellphone,
+    a.account_role,
+    CASE
+    WHEN a.account_role = 'A' THEN '管理员'
+    WHEN a.account_role = 'T' THEN '教师'
+    ELSE '未知数据状态'
+    END AS account_role_text,
+    d.email,
+    d.photo,
+    a.data_status,
+    CASE
+    WHEN a.data_status = 'P' THEN '待审核'
+    WHEN a.data_status = 'A' THEN '正常'
+    WHEN a.data_status = 'N' THEN '驳回'
+    WHEN a.data_status = 'D' THEN '禁用'
+    ELSE '未知数据状态'
+    END AS data_status_text,
+    IFNULL(e.admin_name, g.full_name) AS create_user,
+    DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+    IFNULL(f.admin_name, h.full_name) AS update_user,
+    DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.university_account a
+    INNER JOIN shangshufang_customer.university b
+    ON a.university_code = b.university_code
+    INNER JOIN shangshufang_customer.school c
+    ON a.university_code = c.university_code
+    AND a.school_id = c.school_id
+    INNER JOIN shangshufang_customer.university_customer d
+    ON a.university_code = d.university_code
+    AND a.school_id = d.school_id
+    AND a.cellphone = d.cellphone
+    LEFT JOIN shangshufang_base.system_admin e
+    ON a.create_user = e.admin_id
+    LEFT JOIN shangshufang_base.system_admin f
+    ON a.update_user = f.admin_id
+    LEFT JOIN shangshufang_customer.university_customer g
+    ON a.create_user = g.customer_id
+    LEFT JOIN shangshufang_customer.university_customer h
+    ON a.update_user = h.customer_id
+    WHERE a.account_role = 'T'
+      AND a.account_id != #{arg4,jdbcType=INTEGER}
     <if test="arg2 != 0">
-      AND A.university_code = #{arg2,jdbcType=INTEGER}
+      AND a.university_code = #{arg2,jdbcType=INTEGER}
     </if>
     <if test="arg3 != 0">
-      AND A.school_id = #{arg3,jdbcType=INTEGER}
+      AND a.school_id = #{arg3,jdbcType=INTEGER}
     </if>
-    ORDER BY A.university_code, A.school_id, A.update_time DESC
+
+    UNION
+
+    SELECT
+    a.student_id AS account_id,
+    a.university_code,
+    b.university_name,
+    a.school_id,
+    c.school_name,
+    a.student_id AS customer_id,
+    a.full_name,
+    a.cellphone,
+    'S' AS account_role,
+    '学生' AS account_role_text,
+    a.email,
+    a.photo,
+    a.data_status,
+    CASE
+    WHEN a.data_status = 'P' THEN '待审核'
+    WHEN a.data_status = 'A' THEN '正常'
+    WHEN a.data_status = 'N' THEN '驳回'
+    WHEN a.data_status = 'D' THEN '禁用'
+    ELSE '未知数据状态'
+    END AS data_status_text,
+    '' AS create_user,
+    DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+    IFNULL(d.full_name, '') AS update_user,
+    DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.university_student a
+    INNER JOIN shangshufang_customer.university b
+    ON a.university_code = b.university_code
+    INNER JOIN shangshufang_customer.school c
+    ON a.university_code = c.university_code
+    AND a.school_id = c.school_id
+    LEFT JOIN shangshufang_customer.university_customer d
+    ON a.update_user = d.customer_id
+    WHERE 1 = 1
+    <if test="arg2 != 0">
+      AND a.university_code = #{arg2,jdbcType=INTEGER}
+    </if>
+    <if test="arg3 != 0">
+      AND a.school_id = #{arg3,jdbcType=INTEGER}
+    </if>
+    ORDER BY data_status DESC, university_code, school_id, create_time
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
+
   <select id="teacherLogin" resultMap="BaseResultMap">
     SELECT
       A.account_id,

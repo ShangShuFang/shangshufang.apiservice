@@ -8,6 +8,7 @@ public class UniversityAccountDTO extends BaseDTO {
     private int universityCode;
     private int schoolID;
     private int customerID;
+    private int studentID;
     private String fullName;
     private String cellphone;
     private String password;
