@@ -16,6 +16,7 @@
     <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
     <result column="business_license" property="businessLicense" jdbcType="VARCHAR" />
     <result column="brand" property="brand" jdbcType="VARCHAR" />
+    <result column="recruit_level" property="recruitLevel" jdbcType="VARCHAR" />
     <result column="memo" property="memo" jdbcType="VARCHAR" />
     <result column="using_technology_count" property="usingTechnologyCount" jdbcType="INTEGER" />
     <result column="using_knowledge_count" property="usingKnowledgeCount" jdbcType="INTEGER" />
@@ -54,6 +55,7 @@
       A.cellphone,
       A.business_license,
       A.brand,
+      A.recruit_level,
       A.memo,
       IFNULL(E.using_technology_count,0) AS using_technology_count,
       IFNULL(F.using_knowledge_count, 0) AS using_knowledge_count,
@@ -106,6 +108,35 @@
     ORDER BY A.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
+
+  <select id="searchList4Client" resultMap="BaseResultMap">
+    SELECT
+      A.company_id,
+      A.company_name,
+      A.company_abbreviation,
+      A.province_code,
+      B.region_name AS province_name,
+      A.city_code,
+      IFNULL(C.region_name, CONCAT(B.region_name, '市')) AS city_name,
+      A.district_code,
+      D.region_name AS district_name,
+      A.address,
+      A.contacts,
+      A.cellphone,
+      A.business_license,
+      A.brand,
+      A.recruit_level,
+      A.memo
+    FROM shangshufang_customer.company A
+    INNER JOIN shangshufang_base.china_region B
+    ON A.province_code = B.region_code
+    LEFT JOIN shangshufang_base.china_region C
+    ON A.city_code = C.region_code
+    INNER JOIN shangshufang_base.china_region D
+    ON A.district_code = D.region_code
+    WHERE A.data_status = 'A'
+    ORDER BY A.update_time DESC;
+  </select>
   <select id="searchByID" resultMap="BaseResultMap">
     SELECT
       A.company_id,
@@ -122,6 +153,7 @@
       A.cellphone,
       A.business_license,
       A.brand,
+      A.recruit_level,
       A.memo,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未激活'

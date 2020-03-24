@@ -12,5 +12,7 @@ public interface TechnologyKnowledgeUsingService {
 
     UnifiedResponse findKnowledgeList(int companyID, int technologyID, int learningPhaseID);
 
+    UnifiedResponse findKnowledgeList4Client(int companyID, int technologyID);
+
     UnifiedResponse add(TechnologyKnowledgeUsingDTO dto);
 }

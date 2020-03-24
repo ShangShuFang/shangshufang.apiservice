@@ -34,6 +34,11 @@ public class TechnologyKnowledgeUsingController {
         return serviceImpl.findKnowledgeList(companyID, technologyID, learningPhaseID);
     }
 
+    @RequestMapping(value = "/client/{companyID}/{technologyID}", method = RequestMethod.GET)
+    public UnifiedResponse findKnowledgeList4Client(@PathVariable("companyID") int companyID, @PathVariable("technologyID") int technologyID){
+        return serviceImpl.findKnowledgeList4Client(companyID, technologyID);
+    }
+
     @RequestMapping(method = RequestMethod.POST)
     public UnifiedResponse add(@RequestBody TechnologyKnowledgeUsingDTO dto){
         return serviceImpl.add(dto);

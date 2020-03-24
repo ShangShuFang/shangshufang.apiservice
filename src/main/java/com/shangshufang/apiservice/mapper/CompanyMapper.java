@@ -11,6 +11,8 @@ public interface CompanyMapper extends BaseMapper<CompanyEntity> {
 
     List<CompanyEntity> searchList(int startIndex, int pageSize, int provinceCode, int cityCode);
 
+    List<CompanyEntity> searchList4Client();
+
     CompanyEntity searchByID(int companyID);
 
     int checkCompanyNameExist(String companyName);

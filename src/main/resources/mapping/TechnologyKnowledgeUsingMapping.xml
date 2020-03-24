@@ -116,6 +116,33 @@
     AND E.data_status = 'A'
   </select>
 
+  <select id="searchKnowledgeList4Client" resultMap="BaseResultMap">
+    SELECT
+      A.company_id,
+      B.company_name,
+      A.technology_id,
+      C.technology_name,
+      A.knowledge_id,
+      D.knowledge_name
+    FROM
+    (
+      SELECT
+        DISTINCT company_id, technology_id, knowledge_id
+      FROM shangshufang_customer.technology_knowledge_using
+      WHERE company_id = #{arg0,jdbcType=INTEGER}
+      AND technology_id = #{arg1,jdbcType=INTEGER}
+    ) A
+    INNER JOIN shangshufang_customer.company B
+    ON A.company_id = B.company_id
+    AND B.data_status = 'A'
+    INNER JOIN shangshufang_base.technology C
+    ON A.technology_id = C.technology_id
+    AND C.data_status = 'A'
+    INNER JOIN shangshufang_base.technology_knowledge D
+    ON A.knowledge_id = D.knowledge_id
+    AND D.data_status = 'A'
+  </select>
+
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.TechnologyKnowledgeUsingEntity" >
     INSERT INTO shangshufang_customer.technology_knowledge_using (
       company_id,

@@ -6,6 +6,8 @@ import com.shangshufang.apiservice.vo.UnifiedResponse;
 public interface CompanyService extends BaseService<CompanyDTO> {
     UnifiedResponse findList(int pageNumber, int pageSize, int provinceCode, int cityCode);
 
+    UnifiedResponse findList4Client();
+
     UnifiedResponse find(int companyID);
 
     UnifiedResponse checkCompanyNameExist(String companyName);

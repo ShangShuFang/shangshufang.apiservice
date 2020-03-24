@@ -15,5 +15,7 @@ public interface TechnologyKnowledgeUsingMapper extends BaseMapper<TechnologyKno
 
     List<TechnologyKnowledgeUsingEntity> searchKnowledgeList(int companyID, int technologyID, int learningPhaseID);
 
+    List<TechnologyKnowledgeUsingEntity> searchKnowledgeList4Client(int companyID, int technologyID);
+
     int delete(int companyID, int technologyID, int learningPhaseID);
 }

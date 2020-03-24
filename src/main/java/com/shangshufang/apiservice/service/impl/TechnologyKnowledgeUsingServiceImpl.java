@@ -95,6 +95,24 @@ public class TechnologyKnowledgeUsingServiceImpl implements TechnologyKnowledgeU
     }
 
     @Override
+    public UnifiedResponse findKnowledgeList4Client(int companyID, int technologyID) {
+        try {
+            List<TechnologyKnowledgeUsingVO> modelList = new ArrayList<>();
+
+            List<TechnologyKnowledgeUsingEntity> entityList =  myMapper.searchKnowledgeList4Client(companyID, technologyID);
+            for (TechnologyKnowledgeUsingEntity entity : entityList) {
+                TechnologyKnowledgeUsingVO model = new TechnologyKnowledgeUsingVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse add(TechnologyKnowledgeUsingDTO dto) {
         try {
             String[] usingKnowledgeArray = dto.getKnowledgeIdList().split(",");

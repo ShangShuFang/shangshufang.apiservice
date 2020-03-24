@@ -20,6 +20,11 @@ public class CompanyController {
         return serviceImpl.findList(pageNumber, pageSize, provinceCode, cityCode);
     }
 
+    @RequestMapping(value = "/client", method = RequestMethod.GET)
+    public UnifiedResponse findList4Client(){
+        return serviceImpl.findList4Client();
+    }
+
     @RequestMapping(value = "/{companyID}", method = RequestMethod.GET)
     public UnifiedResponse find(@PathVariable("companyID") int companyID){
         return serviceImpl.find(companyID);

@@ -45,6 +45,26 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public UnifiedResponse findList4Client() {
+        try {
+            List<CompanyVO> modelList = new ArrayList<>();
+            List<CompanyEntity> entityList =  myMapper.searchList4Client();
+            if (entityList.isEmpty()) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            for (CompanyEntity entity : entityList) {
+                CompanyVO model = new CompanyVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse find(int companyID) {
         try {
             CompanyEntity entity =  myMapper.searchByID(companyID);
