@@ -15,4 +15,5 @@ public class UniversityStudentDTO extends BaseDTO {
     private String password;
     private String email;
     private String photo;
+    private boolean assistant;
 }

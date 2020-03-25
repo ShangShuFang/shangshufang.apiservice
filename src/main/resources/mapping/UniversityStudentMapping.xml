@@ -15,6 +15,7 @@
     <result column="password" property="password" jdbcType="VARCHAR" />
     <result column="email" property="email" jdbcType="VARCHAR" />
     <result column="photo" property="photo" jdbcType="VARCHAR" />
+    <result column="is_assistant" property="assistant" jdbcType="BIT" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -50,7 +51,8 @@
       A.enrollment_year,
       A.cellphone,
       A.email,
-      A.photo
+      A.photo,
+      A.is_assistant
     FROM shangshufang_customer.university_student A
     INNER JOIN shangshufang_customer.university B
     ON A.university_code = B.university_code
@@ -83,7 +85,8 @@
       A.enrollment_year,
       A.cellphone,
       A.email,
-      A.photo
+      A.photo,
+      A.is_assistant
     FROM shangshufang_customer.university_student A
     INNER JOIN shangshufang_customer.university B
     ON A.university_code = B.university_code
@@ -151,6 +154,14 @@
   <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.UniversityStudentEntity" >
     UPDATE shangshufang_customer.university_student SET
       data_status = #{dataStatus,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE university_code = #{universityCode,jdbcType=INTEGER}
+    AND school_id = #{schoolID,jdbcType=INTEGER}
+    AND student_id = #{studentID,jdbcType=INTEGER};
+  </update>
+  <update id="updateAssistant" parameterType="com.shangshufang.apiservice.entity.UniversityStudentEntity" >
+    UPDATE shangshufang_customer.university_student SET
+      is_assistant = #{assistant,jdbcType=BIT},
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE university_code = #{universityCode,jdbcType=INTEGER}
     AND school_id = #{schoolID,jdbcType=INTEGER}

@@ -13,4 +13,6 @@ public interface UniversityStudentService extends BaseService<UniversityStudentD
     UnifiedResponse checkEmailExist(String email);
 
     UnifiedResponse changePassword(UniversityStudentDTO dto);
+
+    UnifiedResponse changeAssistant(UniversityStudentDTO dto);
 }

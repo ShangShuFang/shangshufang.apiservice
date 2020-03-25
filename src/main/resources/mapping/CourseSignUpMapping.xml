@@ -12,6 +12,8 @@
     <result column="student_photo" property="studentPhoto" jdbcType="VARCHAR" />
     <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
     <result column="enrollment_year" property="enrollmentYear" jdbcType="VARCHAR" />
+    <result column="is_assistant" property="assistant" jdbcType="BIT" />
+
     <result column="course_university_code" property="courseUniversityCode" jdbcType="INTEGER" />
     <result column="course_university_name" property="courseUniversityName" jdbcType="VARCHAR" />
     <result column="course_school_id" property="courseSchoolID" jdbcType="INTEGER" />
@@ -45,6 +47,7 @@
     F.photo AS student_photo,
     F.cellphone,
     F.enrollment_year,
+    F.is_assistant,
     A.course_university_code,
     D.university_name AS course_university_name,
     A.course_school_id,
@@ -96,6 +99,7 @@
     F.photo AS student_photo,
     F.cellphone,
     F.enrollment_year,
+    F.is_assistant,
     A.course_university_code,
     D.university_name AS course_university_name,
     A.course_school_id,
@@ -155,6 +159,7 @@
     F.photo AS student_photo,
     F.cellphone,
     F.enrollment_year,
+    F.is_assistant,
     A.course_university_code,
     D.university_name AS course_university_name,
     A.course_school_id,
@@ -218,6 +223,7 @@
       G.photo AS student_photo,
       G.cellphone,
       G.enrollment_year,
+      G.is_assistant,
       B.course_university_code,
       E.university_name AS course_university_name,
       B.course_school_id,

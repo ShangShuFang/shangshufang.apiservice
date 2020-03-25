@@ -18,4 +18,6 @@ public interface UniversityStudentMapper extends BaseMapper<UniversityStudentEnt
     int checkEmailExist(String email);
 
     int updatePassword(UniversityStudentEntity entity);
+
+    int updateAssistant(UniversityStudentEntity entity);
 }

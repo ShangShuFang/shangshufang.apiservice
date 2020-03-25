@@ -57,4 +57,9 @@ public class UniversityStudentController {
     public UnifiedResponse changeDataStatus(@RequestBody UniversityStudentDTO dto){
         return serviceImpl.changeDataStatus(dto);
     }
+
+    @RequestMapping(value = "/changeAssistant", method = RequestMethod.PUT)
+    public UnifiedResponse changeAssistant(@RequestBody UniversityStudentDTO dto){
+        return serviceImpl.changeAssistant(dto);
+    }
 }
