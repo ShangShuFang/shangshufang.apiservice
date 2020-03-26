@@ -6,7 +6,9 @@ import com.shangshufang.apiservice.vo.UnifiedResponse;
 public interface UniversityAccountService extends BaseService<UniversityAccountDTO>  {
     UnifiedResponse findList(int pageNumber, int pageSize, int universityCode, int schoolID);
 
-    UnifiedResponse findList4Client(int pageNumber, int pageSize, int universityCode, int schoolID, int accountID);
+    UnifiedResponse findWaitApproveTotalCount4Client(int universityCode, int schoolID, int teacherID);
+
+    UnifiedResponse findList4Client(int pageNumber, int pageSize, int universityCode, int schoolID, int accountID, String dataStatus);
 
     UnifiedResponse login(String cellphone, String password, String accountRole);
 

@@ -18,4 +18,5 @@ public class UniversityAccountEntity extends BaseEntity {
     private String sex;
     private String accountRole;
     private String accountRoleText;
+    private boolean assistant;
 }

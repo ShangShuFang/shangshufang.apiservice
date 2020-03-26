@@ -11,9 +11,11 @@ public interface UniversityAccountMapper extends BaseMapper<UniversityAccountEnt
 
     List<UniversityAccountEntity> searchList(int startIndex, int pageSize, int universityCode, int schoolID);
 
-    int searchTotalCount4Client(int universityCode, int schoolID, int teacherID);
+    int searchWaitApproveTotalCount4Client(int universityCode, int schoolID, int teacherID);
 
-    List<UniversityAccountEntity> searchList4Client(int startIndex, int pageSize, int universityCode, int schoolID, int accountID);
+    int searchTotalCount4Client(int universityCode, int schoolID, int teacherID, String dataStatus);
+
+    List<UniversityAccountEntity> searchList4Client(int startIndex, int pageSize, int universityCode, int schoolID, int accountID, String dataStatus);
 
     UniversityAccountEntity teacherLogin(String cellphone, String password);
 

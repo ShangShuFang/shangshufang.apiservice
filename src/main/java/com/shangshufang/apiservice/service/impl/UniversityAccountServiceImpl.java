@@ -1,6 +1,7 @@
 package com.shangshufang.apiservice.service.impl;
 
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
+import com.shangshufang.apiservice.constant.ParameterConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.constant.UniversityAccountConstant;
 import com.shangshufang.apiservice.dto.UniversityAccountDTO;
@@ -56,15 +57,27 @@ public class UniversityAccountServiceImpl implements UniversityAccountService {
     }
 
     @Override
-    public UnifiedResponse findList4Client(int pageNumber, int pageSize, int universityCode, int schoolID, int accountID) {
+    public UnifiedResponse findWaitApproveTotalCount4Client(int universityCode, int schoolID, int teacherID) {
+        try {
+            int totalCount = myMapper.searchWaitApproveTotalCount4Client(universityCode, schoolID, teacherID);
+            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, totalCount);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse findList4Client(int pageNumber, int pageSize, int universityCode, int schoolID, int accountID, String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<UniversityAccountVO> modelList = new ArrayList<>();
-            int totalCount = myMapper.searchTotalCount4Client(universityCode, schoolID, accountID);
+            dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
+            int totalCount = myMapper.searchTotalCount4Client(universityCode, schoolID, accountID, dataStatus);
             if (totalCount == 0) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<UniversityAccountEntity> entityList = myMapper.searchList4Client(startIndex, pageSize, universityCode, schoolID, accountID);
+            List<UniversityAccountEntity> entityList = myMapper.searchList4Client(startIndex, pageSize, universityCode, schoolID, accountID, dataStatus);
             for (UniversityAccountEntity entity : entityList) {
                 UniversityAccountVO model = new UniversityAccountVO();
                 ObjectConvertUtils.toBean(entity, model);
