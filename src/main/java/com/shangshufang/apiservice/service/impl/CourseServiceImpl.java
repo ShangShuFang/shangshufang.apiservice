@@ -130,6 +130,29 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public UnifiedResponse findList4Copy(int universityCode, int schoolID, int teacherID, int technologyID) {
+        try {
+            List<CourseVO> modelList = new ArrayList<>();
+            //取得课程基本信息
+            List<CourseEntity> entityList =  courseMapper.searchList4Copy(universityCode, schoolID, teacherID, technologyID);
+            if(entityList.isEmpty()){
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+
+            for (CourseEntity entity : entityList) {
+                CourseVO model = new CourseVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse find(int universityCode,
                                 int schoolID,
                                 int courseID,

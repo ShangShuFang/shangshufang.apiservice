@@ -43,6 +43,10 @@ public interface CourseMapper extends BaseMapper<CourseEntity> {
                                   int pageSize,
                                   boolean isSelf);
 
+    int searchTotalCount4Copy(int universityCode, int schoolID, int teacherID, int technologyID);
+
+    List<CourseEntity> searchList4Copy(int universityCode, int schoolID, int teacherID, int technologyID);
+
     CourseEntity search(int universityCode,
                         int schoolID,
                         int courseID,

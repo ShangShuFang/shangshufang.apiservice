@@ -509,6 +509,33 @@
     ON A.course_id = N.course_id;
   </select>
 
+  <select id="searchTotalCount4Copy" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.course
+    WHERE data_status != 'D'
+      AND university_code = #{arg0,jdbcType=INTEGER}
+      AND school_id = #{arg1,jdbcType=INTEGER}
+      AND teacher_id = #{arg2,jdbcType=INTEGER}
+      AND technology_id = #{arg3,jdbcType=INTEGER};
+  </select>
+
+  <select id="searchList4Copy" resultMap="BaseResultMap">
+    SELECT university_code,
+       school_id,
+       technology_id,
+       course_id,
+       course_name,
+       DATE_FORMAT(course_time_begin, '%Y-%m-%d') AS course_time_begin,
+       DATE_FORMAT(course_time_end, '%Y-%m-%d') AS course_time_end
+    FROM shangshufang_customer.course
+    WHERE data_status != 'D'
+      AND university_code = #{arg0,jdbcType=INTEGER}
+      AND school_id = #{arg1,jdbcType=INTEGER}
+      AND teacher_id = #{arg2,jdbcType=INTEGER}
+      AND technology_id = #{arg3,jdbcType=INTEGER};
+  </select>
+
+
   <select id="search" resultMap="BaseResultMap">
     SELECT
       A.course_id,

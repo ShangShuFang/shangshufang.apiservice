@@ -26,6 +26,14 @@ public class CourseController {
         return serviceImpl.findList(pageNumber, pageSize, universityCode, schoolID, teacherID, technologyID, courseTimeBegin, dataStatus, isSelf, searchType);
     }
 
+    @RequestMapping(value = "/copy/{universityCode}/{schoolID}/{teacherID}/{technologyID}", method = RequestMethod.GET)
+    public UnifiedResponse findList4Copy(@PathVariable("universityCode") int universityCode,
+                                    @PathVariable("schoolID") int schoolID,
+                                    @PathVariable("teacherID") int teacherID,
+                                    @PathVariable("technologyID") int technologyID) {
+        return serviceImpl.findList4Copy(universityCode, schoolID, teacherID, technologyID);
+    }
+
     @RequestMapping(value = "/{universityCode}/{schoolID}/{courseID}/{dataStatus}", method = RequestMethod.GET)
     public UnifiedResponse find(@PathVariable("universityCode") int universityCode,
                                 @PathVariable("schoolID") int schoolID,

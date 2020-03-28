@@ -5,4 +5,6 @@ import com.shangshufang.apiservice.vo.UnifiedResponse;
 
 public interface CoursePlanService {
     UnifiedResponse finishCourseClass(CoursePlanDTO dto);
+
+    UnifiedResponse findList(int universityCode, int schoolID, int courseID);
 }
