@@ -106,7 +106,7 @@ public class UniversityStudentServiceImpl implements UniversityStudentService {
         try {
             UniversityStudentEntity entity = new UniversityStudentEntity();
             ObjectConvertUtils.toBean(dto, entity);
-            entity.setAssistant(dto.isAssistant());
+            entity.setAssistant(dto.getAssistant());
             entity.setUpdateUser(dto.getLoginUser());
             int affectRow = myMapper.updateAssistant(entity);
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);

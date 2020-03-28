@@ -77,7 +77,7 @@
       WHEN a.data_status = 'D' THEN '冻结'
       ELSE '未知数据状态'
       END AS data_status_text,
-      false AS is_assistant,
+      0 AS is_assistant,
       IFNULL(e.admin_name, g.full_name) AS create_user,
       DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
       IFNULL(f.admin_name, h.full_name) AS update_user,
@@ -245,7 +245,7 @@
     WHEN a.data_status = 'D' THEN '禁用'
     ELSE '未知数据状态'
     END AS data_status_text,
-    false AS is_assistant,
+    0 AS is_assistant,
     IFNULL(e.admin_name, g.full_name) AS create_user,
     DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
     IFNULL(f.admin_name, h.full_name) AS update_user,

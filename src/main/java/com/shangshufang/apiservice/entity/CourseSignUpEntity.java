@@ -14,7 +14,7 @@ public class CourseSignUpEntity extends BaseEntity {
     private String studentPhoto;
     private String cellphone;
     private String enrollmentYear;
-    private boolean assistant;
+    private int assistant;
     private int courseUniversityCode;
     private String courseUniversityName;
     private int courseSchoolID;

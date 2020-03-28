@@ -17,5 +17,5 @@ public class UniversityAccountVO extends BaseVO {
     private String sex;
     private String accountRole;
     private String accountRoleText;
-    private boolean assistant;
+    private int assistant;
 }

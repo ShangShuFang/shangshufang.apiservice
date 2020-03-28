@@ -36,7 +36,7 @@ public class CourseSignUpServiceImpl implements CourseSignUpService {
             for (CourseSignUpEntity entity : entityList) {
                 CourseSignUpVO model = new CourseSignUpVO();
                 ObjectConvertUtils.toBean(entity, model);
-                model.setAssistant(entity.isAssistant());
+                model.setAssistant(entity.getAssistant());
                 modelList.add(model);
             }
             return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
