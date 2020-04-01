@@ -25,31 +25,15 @@
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <select id="searchTotalCount" resultType="java.lang.Integer">
-    SELECT SUM(A.total_count) AS total_count
-    FROM
-    (
-      SELECT COUNT(1) AS total_count
+     SELECT COUNT(1) AS total_count
       FROM shangshufang_customer.university_account
-      WHERE 1=1
+      WHERE account_role = 'A'
       <if test="arg0 != 0">
         AND university_code = #{arg0,jdbcType=INTEGER}
       </if>
       <if test="arg1 != 0">
         AND school_id = #{arg1,jdbcType=INTEGER}
-      </if>
-
-      UNION
-
-      SELECT COUNT(1) AS total_count
-      FROM shangshufang_customer.university_student
-      WHERE 1 = 1
-      <if test="arg0 != 0">
-        AND university_code = #{arg0,jdbcType=INTEGER}
-      </if>
-      <if test="arg1 != 0">
-        AND school_id = #{arg1,jdbcType=INTEGER}
-      </if>
-    ) A;
+      </if>;
   </select>
   <select id="searchList" resultMap="BaseResultMap">
     SELECT
@@ -77,7 +61,6 @@
       WHEN a.data_status = 'D' THEN '冻结'
       ELSE '未知数据状态'
       END AS data_status_text,
-      0 AS is_assistant,
       IFNULL(e.admin_name, g.full_name) AS create_user,
       DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
       IFNULL(f.admin_name, h.full_name) AS update_user,
@@ -100,58 +83,14 @@
     ON a.create_user = g.customer_id
     LEFT JOIN shangshufang_customer.university_customer h
     ON a.update_user = h.customer_id
-    WHERE 1 = 1
+    WHERE a.account_role = 'A'
     <if test="arg2 != 0">
       AND a.university_code = #{arg2,jdbcType=INTEGER}
     </if>
     <if test="arg3 != 0">
       AND a.school_id = #{arg3,jdbcType=INTEGER}
     </if>
-
-    UNION
-
-    SELECT
-      a.student_id AS account_id,
-      a.university_code,
-      b.university_name,
-      a.school_id,
-      c.school_name,
-      a.student_id AS customer_id,
-      a.full_name,
-      a.cellphone,
-      'S' AS account_role,
-      '学生' AS account_role_text,
-      a.email,
-      a.photo,
-      a.data_status,
-      CASE
-      WHEN a.data_status = 'P' THEN '待审核'
-      WHEN a.data_status = 'A' THEN '正常'
-      WHEN a.data_status = 'N' THEN '驳回'
-      WHEN a.data_status = 'D' THEN '冻结'
-      ELSE '未知数据状态'
-      END AS data_status_text,
-      a.is_assistant,
-      '' AS create_user,
-      DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-      IFNULL(d.full_name, '') AS update_user,
-      DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
-    FROM shangshufang_customer.university_student a
-    INNER JOIN shangshufang_customer.university b
-    ON a.university_code = b.university_code
-    INNER JOIN shangshufang_customer.school c
-    ON a.university_code = c.university_code
-    AND a.school_id = c.school_id
-    LEFT JOIN shangshufang_customer.university_customer d
-    ON a.update_user = d.customer_id
-    WHERE 1 = 1
-    <if test="arg2 != 0">
-      AND a.university_code = #{arg2,jdbcType=INTEGER}
-    </if>
-    <if test="arg3 != 0">
-      AND a.school_id = #{arg3,jdbcType=INTEGER}
-    </if>
-    ORDER BY data_status DESC, university_code, school_id, update_time DESC
+    ORDER BY a.data_status DESC, a.university_code, a.school_id, a.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 

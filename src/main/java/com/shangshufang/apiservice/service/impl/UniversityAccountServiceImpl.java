@@ -1,6 +1,7 @@
 package com.shangshufang.apiservice.service.impl;
 
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
+import com.shangshufang.apiservice.constant.CustomerRoleConstant;
 import com.shangshufang.apiservice.constant.ParameterConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.constant.UniversityAccountConstant;
@@ -235,17 +236,21 @@ public class UniversityAccountServiceImpl implements UniversityAccountService {
             UniversityCustomerEntity customerEntity = new UniversityCustomerEntity();
             UniversityStudentEntity studentEntity = new UniversityStudentEntity();
             int affectRow = 0;
-            if (dto.getAccountRole().equals("T")) {
-                ObjectConvertUtils.toBean(dto, accountEntity);
-                ObjectConvertUtils.toBean(dto, customerEntity);
-                accountEntity.setUpdateUser(dto.getLoginUser());
-                customerEntity.setUpdateUser(dto.getLoginUser());
-                affectRow = myMapper.updateDataStatus(accountEntity);
-                affectRow = customerMapper.updateDataStatus(customerEntity);
-            } else {
-                ObjectConvertUtils.toBean(dto, studentEntity);
-                studentEntity.setUpdateUser(dto.getLoginUser());
-                affectRow = studentMapper.updateDataStatus(studentEntity);
+            switch (dto.getAccountRole()) {
+                case CustomerRoleConstant.UNIVERSITY_SCHOOL_ADMIN :
+                case CustomerRoleConstant.UNIVERSITY_SCHOOL_TEACHER:
+                    ObjectConvertUtils.toBean(dto, accountEntity);
+                    ObjectConvertUtils.toBean(dto, customerEntity);
+                    accountEntity.setUpdateUser(dto.getLoginUser());
+                    customerEntity.setUpdateUser(dto.getLoginUser());
+                    affectRow += myMapper.updateDataStatus(accountEntity);
+                    affectRow += customerMapper.updateDataStatus(customerEntity);
+                    break;
+                case CustomerRoleConstant.UNIVERSITY_SCHOOL_STUDENT:
+                    ObjectConvertUtils.toBean(dto, studentEntity);
+                    studentEntity.setUpdateUser(dto.getLoginUser());
+                    affectRow += studentMapper.updateDataStatus(studentEntity);
+                    break;
             }
 
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
