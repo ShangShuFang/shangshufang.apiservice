@@ -255,7 +255,7 @@
     WHERE A.technology_id = #{arg2,jdbcType=INTEGER}
     AND A.data_status = 'A'
     AND B.data_status = 'A'
-    ORDER BY B.update_time DESC
+    ORDER BY B.update_time DESC, G.student_id ASC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 
