@@ -65,6 +65,11 @@ public class CompanyController {
         return serviceImpl.changeMemo(dto);
     }
 
+    @RequestMapping(value="/changeRecruitLevel", method = RequestMethod.PUT)
+    public UnifiedResponse changeRecruitLevel(@RequestBody CompanyDTO dto){
+        return serviceImpl.changeRecruitLevel(dto);
+    }
+
     @RequestMapping(value = "/{companyID}", method = RequestMethod.DELETE)
     public UnifiedResponse delete(@PathVariable("companyID") int companyID){
         return serviceImpl.delete(companyID);

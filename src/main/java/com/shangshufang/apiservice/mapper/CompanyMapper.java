@@ -23,5 +23,7 @@ public interface CompanyMapper extends BaseMapper<CompanyEntity> {
 
     int updateMemo(CompanyEntity entity);
 
+    int updateRecruitLevel(CompanyEntity entity);
+
     int delete(int companyID);
 }

@@ -250,6 +250,14 @@
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE company_id = #{companyID,jdbcType=INTEGER};
   </update>
+
+  <update id="updateRecruitLevel" parameterType="com.shangshufang.apiservice.entity.CompanyEntity" >
+    UPDATE shangshufang_customer.company SET
+      recruit_level = #{recruitLevel,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE company_id = #{companyID,jdbcType=INTEGER};
+  </update>
+
   <delete id="delete" parameterType="java.lang.Integer" >
     DELETE FROM shangshufang_customer.company
     WHERE company_id = #{companyID,jdbcType=INTEGER};
