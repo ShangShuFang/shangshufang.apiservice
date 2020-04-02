@@ -156,7 +156,6 @@
       ON A.learning_phase_id = C.learning_phase_id
     INNER JOIN shangshufang_base.technology_knowledge D
       ON A.technology_id = D.technology_id
-      AND A.learning_phase_id = D.learning_phase_id
       AND A.knowledge_id = D.knowledge_id
       AND D.data_status = 'A'
     LEFT JOIN shangshufang_base.exercises_knowledge1 E
@@ -194,7 +193,6 @@
       ON A.learning_phase_id = C.learning_phase_id
     INNER JOIN shangshufang_base.technology_knowledge D
       ON A.technology_id = D.technology_id
-      AND A.learning_phase_id = D.learning_phase_id
       AND A.knowledge_id = D.knowledge_id
       AND D.data_status = 'A'
     LEFT JOIN shangshufang_base.exercises_knowledge1 E
