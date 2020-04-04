@@ -83,7 +83,7 @@
     WHERE A.course_university_code = #{arg2,jdbcType=INTEGER}
     AND A.course_school_id = #{arg3,jdbcType=INTEGER}
     AND A.course_id = #{arg4,jdbcType=INTEGER}
-    ORDER BY A.update_time DESC
+    ORDER BY A.update_time DESC, A.student_id
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 

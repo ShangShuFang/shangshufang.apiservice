@@ -61,12 +61,10 @@
     ON A.learning_phase_id = D.learning_phase_id
     INNER JOIN shangshufang_base.technology_knowledge E
     ON A.technology_id = E.technology_id
-    AND A.learning_phase_id = E.learning_phase_id
     AND A.knowledge_id = E.knowledge_id
     AND E.data_status = 'A'
     INNER JOIN shangshufang_base.technology_knowledge_exercises F
     ON A.technology_id = F.technology_id
-    AND A.learning_phase_id = F.learning_phase_id
     AND A.knowledge_id = F.knowledge_id
     AND A.exercises_document_id = F.exercises_id
     WHERE A.course_university_code = #{arg0,jdbcType=INTEGER}
@@ -139,7 +137,6 @@
     AND A.course_id = G.course_id
     INNER JOIN shangshufang_base.technology_knowledge_exercises H
     ON A.technology_id = H.technology_id
-    AND A.learning_phase_id = H.learning_phase_id
     AND A.knowledge_id = H.knowledge_id
     AND A.exercises_document_id = H.exercises_id
     INNER JOIN shangshufang_base.technology I
@@ -201,7 +198,7 @@
     <if test="arg5 != null">
       AND A.data_status = #{arg5,jdbcType=VARCHAR}
     </if>
-    ORDER BY A.update_time DESC, A.student_id, A.course_class, A.knowledge_id
+    ORDER BY A.student_id, A.course_class, A.knowledge_id, A.exercises_document_id, A.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 

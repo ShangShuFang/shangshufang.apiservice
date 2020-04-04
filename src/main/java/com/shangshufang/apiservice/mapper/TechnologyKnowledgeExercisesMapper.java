@@ -11,7 +11,7 @@ public interface TechnologyKnowledgeExercisesMapper extends BaseMapper<Technolog
 
     List<TechnologyKnowledgeExercisesEntity> searchList(int startIndex, int pageSize, int technologyID, int learningPhaseID, int knowledgeID);
 
-    List<TechnologyKnowledgeExercisesEntity> searchList4Knowledge(int technologyID, int learningPhaseID, int knowledgeID);
+    List<TechnologyKnowledgeExercisesEntity> searchList4Knowledge(int technologyID, int knowledgeID);
 
     List<TechnologyKnowledgeExercisesEntity> searchList4CourseKnowledge(int universityCode, int schoolID, int courseID, int courseClass, int knowledgeID);
 

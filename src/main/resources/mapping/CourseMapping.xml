@@ -196,7 +196,6 @@
         AND A.technology_id = B.technology_id
       INNER JOIN shangshufang_base.technology_knowledge_exercises C
         ON B.technology_id = C.technology_id
-        AND B.learning_phase_id = C.learning_phase_id
         AND B.knowledge_id = C.knowledge_id
         AND C.data_status = 'A'
       WHERE A.data_status != 'D'
@@ -434,7 +433,6 @@
     AND A.technology_id = B.technology_id
     INNER JOIN shangshufang_base.technology_knowledge_exercises C
     ON B.technology_id = C.technology_id
-    AND B.learning_phase_id = C.learning_phase_id
     AND B.knowledge_id = C.knowledge_id
     AND C.data_status = 'A'
     WHERE A.data_status != 'D'
@@ -655,7 +653,6 @@
         AND A.technology_id = B.technology_id
       INNER JOIN shangshufang_base.technology_knowledge_exercises C
         ON B.technology_id = C.technology_id
-        AND B.learning_phase_id = C.learning_phase_id
         AND B.knowledge_id = C.knowledge_id
         AND C.data_status = 'A'
       WHERE A.data_status != 'D'

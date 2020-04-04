@@ -68,8 +68,7 @@
     AND A.learning_phase_id = B.learning_phase_id
     AND A.knowledge_id = B.knowledge_id
     WHERE A.technology_id = #{arg0,jdbcType=INTEGER}
-    AND A.learning_phase_id = #{arg1,jdbcType=INTEGER}
-    AND A.knowledge_id = #{arg2,jdbcType=INTEGER}
+    AND A.knowledge_id = #{arg1,jdbcType=INTEGER}
     AND A.data_status = 'A'
     ORDER BY A.exercises_id;
   </select>
@@ -94,7 +93,6 @@
     ) A
     INNER JOIN shangshufang_base.technology_knowledge_exercises B
     ON A.technology_id = B.technology_id
-    AND A.learning_phase_id = B.learning_phase_id
     AND A.knowledge_id = B.knowledge_id
     AND B.data_status = 'A'
     WHERE B.knowledge_id = #{arg4,jdbcType=INTEGER}

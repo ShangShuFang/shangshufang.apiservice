@@ -80,7 +80,6 @@
     LEFT JOIN
     (
       SELECT technology_id,
-      learning_phase_id,
       knowledge_id,
       COUNT(1) AS knowledge_exercises_count
       FROM shangshufang_base.technology_knowledge_exercises
@@ -91,10 +90,9 @@
       <if test="arg3 != 0">
         AND learning_phase_id = #{arg3,jdbcType=INTEGER}
       </if>
-      GROUP BY technology_id, learning_phase_id, knowledge_id
+      GROUP BY technology_id, knowledge_id
     ) E
     ON A.technology_id = E.technology_id
-    AND A.learning_phase_id = E.learning_phase_id
     AND A.knowledge_id = E.knowledge_id
     INNER JOIN shangshufang_base.system_admin F
     ON A.create_user = F.admin_id
