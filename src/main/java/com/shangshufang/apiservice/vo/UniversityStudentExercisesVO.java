@@ -32,6 +32,8 @@ public class UniversityStudentExercisesVO extends BaseVO {
     private String knowledgeName;
     private int exercisesDocumentID;
     private String exercisesDocumentUrl;
+    private String exercisesAnswerUrl;
+
 
     private String sourceCodeGitUrl;
 

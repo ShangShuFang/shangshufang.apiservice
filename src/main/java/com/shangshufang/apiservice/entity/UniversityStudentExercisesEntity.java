@@ -32,6 +32,7 @@ public class UniversityStudentExercisesEntity extends BaseEntity {
     private String knowledgeName;
     private int exercisesDocumentID;
     private String exercisesDocumentUrl;
+    private String exercisesAnswerUrl;
 
     private String sourceCodeGitUrl;
 

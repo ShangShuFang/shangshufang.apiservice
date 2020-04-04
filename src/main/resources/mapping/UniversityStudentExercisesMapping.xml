@@ -30,6 +30,7 @@
     <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR" />
     <result column="exercises_document_id" property="exercisesDocumentID" jdbcType="INTEGER" />
     <result column="exercises_document_url" property="exercisesDocumentUrl" jdbcType="VARCHAR" />
+    <result column="exercises_answer_url" property="exercisesAnswerUrl" jdbcType="VARCHAR" />
     <result column="source_code_git_url" property="sourceCodeGitUrl" jdbcType="VARCHAR" />
 
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
@@ -101,6 +102,7 @@
       K.knowledge_name,
       A.exercises_document_id,
       H.document_url AS exercises_document_url,
+      H.answer_url AS exercises_answer_url,
       A.source_code_git_url,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未完成'
@@ -198,7 +200,7 @@
     <if test="arg5 != null">
       AND A.data_status = #{arg5,jdbcType=VARCHAR}
     </if>
-    ORDER BY A.student_id, A.course_class, A.knowledge_id, A.exercises_document_id, A.update_time DESC
+    ORDER BY A.course_class, A.student_id, A.knowledge_id, A.exercises_document_id, A.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 
