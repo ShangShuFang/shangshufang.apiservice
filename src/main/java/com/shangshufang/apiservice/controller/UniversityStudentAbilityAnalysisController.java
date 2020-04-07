@@ -51,7 +51,7 @@ public class UniversityStudentAbilityAnalysisController {
     }
 
     @RequestMapping(value = "/analysis", method = RequestMethod.POST)
-    public UnifiedResponse analysis(){
-        return serviceImpl.ability();
+    public UnifiedResponse abilityAnalysis() {
+        return serviceImpl.abilityAnalysis();
     }
 }

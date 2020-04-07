@@ -14,12 +14,16 @@ public class UniversityStudentAbilityAnalysisEntity extends BaseEntity {
     private String studentPhoto;
     private String studentCellphone;
     private int technologyID;
+
     private int knowledgeTotalCount;
     private int finishKnowledgeCount;
     private float finishKnowledgePercent;
     private int finishExercisesCount;
+    private int finishUnionExercisesCount;
+    private int finishProjectCount;
     private float onceCompilationSuccessRate;
     private float onceRunSuccessRate;
+    private double standardScore;
     private float positionSite;
     private String abilityLevel;
 }

@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.shangshufang.apiservice.mapper.UniversityStudentAbilityAnalysisMapper" >
-  <parameterMap id="abilityParameterMap" type="java.util.Map">
-    <parameter property="f_start_index" jdbcType="INTEGER" mode="IN"/>
-    <parameter property="f_page_size" jdbcType="INTEGER" mode="IN"/>
-  </parameterMap>
   <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.UniversityStudentAbilityAnalysisEntity" >
     <id column="analysis_id" property="analysisID" jdbcType="INTEGER" />
     <result column="student_university_code" property="studentUniversityCode" jdbcType="INTEGER" />
@@ -22,6 +18,7 @@
     <result column="finish_exercises_count" property="finishExercisesCount" jdbcType="INTEGER" />
     <result column="once_compilation_success_rate" property="onceCompilationSuccessRate" jdbcType="FLOAT" />
     <result column="once_run_success_rate" property="onceRunSuccessRate" jdbcType="FLOAT" />
+    <result column="standard_score" property="standardScore" jdbcType="DOUBLE" />
     <result column="position_site" property="positionSite" jdbcType="FLOAT" />
     <result column="ability_level" property="abilityLevel" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -29,7 +26,6 @@
     <result column="update_user" property="updateUser" jdbcType="INTEGER" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
-
   <resultMap id="StudentAbilityMap" type="com.shangshufang.apiservice.entity.UniversityStudentAbilityEntity" >
     <result column="university_code" property="universityCode" jdbcType="INTEGER" />
     <result column="university_name" property="universityName" jdbcType="VARCHAR" />
@@ -46,11 +42,246 @@
     <result column="online_question_count" property="onlineQuestionCount" jdbcType="INTEGER" />
     <result column="online_answer_count" property="onlineAnswerCount" jdbcType="INTEGER" />
   </resultMap>
-
   <resultMap id="CodeStandardAnalysisMap" type="com.shangshufang.apiservice.entity.StudentCodeStandardAnalysisEntity" >
     <result column="code_standard_name" property="codeStandardName" jdbcType="VARCHAR" />
     <result column="code_standard_count" property="codeStandardCount" jdbcType="INTEGER" />
   </resultMap>
+
+  <select id="searchStudentTotalCountWithTechnology" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS student_total_count
+    FROM shangshufang_customer.university_student_ability_analysis
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER};
+  </select>
+
+  <select id="searchStudentPositionNumberWithTechnology" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS student_total_count
+    FROM shangshufang_customer.university_student_ability_analysis
+    WHERE technology_id = #{arg0,jdbcType=INTEGER} AND standard_score &lt; #{arg1,jdbcType=DOUBLE};
+  </select>
+
+  <select id="searchDataSource4Base" resultMap="BaseResultMap">
+    SELECT a.student_university_code,
+           c.university_name,
+           a.student_school_id,
+           d.school_name,
+           a.student_id,
+           e.full_name AS student_name,
+           e.photo,
+           e.cellphone,
+           b.technology_id,
+           b.teacher_id
+    FROM shangshufang_customer.course_sign_up a
+       INNER JOIN shangshufang_customer.course b
+          ON a.course_university_code = b.university_code
+            AND a.course_school_id = b.school_id
+            AND a.course_id = b.course_id
+       INNER JOIN shangshufang_customer.university c
+          ON a.student_university_code = c.university_code
+       INNER JOIN shangshufang_customer.school d
+          ON a.student_university_code = d.university_code
+            AND a.student_school_id = d.school_id
+       INNER JOIN shangshufang_customer.university_student e
+          ON a.student_university_code = e.university_code
+            AND a.student_school_id = e.school_id
+            AND a.student_id = e.student_id
+    WHERE a.data_status = 'A'
+    ORDER BY a.student_university_code, a.student_school_id, a.student_id, b.technology_id
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+
+  <select id="searchDataSource4KnowledgeCount" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS knowledge_total_count
+    FROM shangshufang_base.technology_knowledge
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER};
+  </select>
+
+  <select id="searchDataSource4FinishKnowledgeCount" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS finish_knowledge_count
+    FROM (
+           SELECT a.student_university_code,
+                  a.student_school_id,
+                  a.student_id,
+                  a.technology_id,
+                  a.knowledge_id,
+                  IF(IFNULL(b.finish_exercises_count, 0) = a.total_exercises_count, 1, 0) AS finish_knowledge_flag
+           FROM (
+                  SELECT student_university_code,
+                         student_school_id,
+                         student_id,
+                         technology_id,
+                         knowledge_id,
+                         COUNT(1) AS total_exercises_count
+                  FROM shangshufang_customer.university_student_exercises
+                  WHERE student_university_code = #{arg0,jdbcType=INTEGER}
+                    AND student_school_id = #{arg1,jdbcType=INTEGER}
+                    AND student_id = #{arg2,jdbcType=INTEGER}
+                    AND technology_id = #{arg3,jdbcType=INTEGER}
+                  GROUP BY student_university_code, student_school_id, student_id, technology_id, knowledge_id
+                ) a
+                  LEFT JOIN
+                (
+                  SELECT student_university_code,
+                         student_school_id,
+                         student_id,
+                         technology_id,
+                         knowledge_id,
+                         COUNT(1) AS finish_exercises_count
+                  FROM shangshufang_customer.university_student_exercises
+                  WHERE student_university_code = #{arg0,jdbcType=INTEGER}
+                    AND student_school_id = #{arg1,jdbcType=INTEGER}
+                    AND student_id = #{arg2,jdbcType=INTEGER}
+                    AND technology_id = #{arg3,jdbcType=INTEGER}
+                    AND data_status = 'S'
+                  GROUP BY student_university_code, student_school_id, student_id, technology_id, knowledge_id
+                ) b
+                ON a.student_university_code = b.student_university_code
+                  AND a.student_school_id = b.student_school_id
+                  AND a.student_id = b.student_id
+                  AND a.technology_id = b.technology_id
+                  AND a.knowledge_id = b.knowledge_id
+         ) c
+    WHERE finish_knowledge_flag = 1;
+  </select>
+
+  <select id="searchDataSource4FinishExercisesCount" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS finish_exercises_count
+    FROM shangshufang_customer.university_student_exercises
+    WHERE student_university_code = #{arg0,jdbcType=INTEGER}
+      AND student_school_id = #{arg1,jdbcType=INTEGER}
+      AND student_id = #{arg2,jdbcType=INTEGER}
+      AND technology_id = #{arg3,jdbcType=INTEGER}
+      AND data_status = 'S';
+  </select>
+
+  <select id="searchDataSource4OnceCompilationSuccessRate" resultType="java.lang.Float">
+    SELECT FORMAT(IFNULL(B.once_compilation_success_total_count, 0) / A.exercises_total_count * 100, 2) AS once_compilation_success_rate
+    FROM (
+           SELECT student_university_code,
+                  student_school_id,
+                  student_id,
+                  technology_id,
+                  COUNT(1) AS exercises_total_count
+           FROM shangshufang_customer.university_student_exercises
+           WHERE student_university_code = #{arg0,jdbcType=INTEGER}
+             AND student_school_id = #{arg1,jdbcType=INTEGER}
+             AND student_id = #{arg2,jdbcType=INTEGER}
+             AND technology_id = #{arg3,jdbcType=INTEGER}
+           GROUP BY student_university_code, student_school_id, student_id, technology_id
+         ) A
+           LEFT JOIN
+         (
+           SELECT A.student_university_code,
+                  A.student_school_id,
+                  A.student_id,
+                  A.technology_id,
+                  COUNT(1) AS once_compilation_success_total_count
+           FROM (
+                  SELECT A.student_university_code,
+                         A.student_school_id,
+                         A.student_id,
+                         A.technology_id,
+                         A.student_exercises_id,
+                         MIN(B.review_id)   AS first_review_id,
+                         MIN(B.create_time) AS first_review_time
+                  FROM shangshufang_customer.university_student_exercises A
+                         INNER JOIN shangshufang_customer.university_student_exercises_review B
+                                    ON A.student_exercises_id = B.student_exercises_id
+                  WHERE A.student_university_code = #{arg0,jdbcType=INTEGER}
+                    AND A.student_school_id = #{arg1,jdbcType=INTEGER}
+                    AND A.student_id = #{arg2,jdbcType=INTEGER}
+                    AND A.technology_id = #{arg3,jdbcType=INTEGER}
+                    AND A.data_status != 'P'
+                  GROUP BY A.student_university_code, A.student_school_id, A.student_id, A.technology_id,
+                           A.student_exercises_id
+                  ORDER BY A.student_university_code, A.student_school_id, A.student_id, A.technology_id,
+                           A.student_exercises_id
+                ) A
+                  INNER JOIN shangshufang_customer.university_student_exercises_review B
+                             ON A.first_review_id = B.review_id
+           WHERE B.compilation_result = 'S'
+           GROUP BY A.student_university_code, A.student_school_id, A.student_id, A.technology_id
+           ORDER BY A.student_university_code, A.student_school_id, A.student_id, A.technology_id
+         ) B
+         ON A.student_university_code = B.student_university_code
+           AND A.student_school_id = B.student_school_id
+           AND A.student_id = B.student_id
+           AND A.technology_id = B.technology_id;
+  </select>
+
+  <select id="searchDataSource4OnceRunSuccessRate" resultType="java.lang.Float">
+    SELECT FORMAT(IFNULL(B.once_run_success_total_count, 0) / A.exercises_total_count * 100, 2) AS once_run_success_rate
+    FROM (
+           SELECT student_university_code,
+                  student_school_id,
+                  student_id,
+                  technology_id,
+                  COUNT(1) AS exercises_total_count
+           FROM shangshufang_customer.university_student_exercises
+           WHERE student_university_code = #{arg0,jdbcType=INTEGER}
+             AND student_school_id = #{arg1,jdbcType=INTEGER}
+             AND student_id = #{arg2,jdbcType=INTEGER}
+             AND technology_id = #{arg3,jdbcType=INTEGER}
+           GROUP BY student_university_code, student_school_id, student_id, technology_id
+         ) A
+           LEFT JOIN
+         (
+           SELECT A.student_university_code,
+                  A.student_school_id,
+                  A.student_id,
+                  A.technology_id,
+                  COUNT(1) AS once_run_success_total_count
+           FROM (
+                  SELECT A.student_university_code,
+                         A.student_school_id,
+                         A.student_id,
+                         A.technology_id,
+                         A.student_exercises_id,
+                         MIN(B.review_id)   AS first_review_id,
+                         MIN(B.create_time) AS first_review_time
+                  FROM shangshufang_customer.university_student_exercises A
+                         INNER JOIN shangshufang_customer.university_student_exercises_review B
+                                    ON A.student_exercises_id = B.student_exercises_id
+                  WHERE A.student_university_code = #{arg0,jdbcType=INTEGER}
+                    AND A.student_school_id = #{arg1,jdbcType=INTEGER}
+                    AND A.student_id = #{arg2,jdbcType=INTEGER}
+                    AND A.technology_id = #{arg3,jdbcType=INTEGER}
+                    AND A.data_status != 'P'
+                  GROUP BY A.student_university_code, A.student_school_id, A.student_id, A.technology_id,
+                           A.student_exercises_id
+                  ORDER BY A.student_university_code, A.student_school_id, A.student_id, A.technology_id,
+                           A.student_exercises_id
+                ) A
+                  INNER JOIN shangshufang_customer.university_student_exercises_review B
+                             ON A.first_review_id = B.review_id
+           WHERE B.run_result = 'S'
+           GROUP BY A.student_university_code, A.student_school_id, A.student_id, A.technology_id
+           ORDER BY A.student_university_code, A.student_school_id, A.student_id, A.technology_id
+         ) B
+         ON A.student_university_code = B.student_university_code
+           AND A.student_school_id = B.student_school_id
+           AND A.student_id = B.student_id
+           AND A.technology_id = B.technology_id;
+  </select>
+
+  <select id="searchDataSource4Analysis" resultMap="BaseResultMap">
+    SELECT analysis_id,
+           student_university_code,
+           student_school_id,
+           student_id,
+           technology_id,
+           knowledge_total_count,
+           finish_knowledge_count,
+           finish_knowledge_percent,
+           finish_exercises_count,
+           once_compilation_success_rate,
+           once_run_success_rate,
+           position_site,
+           standard_score,
+           ability_level
+    FROM shangshufang_customer.university_student_ability_analysis
+    ORDER BY standard_score DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
 
   <select id="searchTotalCount" resultType="java.lang.Integer">
     SELECT COUNT(1) AS total_count
@@ -101,7 +332,7 @@
            B.finish_exercises_count,
            B.once_compilation_success_rate,
            B.once_run_success_rate,
-           B.position_site,
+           B.position_site * 100 AS position_site,
            B.ability_level
     FROM
     (
@@ -155,11 +386,6 @@
     AND A.student_school_id = B.student_school_id
     AND A.student_id = B.student_id
     ORDER BY B.position_site DESC;
-  </select>
-  <select id="searchAnalysisList" parameterMap="abilityParameterMap" statementType="CALLABLE" resultMap="BaseResultMap">
-    CALL shangshufang_customer.pro_get_student_professional_analysis_result(
-    #{f_start_index, mode=IN},
-    #{f_page_size, mode=IN});
   </select>
   <select id="searchAbilityAnalysisTotalCount" resultType="java.lang.Integer">
     SELECT COUNT(1) AS TotalCount
@@ -248,7 +474,6 @@
       AND student_id = #{arg2,jdbcType=INTEGER}
       AND technology_id = #{arg3,jdbcType=INTEGER};
   </select>
-
   <select id="searchCodeStandardAnalysis" resultMap="CodeStandardAnalysisMap">
     SELECT b.code_standard_name,
            a.code_standard_count
@@ -285,6 +510,7 @@
       finish_exercises_count,
       once_compilation_success_rate,
       once_run_success_rate,
+      standard_score,
       position_site,
       ability_level
     )
@@ -299,6 +525,7 @@
       #{finishExercisesCount, jdbcType=INTEGER},
       #{onceCompilationSuccessRate, jdbcType=FLOAT},
       #{onceRunSuccessRate, jdbcType=FLOAT},
+      #{standardScore, jdbcType=FLOAT},
       #{positionSite, jdbcType=FLOAT},
       #{abilityLevel, jdbcType=VARCHAR}
     )
@@ -311,8 +538,16 @@
       finish_exercises_count = #{finishExercisesCount,jdbcType=INTEGER},
       once_compilation_success_rate = #{onceCompilationSuccessRate,jdbcType=FLOAT},
       once_run_success_rate = #{onceRunSuccessRate,jdbcType=FLOAT},
-      position_site = #{positionSite,jdbcType=FLOAT},
       ability_level = #{abilityLevel,jdbcType=VARCHAR}
+    WHERE student_university_code = #{studentUniversityCode,jdbcType=INTEGER}
+      AND student_school_id = #{studentSchoolID,jdbcType=INTEGER}
+      AND student_id = #{studentID,jdbcType=INTEGER}
+      AND technology_id = #{technologyID,jdbcType=INTEGER};
+  </update>
+
+  <update id="updatePositionSite" parameterType="com.shangshufang.apiservice.entity.UniversityStudentAbilityAnalysisEntity" >
+    UPDATE shangshufang_customer.university_student_ability_analysis SET
+     position_site = #{positionSite,jdbcType=FLOAT}
     WHERE student_university_code = #{studentUniversityCode,jdbcType=INTEGER}
       AND student_school_id = #{studentSchoolID,jdbcType=INTEGER}
       AND student_id = #{studentID,jdbcType=INTEGER}
