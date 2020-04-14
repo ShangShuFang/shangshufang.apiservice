@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/university/student/exercises")
+@RequestMapping("/api/v1/course/exercises")
 public class UniversityStudentExercisesController {
     @Autowired
     private UniversityStudentExercisesServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/{pageNumber}/{pageSize}/{courseUniversityCode}/{courseSchoolID}/{courseID}/{dataStatus}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{courseUniversityCode}/{courseSchoolID}/{courseID}/{dataStatus}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
                                     @PathVariable("courseUniversityCode") int courseUniversityCode,

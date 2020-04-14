@@ -23,14 +23,7 @@ import java.util.Random;
 @Service
 public class UniversityStudentExercisesServiceImpl implements UniversityStudentExercisesService {
     @Autowired
-    private ExercisesMapper exercisesMapper;
-
-    @Autowired
     private TechnologyKnowledgeExercisesMapper knowledgeExercisesMapper;
-    @Autowired
-    private ExercisesDocumentMapper exercisesDocumentMapper;
-    @Autowired
-    private ExercisesKnowledgeMapper exercisesKnowledgeMapper;
     @Autowired
     private CoursePlanMapper coursePlanMapper;
     @Autowired

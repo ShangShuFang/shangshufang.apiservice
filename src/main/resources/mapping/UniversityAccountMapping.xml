@@ -369,7 +369,7 @@
     AND A.password = #{arg1,jdbcType=VARCHAR}
     AND A.account_role = 'S';
   </select>
-  <select id="checkCellphoneExist" resultType="java.lang.Integer">
+  <select id="checkCellphone4Register" resultType="java.lang.Integer">
     SELECT
       COUNT(1) AS TotalCount
     FROM shangshufang_customer.university_account

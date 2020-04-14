@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/chinaRegion")
+@RequestMapping("/api/v1/china_region")
 public class ChinaRegionController {
     @Autowired
     private ChinaRegionServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/{regionParentCode}", method = RequestMethod.GET)
-    public UnifiedResponse findList(@PathVariable("regionParentCode") int regionParentCode){
-        return serviceImpl.findList(regionParentCode);
+    @RequestMapping(value = "/list/{parentCode}", method = RequestMethod.GET)
+    public UnifiedResponse findList(@PathVariable("parentCode") int parentCode){
+        return serviceImpl.findList(parentCode);
     }
 }

@@ -507,7 +507,7 @@
     ON A.course_id = N.course_id;
   </select>
 
-  <select id="searchTotalCount4Copy" resultType="java.lang.Integer">
+  <select id="searchSimpleTotalCount" resultType="java.lang.Integer">
     SELECT COUNT(1) AS total_count
     FROM shangshufang_customer.course
     WHERE data_status != 'D'
@@ -517,7 +517,7 @@
       AND technology_id = #{arg3,jdbcType=INTEGER};
   </select>
 
-  <select id="searchList4Copy" resultMap="BaseResultMap">
+  <select id="searchSimpleList" resultMap="BaseResultMap">
     SELECT university_code,
        school_id,
        technology_id,

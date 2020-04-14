@@ -118,9 +118,9 @@ public class UniversityAccountServiceImpl implements UniversityAccountService {
     }
 
     @Override
-    public UnifiedResponse checkCellphoneExist(String cellphone) {
+    public UnifiedResponse checkCellphone4Register(String cellphone) {
         try {
-            int count = myMapper.checkCellphoneExist(cellphone);
+            int count = myMapper.checkCellphone4Register(cellphone);
             Boolean exist = count > 0;
             return UnifiedResponseManager.buildSearchSuccessResponse(count, exist);
         } catch (Exception ex) {

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/system/admin")
+@RequestMapping("/api/v1/account/cms")
 public class SystemAdminController {
     @Autowired
     private SystemAdminServiceImpl serviceImpl;

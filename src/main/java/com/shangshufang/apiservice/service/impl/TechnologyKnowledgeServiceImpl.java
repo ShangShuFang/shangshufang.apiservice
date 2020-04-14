@@ -46,10 +46,10 @@ public class TechnologyKnowledgeServiceImpl implements TechnologyKnowledgeServic
     }
 
     @Override
-    public UnifiedResponse find(int technologyID) {
+    public UnifiedResponse findList(int technologyID) {
         try {
             List<TechnologyKnowledgeVO> modelList = new ArrayList<>();
-            List<TechnologyKnowledgeEntity> entityList =  myMapper.search(technologyID);
+            List<TechnologyKnowledgeEntity> entityList =  myMapper.searchSimpleList(technologyID);
             if(entityList.isEmpty()){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }

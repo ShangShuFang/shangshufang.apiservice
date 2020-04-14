@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/suggest/type")
+@RequestMapping("/api/v1/sys_parm/suggest_type")
 public class SuggestTypeController {
     @Autowired
     private SuggestTypeServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/{portal}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/{portal}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("portal") String portal){
         return serviceImpl.findList(portal);
     }

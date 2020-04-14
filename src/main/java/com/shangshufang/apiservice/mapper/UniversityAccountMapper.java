@@ -21,7 +21,7 @@ public interface UniversityAccountMapper extends BaseMapper<UniversityAccountEnt
 
     UniversityAccountEntity studentLogin(String cellphone, String password);
 
-    int checkCellphoneExist(String cellphone);
+    int checkCellphone4Register(String cellphone);
 
     int checkCellphone4ChangePassword(String cellphone);
 

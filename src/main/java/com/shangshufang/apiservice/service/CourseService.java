@@ -15,7 +15,7 @@ public interface CourseService extends BaseService<CourseDTO> {
                              boolean isSelf,
                              String searchType);
 
-    UnifiedResponse findList4Copy(int universityCode, int schoolID, int teacherID, int technologyID);
+    UnifiedResponse findSimpleList(int universityCode, int schoolID, int teacherID, int technologyID);
 
     UnifiedResponse find(int universityCode,
                          int schoolID,

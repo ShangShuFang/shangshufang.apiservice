@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/course")
+@RequestMapping("/api/v1/course")
 public class CourseController {
     @Autowired
     private CourseServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{teacherID}/{technologyID}/{courseTimeBegin}/{dataStatus}/{isSelf}/{searchType}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{teacherID}/{technologyID}/{courseTimeBegin}/{dataStatus}/{isSelf}/{searchType}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
                                     @PathVariable("universityCode") int universityCode,
@@ -26,15 +26,15 @@ public class CourseController {
         return serviceImpl.findList(pageNumber, pageSize, universityCode, schoolID, teacherID, technologyID, courseTimeBegin, dataStatus, isSelf, searchType);
     }
 
-    @RequestMapping(value = "/copy/{universityCode}/{schoolID}/{teacherID}/{technologyID}", method = RequestMethod.GET)
-    public UnifiedResponse findList4Copy(@PathVariable("universityCode") int universityCode,
+    @RequestMapping(value = "/list/simple/{universityCode}/{schoolID}/{teacherID}/{technologyID}", method = RequestMethod.GET)
+    public UnifiedResponse findSimpleList(@PathVariable("universityCode") int universityCode,
                                     @PathVariable("schoolID") int schoolID,
                                     @PathVariable("teacherID") int teacherID,
                                     @PathVariable("technologyID") int technologyID) {
-        return serviceImpl.findList4Copy(universityCode, schoolID, teacherID, technologyID);
+        return serviceImpl.findSimpleList(universityCode, schoolID, teacherID, technologyID);
     }
 
-    @RequestMapping(value = "/{universityCode}/{schoolID}/{courseID}/{dataStatus}", method = RequestMethod.GET)
+    @RequestMapping(value = "/any/{universityCode}/{schoolID}/{courseID}/{dataStatus}", method = RequestMethod.GET)
     public UnifiedResponse find(@PathVariable("universityCode") int universityCode,
                                 @PathVariable("schoolID") int schoolID,
                                 @PathVariable("courseID") int courseID,
@@ -42,7 +42,7 @@ public class CourseController {
         return serviceImpl.find(universityCode, schoolID, courseID, dataStatus);
     }
 
-    @RequestMapping(value = "/checkCourse/{universityCode}/{schoolID}/{courseName}/{courseTimeBegin}/{courseTimeEnd}", method = RequestMethod.GET)
+    @RequestMapping(value = "/check/course/{universityCode}/{schoolID}/{courseName}/{courseTimeBegin}/{courseTimeEnd}", method = RequestMethod.GET)
     public UnifiedResponse checkCourseExist(@PathVariable("universityCode") int universityCode,
                                             @PathVariable("schoolID") int schoolID,
                                             @PathVariable("courseName") String courseName,
@@ -51,32 +51,17 @@ public class CourseController {
         return serviceImpl.checkCourseExist(universityCode, schoolID, courseName, courseTimeBegin, courseTimeEnd);
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value="/add", method = RequestMethod.POST)
     public UnifiedResponse add(@RequestBody CourseDTO dto){
         return serviceImpl.add(dto);
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
-    public UnifiedResponse change(@RequestBody CourseDTO dto){
-        return serviceImpl.change(dto);
-    }
-
-    @RequestMapping(value="/courseBaseInfo", method = RequestMethod.PUT)
+    @RequestMapping(value="/change", method = RequestMethod.PUT)
     public UnifiedResponse changeCourseBaseInfo(@RequestBody CourseDTO dto){
         return serviceImpl.changeCourseBaseInfo(dto);
     }
 
-    @RequestMapping(value="/courseSchedule", method = RequestMethod.PUT)
-    public UnifiedResponse changeCourseSchedule(@RequestBody CourseDTO dto){
-        return serviceImpl.changeCourseSchedule(dto);
-    }
-
-    @RequestMapping(value="/coursePlan", method = RequestMethod.PUT)
-    public UnifiedResponse changeCoursePlan(@RequestBody CourseDTO dto){
-        return serviceImpl.changeCoursePlan(dto);
-    }
-
-    @RequestMapping(value="/changeStatus", method = RequestMethod.PUT)
+    @RequestMapping(value="/change/status", method = RequestMethod.PUT)
     public UnifiedResponse changeStatus(@RequestBody CourseDTO dto){
         return serviceImpl.changeDataStatus(dto);
     }

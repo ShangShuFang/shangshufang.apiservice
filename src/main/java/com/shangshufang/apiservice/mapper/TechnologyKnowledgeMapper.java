@@ -12,7 +12,7 @@ public interface TechnologyKnowledgeMapper extends BaseMapper<TechnologyKnowledg
 
     List<TechnologyKnowledgeEntity> searchList(int startIndex, int pageSize, int technologyID, int learningPhaseID, String dataStatus);
 
-    List<TechnologyKnowledgeEntity> search(int technologyID);
+    List<TechnologyKnowledgeEntity> searchSimpleList(int technologyID);
 
     int checkKnowledgeNameExist(int technologyID, String knowledgeName);
 

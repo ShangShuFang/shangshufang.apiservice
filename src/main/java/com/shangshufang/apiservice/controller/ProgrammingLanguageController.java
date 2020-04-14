@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/programmingLanguage")
+@RequestMapping("/api/v1/sys_parm/prog_lan")
 public class ProgrammingLanguageController {
     @Autowired
     private ProgrammingLanguageServiceImpl serviceImpl;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="/list", method = RequestMethod.GET)
     public UnifiedResponse findList(){
         return serviceImpl.findList();
     }

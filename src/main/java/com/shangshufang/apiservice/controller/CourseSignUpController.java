@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/course/signUp")
+@RequestMapping("/api/v1/course/sign_up")
 public class CourseSignUpController {
     @Autowired
     private CourseSignUpServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/course/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{courseID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/student/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{courseID}", method = RequestMethod.GET)
     public UnifiedResponse findCourseSignUpList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
                                     @PathVariable("universityCode") int universityCode,
@@ -21,7 +21,7 @@ public class CourseSignUpController {
         return serviceImpl.findCourseSignUpList(pageNumber, pageSize, universityCode, schoolID, courseID);
     }
 
-    @RequestMapping(value = "/student/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{studentID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/course/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{studentID}", method = RequestMethod.GET)
     public UnifiedResponse findStudentSignUpList(@PathVariable("pageNumber") int pageNumber,
                                                 @PathVariable("pageSize") int pageSize,
                                                 @PathVariable("universityCode") int universityCode,
@@ -30,19 +30,19 @@ public class CourseSignUpController {
         return serviceImpl.findStudentSignUpList(pageNumber, pageSize, universityCode, schoolID, studentID);
     }
 
-    @RequestMapping(value = "/technology/{pageNumber}/{pageSize}/{technologyID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/student/{pageNumber}/{pageSize}/{technologyID}", method = RequestMethod.GET)
     public UnifiedResponse findTechnologyCourseSignUpList(@PathVariable("pageNumber") int pageNumber,
                                                  @PathVariable("pageSize") int pageSize,
                                                  @PathVariable("technologyID") int technologyID){
         return serviceImpl.findTechnologyCourseSignUpList(pageNumber, pageSize, technologyID);
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
     public UnifiedResponse add(@RequestBody CourseSignUpDTO dto){
         return serviceImpl.add(dto);
     }
 
-    @RequestMapping(value = "/changeDataStatus", method = RequestMethod.PUT)
+    @RequestMapping(value = "/change/status", method = RequestMethod.PUT)
     public UnifiedResponse changeDataStatus(@RequestBody CourseSignUpDTO dto){
         return serviceImpl.changeDataStatus(dto);
     }

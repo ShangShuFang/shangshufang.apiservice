@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/course/question")
+@RequestMapping("/api/v1/course/question")
 public class CourseQuestionController {
     @Autowired
     private CourseQuestionServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/{pageNumber}/{pageSize}/{courseUniversityCode}/{courseSchoolID}/{courseID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{courseUniversityCode}/{courseSchoolID}/{courseID}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
                                     @PathVariable("courseUniversityCode") int courseUniversityCode,
@@ -21,12 +21,12 @@ public class CourseQuestionController {
         return serviceImpl.findList(pageNumber, pageSize, courseUniversityCode, courseSchoolID, courseID);
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value="/add", method = RequestMethod.POST)
     public UnifiedResponse add(@RequestBody CourseQuestionDTO dto){
         return serviceImpl.add(dto);
     }
 
-    @RequestMapping(value="/changeStatus", method = RequestMethod.PUT)
+    @RequestMapping(value="/change/status", method = RequestMethod.PUT)
     public UnifiedResponse changeStatus(@RequestBody CourseQuestionDTO dto){
         return serviceImpl.changeDataStatus(dto);
     }

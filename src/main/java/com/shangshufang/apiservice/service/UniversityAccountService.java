@@ -12,7 +12,7 @@ public interface UniversityAccountService extends BaseService<UniversityAccountD
 
     UnifiedResponse login(String cellphone, String password, String accountRole);
 
-    UnifiedResponse checkCellphoneExist(String cellphone);
+    UnifiedResponse checkCellphone4Register(String cellphone);
 
     UnifiedResponse checkCellphone4ChangePassword(String cellphone);
 

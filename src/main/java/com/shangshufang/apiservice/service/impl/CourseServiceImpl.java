@@ -130,11 +130,11 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public UnifiedResponse findList4Copy(int universityCode, int schoolID, int teacherID, int technologyID) {
+    public UnifiedResponse findSimpleList(int universityCode, int schoolID, int teacherID, int technologyID) {
         try {
             List<CourseVO> modelList = new ArrayList<>();
             //取得课程基本信息
-            List<CourseEntity> entityList =  courseMapper.searchList4Copy(universityCode, schoolID, teacherID, technologyID);
+            List<CourseEntity> entityList =  courseMapper.searchSimpleList(universityCode, schoolID, teacherID, technologyID);
             if(entityList.isEmpty()){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
