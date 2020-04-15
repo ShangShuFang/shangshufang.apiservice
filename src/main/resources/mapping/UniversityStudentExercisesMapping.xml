@@ -13,6 +13,8 @@
     <result column="student_photo" property="studentPhoto" jdbcType="VARCHAR" />
     <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
     <result column="enrollment_year" property="enrollmentYear" jdbcType="VARCHAR" />
+    <result column="position_site" property="positionSite" jdbcType="FLOAT" />
+    <result column="ability_level" property="abilityLevel" jdbcType="VARCHAR" />
 
     <result column="course_university_code" property="courseUniversityCode" jdbcType="INTEGER" />
     <result column="course_university_name" property="courseUniversityName" jdbcType="VARCHAR" />
@@ -87,6 +89,8 @@
       F.photo AS student_photo,
       F.cellphone,
       F.enrollment_year,
+      N.ability_level,
+      N.position_site,
       A.course_university_code,
       D.university_name AS course_university_name,
       A.course_school_id,
@@ -194,6 +198,11 @@
       AND C.reviewer_type = 'S'
     ) M
     ON A.student_exercises_id = M.student_exercises_id
+    INNER JOIN shangshufang_customer.university_student_ability_analysis N
+    ON A.student_university_code = N.student_university_code
+    AND A.student_school_id = N.student_school_id
+    AND A.student_id = N.student_id
+
     WHERE A.course_university_code = #{arg2,jdbcType=INTEGER}
     AND A.course_school_id = #{arg3,jdbcType=INTEGER}
     AND A.course_id = #{arg4,jdbcType=INTEGER}

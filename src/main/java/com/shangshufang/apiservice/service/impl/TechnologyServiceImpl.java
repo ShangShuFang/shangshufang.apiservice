@@ -5,12 +5,16 @@ import com.shangshufang.apiservice.constant.DataStatusConstant;
 import com.shangshufang.apiservice.constant.ParameterConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.TechnologyDTO;
+import com.shangshufang.apiservice.entity.AbilityAnalysisResult4StudentMainInfoEntity;
 import com.shangshufang.apiservice.entity.TechnologyDirectionEntity;
 import com.shangshufang.apiservice.entity.TechnologyEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
+import com.shangshufang.apiservice.mapper.AnalysisAbilityMapper;
+import com.shangshufang.apiservice.mapper.CompanyMapper;
 import com.shangshufang.apiservice.mapper.TechnologyDirectionMapper;
 import com.shangshufang.apiservice.mapper.TechnologyMapper;
 import com.shangshufang.apiservice.service.TechnologyService;
+import com.shangshufang.apiservice.vo.AbilityAnalysisResult4StudentMainInfoVO;
 import com.shangshufang.apiservice.vo.TechnologyVO;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
 import org.apache.logging.log4j.LogManager;
@@ -27,6 +31,11 @@ public class TechnologyServiceImpl implements TechnologyService {
     private TechnologyMapper myMapper;
     @Autowired
     private TechnologyDirectionMapper technologyDirectionMapper;
+    @Autowired
+    private CompanyMapper companyMapper;
+    @Autowired
+    private AnalysisAbilityMapper analysisAbilityMapper;
+
     private Logger logger = LogManager.getLogger(TechnologyServiceImpl.class);
 
     @Override
@@ -62,8 +71,20 @@ public class TechnologyServiceImpl implements TechnologyService {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
             List<TechnologyEntity> entityList =  myMapper.searchList4Client(startIndex, pageSize, DataStatusConstant.ACTIVE);
+            String lowestRecruitLevel = companyMapper.searchLowestRecruitLevel();
+
             for (TechnologyEntity entity : entityList) {
                 TechnologyVO model = new TechnologyVO();
+                List<AbilityAnalysisResult4StudentMainInfoVO> topStudentMainInfoModelList = new ArrayList<>();
+                List<AbilityAnalysisResult4StudentMainInfoEntity> topStudentMainInfoEntityList = analysisAbilityMapper.searchTopStudentSummary(entity.getTechnologyID(), lowestRecruitLevel, 4);
+                if (!topStudentMainInfoEntityList.isEmpty()) {
+                    for (AbilityAnalysisResult4StudentMainInfoEntity topStudentMainInfoEntity : topStudentMainInfoEntityList) {
+                        AbilityAnalysisResult4StudentMainInfoVO topStudentMainInfoModel = new AbilityAnalysisResult4StudentMainInfoVO();
+                        ObjectConvertUtils.toBean(topStudentMainInfoEntity, topStudentMainInfoModel);
+                        topStudentMainInfoModelList.add(topStudentMainInfoModel);
+                    }
+                    model.setTopStudentMainInfoList(topStudentMainInfoModelList);
+                }
                 ObjectConvertUtils.toBean(entity, model);
                 modelList.add(model);
             }

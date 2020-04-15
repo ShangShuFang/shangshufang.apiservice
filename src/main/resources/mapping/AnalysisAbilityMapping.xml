@@ -787,4 +787,31 @@
   </select>
   <!--endregion-->
 
+  <select id="searchTopStudentSummary" resultMap="StudentMainResultMap">
+    SELECT a.student_university_code,
+           a.student_school_id,
+           a.student_id,
+           b.full_name AS student_name,
+           b.photo,
+           a.technology_id,
+           a.knowledge_total_count,
+           a.finish_knowledge_count,
+           a.finish_knowledge_percent,
+           a.finish_exercises_count,
+           a.once_compilation_success_rate,
+           a.once_run_success_rate,
+           a.position_site,
+           a.standard_score,
+           a.ability_level
+    FROM shangshufang_customer.university_student_ability_analysis a
+           INNER JOIN shangshufang_customer.university_student b
+                      ON a.student_university_code = b.university_code
+                        AND a.student_school_id = b.school_id
+                        AND a.student_id = b.student_id
+    WHERE a.technology_id = #{arg0,jdbcType=INTEGER}
+      AND a.ability_level &gt;= #{arg1,jdbcType=VARCHAR}
+    ORDER BY a.standard_score DESC
+    LIMIT 0, #{arg2,jdbcType=INTEGER};
+  </select>
+
 </mapper>

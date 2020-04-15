@@ -15,6 +15,9 @@ public class UniversityStudentExercisesVO extends BaseVO {
     private String studentPhoto;
     private String cellphone;
     private String enrollmentYear;
+    private float positionSite;
+    private String abilityLevel;
+    private int assistant;
 
     private int courseUniversityCode;
     private String courseUniversityName;

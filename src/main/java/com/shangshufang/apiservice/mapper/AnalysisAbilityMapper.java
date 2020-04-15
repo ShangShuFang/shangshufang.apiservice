@@ -243,4 +243,15 @@ public interface AnalysisAbilityMapper {
      */
     List<AbilityAnalysisResult4ExercisePercentTrendEntity> searchExercisePercentTrend(int universityCode, int schoolID, int studentID, int technologyID);
     //endregion
+
+    /**
+     * 取得指定技术，能力最强的前几名的学生
+     * @param technologyID 技术
+     * @param lowestRecruitLevel 最低级别
+     * @param topNum 取得人数
+     * @return 指定技术，能力最强的前几名的学生
+     */
+    List<AbilityAnalysisResult4StudentMainInfoEntity> searchTopStudentSummary (int technologyID, String lowestRecruitLevel, int topNum);
+
+
 }

@@ -12,8 +12,9 @@
     <result column="student_photo" property="studentPhoto" jdbcType="VARCHAR" />
     <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
     <result column="enrollment_year" property="enrollmentYear" jdbcType="VARCHAR" />
+    <result column="position_site" property="positionSite" jdbcType="FLOAT" />
+    <result column="ability_level" property="abilityLevel" jdbcType="VARCHAR" />
     <result column="is_assistant" property="assistant" jdbcType="BIT" />
-
     <result column="course_university_code" property="courseUniversityCode" jdbcType="INTEGER" />
     <result column="course_university_name" property="courseUniversityName" jdbcType="VARCHAR" />
     <result column="course_school_id" property="courseSchoolID" jdbcType="INTEGER" />
@@ -47,6 +48,8 @@
     F.photo AS student_photo,
     F.cellphone,
     F.enrollment_year,
+    H.ability_level,
+    H.position_site,
     F.is_assistant,
     A.course_university_code,
     D.university_name AS course_university_name,
@@ -80,6 +83,10 @@
     ON A.course_university_code = G.university_code
     AND A.course_school_id = G.school_id
     AND A.course_id = G.course_id
+    INNER JOIN shangshufang_customer.university_student_ability_analysis H
+     ON A.student_university_code = H.student_university_code
+       AND A.student_school_id = H.student_school_id
+       AND A.student_id = H.student_id
     WHERE A.course_university_code = #{arg2,jdbcType=INTEGER}
     AND A.course_school_id = #{arg3,jdbcType=INTEGER}
     AND A.course_id = #{arg4,jdbcType=INTEGER}
@@ -228,6 +235,8 @@
       E.university_name AS course_university_name,
       B.course_school_id,
       F.school_name AS course_school_name,
+      H.ability_level,
+      H.position_site,
       B.data_status,
       CASE WHEN B.data_status = 'A' THEN '报名成功'
         WHEN B.data_status = 'C' THEN '报名取消'
@@ -252,6 +261,11 @@
     ON B.student_university_code = G.university_code
     AND B.student_school_id = G.school_id
     AND B.student_id = G.student_id
+    INNER JOIN shangshufang_customer.university_student_ability_analysis H
+    ON G.university_code = H.student_university_code
+    AND G.school_id = H.student_school_id
+    AND G.student_id = H.student_id
+    AND H.technology_id = #{arg2,jdbcType=INTEGER}
     WHERE A.technology_id = #{arg2,jdbcType=INTEGER}
     AND A.data_status = 'A'
     AND B.data_status = 'A'

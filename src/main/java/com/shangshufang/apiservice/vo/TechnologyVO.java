@@ -2,6 +2,8 @@ package com.shangshufang.apiservice.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class TechnologyVO extends BaseVO {
     private int technologyID;
@@ -15,4 +17,5 @@ public class TechnologyVO extends BaseVO {
     private String directionNames;
     private int languageID;
     private String languageName;
+    List<AbilityAnalysisResult4StudentMainInfoVO> topStudentMainInfoList;
 }
