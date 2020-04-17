@@ -9,6 +9,6 @@ public class UniversityStudentExercisesReviewCodeStandardDTO extends BaseDTO {
     private int studentUniversityCode;
     private int studentSchoolID;
     private int studentID;
-    private int technologyID;
+    private int languageID;
     private int codeStandardID;
 }

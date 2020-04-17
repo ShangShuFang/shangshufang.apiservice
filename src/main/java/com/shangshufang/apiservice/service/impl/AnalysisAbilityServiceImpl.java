@@ -265,10 +265,10 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
     }
 
     @Override
-    public UnifiedResponse findCodeGuidelineResult(int studentUniversityCode, int studentSchoolID, int studentID, int technologyID) {
+    public UnifiedResponse findCodeGuidelineResult(int studentUniversityCode, int studentSchoolID, int studentID, int languageID) {
         try {
             List<AbilityAnalysisResult4CodeGuidelineSummaryVO> modelList = new ArrayList<>();
-            List<AbilityAnalysisResult4CodeGuidelineSummaryEntity> entityList = myMapper.searchCodeStandardAnalysisResultList(studentUniversityCode, studentSchoolID, studentID, technologyID);
+            List<AbilityAnalysisResult4CodeGuidelineSummaryEntity> entityList = myMapper.searchCodeStandardAnalysisResultList(studentUniversityCode, studentSchoolID, studentID, languageID);
             if (entityList.isEmpty()) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.CodeStandardMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.CodeStandardEntity" >
+    <id column="code_standard_id" property="codeStandardID" jdbcType="INTEGER" />
+    <result column="language_id" property="languageID" jdbcType="INTEGER" />
+    <result column="language_name" property="languageName" jdbcType="VARCHAR" />
+    <result column="code_standard_name" property="codeStandardName" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS total_count
+    FROM shangshufang_base.code_standard
+    WHERE 1 = 1
+    <if test="languageID != 0">
+      AND language_id = #{languageID,jdbcType=INTEGER}
+    </if>;
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+    A.code_standard_id,
+    A.language_id,
+    B.language_name,
+    A.code_standard_name,
+    C.admin_name AS create_user,
+    DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+    D.admin_name AS update_user,
+    DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_base.code_standard A
+    INNER JOIN shangshufang_base.programming_language B
+    ON A.language_id = B.language_id
+    INNER JOIN shangshufang_base.system_admin C
+    ON A.create_user = C.admin_id
+    INNER JOIN shangshufang_base.system_admin D
+    ON A.update_user = D.admin_id
+    WHERE 1 = 1
+    <if test="arg2 != 0">
+      AND A.language_id = #{arg2,jdbcType=INTEGER}
+    </if>
+    ORDER BY A.update_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+
+  <select id="checkNameExist" resultType="java.lang.Integer">
+    SELECT
+      COUNT(1) AS total_count
+    FROM shangshufang_base.code_standard
+    WHERE language_id = #{arg0,jdbcType=INTEGER}
+    AND code_standard_name = #{arg1,jdbcType=VARCHAR};
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.CodeStandardEntity" >
+    INSERT INTO shangshufang_base.code_standard
+        (
+          language_id,
+          code_standard_name,
+          create_user,
+          update_user
+        )
+    VALUES
+        (
+          #{languageID, jdbcType=INTEGER},
+          #{codeStandardName, jdbcType=VARCHAR},
+          #{createUser, jdbcType=VARCHAR},
+          #{updateUser, jdbcType=VARCHAR}
+        )
+  </insert>
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.CodeStandardEntity" >
+    UPDATE shangshufang_base.code_standard
+    SET code_standard_name = #{codeStandardName,jdbcType=VARCHAR},
+        update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE language_id = #{languageID,jdbcType=INTEGER}
+    AND code_standard_id = #{codeStandardID,jdbcType=INTEGER};
+  </update>
+  <delete id="delete" parameterType="java.lang.Integer" >
+    DELETE FROM shangshufang_base.code_standard
+    WHERE language_id = #{arg0,jdbcType=INTEGER}
+      AND code_standard_id = #{arg1,jdbcType=INTEGER};
+  </delete>
+</mapper>

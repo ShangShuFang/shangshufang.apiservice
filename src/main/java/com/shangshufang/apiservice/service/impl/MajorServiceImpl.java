@@ -2,12 +2,12 @@ package com.shangshufang.apiservice.service.impl;
 
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
-import com.shangshufang.apiservice.dto.TechnologyCodeStandardDTO;
-import com.shangshufang.apiservice.entity.TechnologyCodeStandardEntity;
+import com.shangshufang.apiservice.dto.MajorDTO;
+import com.shangshufang.apiservice.entity.MajorEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
-import com.shangshufang.apiservice.mapper.TechnologyCodeStandardMapper;
-import com.shangshufang.apiservice.service.TechnologyCodeStandardService;
-import com.shangshufang.apiservice.vo.TechnologyCodeStandardVO;
+import com.shangshufang.apiservice.mapper.MajorMapper;
+import com.shangshufang.apiservice.service.MajorService;
+import com.shangshufang.apiservice.vo.MajorVO;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,23 +18,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class TechnologyCodeStandardServiceImpl implements TechnologyCodeStandardService {
+public class MajorServiceImpl implements MajorService {
     @Autowired
-    private TechnologyCodeStandardMapper myMapper;
-    private Logger logger = LogManager.getLogger(TechnologyCodeStandardServiceImpl.class);
+    private MajorMapper myMapper;
+
+    private Logger logger = LogManager.getLogger(MajorServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, int technologyID) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, int universityCode, int schoolID) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
-            List<TechnologyCodeStandardVO> modelList = new ArrayList<>();
-            int totalCount = myMapper.searchTotalCount(technologyID);
-            if(totalCount == 0){
+            List<MajorVO> modelList = new ArrayList<>();
+
+            int totalCount = myMapper.searchTotalCount(universityCode, schoolID);
+            if (totalCount == 0) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<TechnologyCodeStandardEntity> entityList =  myMapper.searchList(startIndex, pageSize, technologyID);
-            for (TechnologyCodeStandardEntity entity : entityList) {
-                TechnologyCodeStandardVO model = new TechnologyCodeStandardVO();
+            List<MajorEntity> entityList = myMapper.searchList(startIndex, pageSize, universityCode, schoolID);
+            for (MajorEntity entity : entityList) {
+                MajorVO model = new MajorVO();
                 ObjectConvertUtils.toBean(entity, model);
                 modelList.add(model);
             }
@@ -46,10 +48,10 @@ public class TechnologyCodeStandardServiceImpl implements TechnologyCodeStandard
     }
 
     @Override
-    public UnifiedResponse checkCodeStandardExist(int technologyID, String codeStandardName) {
+    public UnifiedResponse checkNameExist(int universityCode, int schoolID, String majorName) {
         try {
-            int count =  myMapper.checkCodeStandardExist(technologyID, codeStandardName);
-            Boolean exist =  count > 0;
+            int count = myMapper.checkNameExist(universityCode, schoolID, majorName);
+            Boolean exist = count > 0;
             return UnifiedResponseManager.buildSearchSuccessResponse(count, exist);
         } catch (Exception ex) {
             logger.error(ex.toString());
@@ -58,9 +60,9 @@ public class TechnologyCodeStandardServiceImpl implements TechnologyCodeStandard
     }
 
     @Override
-    public UnifiedResponse delete(int technologyID, int codeStandardID) {
+    public UnifiedResponse delete(int universityCode, int schoolID, int majorID) {
         try {
-            int affectRow = myMapper.delete(technologyID, codeStandardID);
+            int affectRow = myMapper.delete(universityCode, schoolID, majorID);
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
         } catch (Exception ex) {
             logger.error(ex.toString());
@@ -69,9 +71,9 @@ public class TechnologyCodeStandardServiceImpl implements TechnologyCodeStandard
     }
 
     @Override
-    public UnifiedResponse add(TechnologyCodeStandardDTO dto) {
+    public UnifiedResponse add(MajorDTO dto) {
         try {
-            TechnologyCodeStandardEntity entity = new TechnologyCodeStandardEntity();
+            MajorEntity entity = new MajorEntity();
             ObjectConvertUtils.toBean(dto, entity);
             entity.setCreateUser(dto.getLoginUser());
             entity.setUpdateUser(dto.getLoginUser());
@@ -84,9 +86,9 @@ public class TechnologyCodeStandardServiceImpl implements TechnologyCodeStandard
     }
 
     @Override
-    public UnifiedResponse change(TechnologyCodeStandardDTO dto) {
+    public UnifiedResponse change(MajorDTO dto) {
         try {
-            TechnologyCodeStandardEntity entity = new TechnologyCodeStandardEntity();
+            MajorEntity entity = new MajorEntity();
             ObjectConvertUtils.toBean(dto, entity);
             entity.setUpdateUser(dto.getLoginUser());
             int affectRow = myMapper.update(entity);
@@ -98,7 +100,7 @@ public class TechnologyCodeStandardServiceImpl implements TechnologyCodeStandard
     }
 
     @Override
-    public UnifiedResponse changeDataStatus(TechnologyCodeStandardDTO dto) {
+    public UnifiedResponse changeDataStatus(MajorDTO dto) {
         return null;
     }
 }

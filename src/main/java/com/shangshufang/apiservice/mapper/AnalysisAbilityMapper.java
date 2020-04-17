@@ -208,10 +208,10 @@ public interface AnalysisAbilityMapper {
      * @param universityCode 学生所在高校
      * @param schoolID 学生所在二级学院
      * @param studentID 学生编号
-     * @param technologyID 技术编号
+     * @param languageID 编程语言编号
      * @return 学生指定技术代码规范性问题分析
      */
-    List<AbilityAnalysisResult4CodeGuidelineSummaryEntity> searchCodeStandardAnalysisResultList(int universityCode, int schoolID, int studentID, int technologyID);
+    List<AbilityAnalysisResult4CodeGuidelineSummaryEntity> searchCodeStandardAnalysisResultList(int universityCode, int schoolID, int studentID, int languageID);
 
     /**
      * 取得学生已学习的知识点总数

@@ -13,7 +13,7 @@ public interface AnalysisAbilityService {
 
     UnifiedResponse findKnowledgeSummaryResult(int studentUniversityCode, int studentSchoolID, int studentID, int technologyID);
 
-    UnifiedResponse findCodeGuidelineResult(int studentUniversityCode, int studentSchoolID, int studentID, int technologyID);
+    UnifiedResponse findCodeGuidelineResult(int studentUniversityCode, int studentSchoolID, int studentID, int languageID);
 
     UnifiedResponse findExerciseNumberResultList(int studentUniversityCode, int studentSchoolID, int studentID, int technologyID);
 

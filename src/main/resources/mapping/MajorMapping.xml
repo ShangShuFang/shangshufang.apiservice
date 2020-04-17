@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.MajorMapper">
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.MajorEntity">
+    <id column="major_id" property="majorID" jdbcType="INTEGER"/>
+    <result column="university_code" property="universityCode" jdbcType="INTEGER"/>
+    <result column="university_name" property="universityName" jdbcType="VARCHAR"/>
+    <result column="school_id" property="schoolID" jdbcType="INTEGER"/>
+    <result column="school_name" property="schoolName" jdbcType="VARCHAR"/>
+    <result column="major_name" property="majorName" jdbcType="VARCHAR"/>
+    <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.major
+    WHERE 1 = 1
+    <if test="arg0 != 0">
+      AND university_code = #{arg0,jdbcType=INTEGER}
+    </if>
+    <if test="arg1 != 0">
+      AND school_id = #{arg1,jdbcType=INTEGER};
+    </if>
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT a.major_id,
+           a.university_code,
+           b.university_name,
+           a.school_id,
+           c.school_name,
+           a.major_name,
+           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+           d.admin_name                                    AS update_user,
+           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.major a
+           INNER JOIN shangshufang_customer.university b
+                      ON a.university_code = b.university_code
+           INNER JOIN shangshufang_customer.school c
+                      ON a.university_code = c.university_code
+                             AND a.school_id = c.school_id
+           INNER JOIN shangshufang_base.system_admin d
+                      ON a.create_user = d.admin_id
+           INNER JOIN shangshufang_base.system_admin e
+                      ON a.update_user = e.admin_id
+    WHERE 1 = 1
+    <if test="arg2 != 0">
+      AND a.university_code = #{arg2,jdbcType=INTEGER}
+    </if>
+    <if test="arg3 != 0">
+      AND a.school_id = #{arg3,jdbcType=INTEGER}
+    </if>
+    ORDER BY a.update_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+
+  <select id="checkNameExist" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.major
+    WHERE university_code = #{arg0,jdbcType=INTEGER}
+      AND school_id = #{arg1,jdbcType=INTEGER}
+      AND major_name = #{arg2,jdbcType=VARCHAR};
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.MajorEntity">
+    INSERT INTO shangshufang_customer.major
+    (
+      university_code,
+      school_id,
+      major_name,
+      create_user,
+      update_user
+     )
+    VALUES
+     (
+      #{universityCode, jdbcType=INTEGER},
+      #{schoolID, jdbcType=INTEGER},
+      #{majorName, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.MajorEntity">
+    UPDATE shangshufang_customer.major
+    SET major_name = #{majorName,jdbcType=VARCHAR},
+        update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE university_code = #{universityCode,jdbcType=INTEGER}
+      AND school_id = #{schoolID,jdbcType=INTEGER}
+      AND major_id = #{majorID,jdbcType=INTEGER};
+  </update>
+  <delete id="delete" parameterType="java.lang.Integer">
+    DELETE
+    FROM shangshufang_customer.major
+    WHERE university_code = #{arg0,jdbcType=INTEGER}
+      AND school_id = #{arg1,jdbcType=INTEGER}
+      AND major_id = #{arg2,jdbcType=INTEGER};
+  </delete>
+</mapper>

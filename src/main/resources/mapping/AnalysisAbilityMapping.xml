@@ -48,6 +48,7 @@
     <result column="student_university_code" property="universityCode" jdbcType="INTEGER" />
     <result column="student_school_id" property="schoolID" jdbcType="INTEGER" />
     <result column="student_id" property="studentID" jdbcType="INTEGER" />
+    <result column="language_id" property="languageID" jdbcType="INTEGER" />
     <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
     <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
     <result column="finish_knowledge_percent" property="finishKnowledgePercent" jdbcType="FLOAT" />
@@ -59,7 +60,7 @@
     <result column="student_university_code" property="universityCode" jdbcType="INTEGER" />
     <result column="student_school_id" property="schoolID" jdbcType="INTEGER" />
     <result column="student_id" property="studentID" jdbcType="INTEGER" />
-    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="language_id" property="languageID" jdbcType="INTEGER" />
     <result column="code_standard_id" property="codeStandardID" jdbcType="INTEGER" />
     <result column="code_standard_name" property="codeStandardName" jdbcType="VARCHAR" />
     <result column="code_standard_count" property="codeStandardCount" jdbcType="INTEGER" />
@@ -443,7 +444,7 @@
            B.finish_exercises_count,
            B.once_compilation_success_rate,
            B.once_run_success_rate,
-           B.position_site * 100 AS position_site,
+           B.position_site AS position_site,
            B.ability_level
     FROM
     (
@@ -565,6 +566,7 @@
     SELECT a.student_university_code,
            a.student_school_id,
            a.student_id,
+           b.language_id,
            a.technology_id,
            b.technology_name,
            a.finish_knowledge_percent,
@@ -582,7 +584,7 @@
     SELECT a.student_university_code,
            a.student_school_id,
            a.student_id,
-           a.technology_id,
+           a.language_id,
            a.code_standard_id,
            b.code_standard_name,
            a.code_standard_count
@@ -591,22 +593,22 @@
         SELECT student_university_code,
                student_school_id,
                student_id,
-               technology_id,
+               language_id,
                code_standard_id,
                COUNT(1) AS code_standard_count
         FROM shangshufang_customer.university_student_exercises_review_code_standard
         WHERE student_university_code = #{arg0,jdbcType=INTEGER}
           AND student_school_id = #{arg1,jdbcType=INTEGER}
           AND student_id = #{arg2,jdbcType=INTEGER}
-          AND technology_id = #{arg3,jdbcType=INTEGER}
+          AND language_id = #{arg3,jdbcType=INTEGER}
         GROUP BY student_university_code,
              student_school_id,
              student_id,
-             technology_id,
+             language_id,
              code_standard_id
     ) a
-    INNER JOIN shangshufang_base.technology_code_standard b
-    ON a.technology_id = b.technology_id
+    INNER JOIN shangshufang_base.code_standard b
+    ON a.language_id = b.language_id
     AND a.code_standard_id = b.code_standard_id;
   </select>
 

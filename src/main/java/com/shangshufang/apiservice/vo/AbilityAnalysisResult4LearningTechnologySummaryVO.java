@@ -8,6 +8,7 @@ public class AbilityAnalysisResult4LearningTechnologySummaryVO {
     private int schoolID;
     private int majorID;
     private int studentID;
+    private int languageID;
     private int technologyID;
     private String technologyName;
     private float finishKnowledgePercent;

@@ -7,7 +7,7 @@
     <result column="student_university_code" property="studentUniversityCode" jdbcType="INTEGER" />
     <result column="student_school_id" property="studentSchoolID" jdbcType="INTEGER" />
     <result column="student_id" property="studentID" jdbcType="INTEGER" />
-    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="language_id" property="languageID" jdbcType="INTEGER" />
     <result column="code_standard_id" property="codeStandardID" jdbcType="INTEGER" />
     <result column="code_standard_name" property="codeStandardName" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -19,13 +19,13 @@
     SELECT A.student_university_code,
       A.student_school_id,
       A.student_id,
-      A.technology_id,
+      A.language_id,
       A.review_id,
       A.code_standard_id,
       B.code_standard_name
     FROM shangshufang_customer.university_student_exercises_review_code_standard A
-    INNER JOIN shangshufang_base.technology_code_standard B
-    ON A.technology_id = B.technology_id
+    INNER JOIN shangshufang_base.code_standard B
+    ON A.language_id = B.language_id
     AND A.code_standard_id = B.code_standard_id
     WHERE A.review_id = #{arg0,jdbcType=INTEGER};
   </select>
@@ -36,9 +36,8 @@
       student_university_code,
       student_school_id,
       student_id,
-      technology_id,
+      language_id,
       code_standard_id,
-
       create_user,
       update_user
     )
@@ -47,7 +46,7 @@
       #{studentUniversityCode, jdbcType=INTEGER},
       #{studentSchoolID, jdbcType=INTEGER},
       #{studentID, jdbcType=INTEGER},
-      #{technologyID, jdbcType=INTEGER},
+      #{languageID, jdbcType=INTEGER},
       #{codeStandardID, jdbcType=INTEGER},
       #{createUser, jdbcType=VARCHAR},
       #{updateUser, jdbcType=VARCHAR}

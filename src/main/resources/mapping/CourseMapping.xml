@@ -7,6 +7,7 @@
     <result column="university_name" property="universityName" jdbcType="VARCHAR" />
     <result column="school_id" property="schoolID" jdbcType="INTEGER" />
     <result column="school_name" property="schoolName" jdbcType="VARCHAR" />
+    <result column="language_id" property="languageID" jdbcType="INTEGER" />
     <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
     <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
     <result column="technology_thumbnail" property="technologyThumbnail" jdbcType="VARCHAR" />
@@ -542,6 +543,7 @@
       A.school_id,
       C.school_name,
       A.technology_id,
+      D.language_id,
       D.technology_name,
       D.technology_thumbnail,
       A.course_name,

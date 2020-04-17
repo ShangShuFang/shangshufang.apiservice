@@ -11,6 +11,7 @@ public class CourseVO extends BaseVO {
     private String universityName;
     private int schoolID;
     private String schoolName;
+    private int languageID;
     private int technologyID;
     private String technologyName;
     private String technologyThumbnail;

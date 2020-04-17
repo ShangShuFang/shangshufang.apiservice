@@ -8,7 +8,7 @@ public class AbilityAnalysisResult4CodeGuidelineSummaryEntity {
     private int schoolID;
     private int majorID;
     private int studentID;
-    private int technologyID;
+    private int languageID;
     private int codeStandardID;
     private String codeStandardName;
     private int codeStandardCount;

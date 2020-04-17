@@ -104,15 +104,15 @@ public class AnalysisAbilityController {
      * @param studentUniversityCode 学生所在高校编码
      * @param studentSchoolID       学生所在二级学院编号
      * @param studentID             学生编号
-     * @param technologyID          技术编号
+     * @param languageID            编程语言编号
      * @return 学生代码规范性分析信息
      */
-    @RequestMapping(value = "/any/code_guideline/{studentUniversityCode}/{studentSchoolID}/{studentID}/{technologyID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/any/code_guideline/{studentUniversityCode}/{studentSchoolID}/{studentID}/{languageID}", method = RequestMethod.GET)
     public UnifiedResponse findCodeGuidelineResult(@PathVariable("studentUniversityCode") int studentUniversityCode,
                                                    @PathVariable("studentSchoolID") int studentSchoolID,
                                                    @PathVariable("studentID") int studentID,
-                                                   @PathVariable("technologyID") int technologyID) {
-        return serviceImpl.findCodeGuidelineResult(studentUniversityCode, studentSchoolID, studentID, technologyID);
+                                                   @PathVariable("languageID") int languageID) {
+        return serviceImpl.findCodeGuidelineResult(studentUniversityCode, studentSchoolID, studentID, languageID);
     }
 
     /**

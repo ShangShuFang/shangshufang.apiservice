@@ -9,7 +9,7 @@ public class UniversityStudentExercisesReviewCodeStandardEntity extends BaseEnti
     private int studentUniversityCode;
     private int studentSchoolID;
     private int studentID;
-    private int technologyID;
+    private int languageID;
     private int codeStandardID;
     private String codeStandardName;
 }
