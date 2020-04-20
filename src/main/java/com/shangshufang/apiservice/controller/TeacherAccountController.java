@@ -20,15 +20,14 @@ public class TeacherAccountController {
         return serviceImpl.findList(pageNumber, pageSize, universityCode, schoolID);
     }
 
-    @RequestMapping(value = "/client/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{accountID}/{dataStatus}/{accountRole}", method = RequestMethod.GET)
+    @RequestMapping(value = "/client/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{accountID}/{dataStatus}", method = RequestMethod.GET)
     public UnifiedResponse findList4Client(@PathVariable("pageNumber") int pageNumber,
                                            @PathVariable("pageSize") int pageSize,
                                            @PathVariable("universityCode") int universityCode,
                                            @PathVariable("schoolID") int schoolID,
                                            @PathVariable("accountID") int accountID,
-                                           @PathVariable("dataStatus") String dataStatus,
-                                           @PathVariable("accountRole") String accountRole){
-        return serviceImpl.findList4Client(pageNumber, pageSize, universityCode, schoolID, accountID, dataStatus, accountRole);
+                                           @PathVariable("dataStatus") String dataStatus){
+        return serviceImpl.findList4Client(pageNumber, pageSize, universityCode, schoolID, accountID, dataStatus);
     }
 
     @RequestMapping(value = "/client/waitApprove/{universityCode}/{schoolID}/{teacherID}", method = RequestMethod.GET)

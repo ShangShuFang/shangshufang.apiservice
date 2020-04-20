@@ -69,17 +69,16 @@ public class UniversityAccountServiceImpl implements UniversityAccountService {
     }
 
     @Override
-    public UnifiedResponse findList4Client(int pageNumber, int pageSize, int universityCode, int schoolID, int accountID, String dataStatus, String accountRole) {
+    public UnifiedResponse findList4Client(int pageNumber, int pageSize, int universityCode, int schoolID, int accountID, String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<UniversityAccountVO> modelList = new ArrayList<>();
             dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
-            accountRole = accountRole.equals(CustomerRoleConstant.UNIVERSITY_SCHOOL_ADMIN) ? accountRole : null;
-            int totalCount = myMapper.searchTotalCount4Client(universityCode, schoolID, accountID, dataStatus, accountRole);
+            int totalCount = myMapper.searchTotalCount4Client(universityCode, schoolID, accountID, dataStatus);
             if (totalCount == 0) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<UniversityAccountEntity> entityList = myMapper.searchList4Client(startIndex, pageSize, universityCode, schoolID, accountID, dataStatus, accountRole);
+            List<UniversityAccountEntity> entityList = myMapper.searchList4Client(startIndex, pageSize, universityCode, schoolID, accountID, dataStatus);
             for (UniversityAccountEntity entity : entityList) {
                 UniversityAccountVO model = new UniversityAccountVO();
                 ObjectConvertUtils.toBean(entity, model);
