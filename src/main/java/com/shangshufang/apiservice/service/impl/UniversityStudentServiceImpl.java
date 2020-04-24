@@ -64,6 +64,22 @@ public class UniversityStudentServiceImpl implements UniversityStudentService {
     }
 
     @Override
+    public UnifiedResponse login(String cellphone, String password) {
+        try {
+            UniversityStudentEntity entity =  myMapper.login(cellphone, password);
+            if(entity == null){
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            UniversityStudentVO model = new UniversityStudentVO();
+            ObjectConvertUtils.toBean(entity, model);
+            return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.ONE_SEARCH_COUNT, model);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse checkCellphoneExist(String cellphone) {
         try {
             int count =  myMapper.checkCellphoneExist(cellphone);

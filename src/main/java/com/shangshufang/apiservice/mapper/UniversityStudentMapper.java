@@ -13,6 +13,8 @@ public interface UniversityStudentMapper extends BaseMapper<UniversityStudentEnt
 
     UniversityStudentEntity search(int universityCode, int schoolID, int studentID);
 
+    UniversityStudentEntity login(String cellphone, String password);
+
     int checkCellphoneExist(String cellphone);
 
     int checkEmailExist(String email);

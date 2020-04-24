@@ -8,6 +8,8 @@ public interface UniversityStudentService extends BaseService<UniversityStudentD
 
     UnifiedResponse find(int universityCode, int schoolID, int studentID);
 
+    UnifiedResponse login(String cellphone, String password);
+
     UnifiedResponse checkCellphoneExist(String cellphone);
 
     UnifiedResponse checkEmailExist(String email);

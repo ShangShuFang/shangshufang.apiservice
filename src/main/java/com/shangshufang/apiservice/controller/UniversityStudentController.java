@@ -28,6 +28,12 @@ public class UniversityStudentController {
         return serviceImpl.find(universityCode, schoolID, studentID);
     }
 
+    @RequestMapping(value = "/login/{cellphone}/{password}", method = RequestMethod.GET)
+    public UnifiedResponse login(@PathVariable("cellphone") String cellphone,
+                                @PathVariable("password") String password){
+        return serviceImpl.login(cellphone, password);
+    }
+
     @RequestMapping(value = "/check/cellphone/{cellphone}", method = RequestMethod.GET)
     public UnifiedResponse checkCellphoneExist(@PathVariable("cellphone") String cellphone){
         return serviceImpl.checkCellphoneExist(cellphone);

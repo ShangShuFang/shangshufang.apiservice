@@ -7,6 +7,8 @@
     <result column="university_name" property="universityName" jdbcType="VARCHAR" />
     <result column="school_id" property="schoolID" jdbcType="INTEGER" />
     <result column="school_name" property="schoolName" jdbcType="VARCHAR" />
+    <result column="major_id" property="majorID" jdbcType="INTEGER" />
+    <result column="major_name" property="majorName" jdbcType="VARCHAR" />
     <result column="full_name" property="fullName" jdbcType="VARCHAR" />
     <result column="sex" property="sex" jdbcType="VARCHAR" />
     <result column="birth" property="birth" jdbcType="VARCHAR" />
@@ -97,6 +99,39 @@
     AND A.school_id = #{arg1,jdbcType=INTEGER}
     AND A.student_id = #{arg2,jdbcType=INTEGER};
   </select>
+
+  <select id="login" resultMap="BaseResultMap">
+    SELECT a.student_id,
+           a.university_code,
+           b.university_name,
+           a.school_id,
+           c.school_name,
+           a.major_id,
+           d.major_name,
+           a.full_name,
+           a.sex,
+           a.birth,
+           a.enrollment_year,
+           a.cellphone,
+           a.password,
+           a.email,
+           a.photo,
+           a.is_assistant
+    FROM shangshufang_customer.university_student a
+           INNER JOIN shangshufang_customer.university b
+                      ON a.university_code = b.university_code
+           INNER JOIN shangshufang_customer.school c
+                      ON a.university_code = c.university_code
+                        AND a.school_id = c.school_id
+           INNER JOIN shangshufang_customer.major d
+                      ON a.university_code = d.university_code
+                        AND a.school_id = d.school_id
+                        AND a.major_id = d.major_id
+    WHERE a.cellphone = #{arg0,jdbcType=VARCHAR}
+      AND a.password = #{arg1,jdbcType=VARCHAR};
+  </select>
+
+
   <select id="checkCellphoneExist" resultType="java.lang.Integer">
     SELECT
       COUNT(1) AS TotalCount
