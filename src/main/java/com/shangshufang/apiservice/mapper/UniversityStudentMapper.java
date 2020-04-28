@@ -21,5 +21,7 @@ public interface UniversityStudentMapper extends BaseMapper<UniversityStudentEnt
 
     int updatePassword(UniversityStudentEntity entity);
 
+    int resetPassword(UniversityStudentEntity entity);
+
     int updateAssistant(UniversityStudentEntity entity);
 }

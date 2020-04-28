@@ -1,6 +1,7 @@
 package com.shangshufang.apiservice.service.impl;
 
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
+import com.shangshufang.apiservice.constant.DataStatusConstant;
 import com.shangshufang.apiservice.constant.ParameterConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.UniversityStudentDTO;
@@ -118,6 +119,20 @@ public class UniversityStudentServiceImpl implements UniversityStudentService {
     }
 
     @Override
+    public UnifiedResponse resetPassword(UniversityStudentDTO dto) {
+        try {
+            UniversityStudentEntity entity = new UniversityStudentEntity();
+            ObjectConvertUtils.toBean(dto, entity);
+            entity.setUpdateUser(dto.getLoginUser());
+            int affectRow = myMapper.resetPassword(entity);
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse changeAssistant(UniversityStudentDTO dto) {
         try {
             UniversityStudentEntity entity = new UniversityStudentEntity();
@@ -137,6 +152,7 @@ public class UniversityStudentServiceImpl implements UniversityStudentService {
         try {
             UniversityStudentEntity entity = new UniversityStudentEntity();
             ObjectConvertUtils.toBean(dto, entity);
+            entity.setDataStatus(DataStatusConstant.ACTIVE);
             entity.setCreateUser(dto.getLoginUser());
             entity.setUpdateUser(dto.getLoginUser());
             int affectRow = myMapper.insert(entity);

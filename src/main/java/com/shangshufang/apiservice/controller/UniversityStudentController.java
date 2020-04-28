@@ -58,6 +58,11 @@ public class UniversityStudentController {
     public UnifiedResponse changePassword(@RequestBody UniversityStudentDTO dto){
         return serviceImpl.changePassword(dto);
     }
+    
+    @RequestMapping(value = "/reset/password", method = RequestMethod.PUT)
+    public UnifiedResponse resetPassword(@RequestBody UniversityStudentDTO dto){
+        return serviceImpl.resetPassword(dto);
+    }
 
     @RequestMapping(value = "/change/status", method = RequestMethod.PUT)
     public UnifiedResponse changeDataStatus(@RequestBody UniversityStudentDTO dto){

@@ -7,6 +7,7 @@ public class UniversityStudentDTO extends BaseDTO {
     private int studentID;
     private int universityCode;
     private int schoolID;
+    private int majorID;
     private String fullName;
     private String sex;
     private String birth;

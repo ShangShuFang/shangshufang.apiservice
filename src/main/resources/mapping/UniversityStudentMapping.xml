@@ -148,18 +148,22 @@
     INSERT INTO shangshufang_customer.university_student (
       university_code,
       school_id,
+      major_id,
       full_name,
       cellphone,
       password,
+      data_status,
       create_user,
       update_user
     )
     VALUES (
       #{universityCode, jdbcType=INTEGER},
       #{schoolID, jdbcType=INTEGER},
+      #{majorID, jdbcType=INTEGER},
       #{fullName, jdbcType=VARCHAR},
       #{cellphone, jdbcType=VARCHAR},
       #{password, jdbcType=VARCHAR},
+      #{dataStatus, jdbcType=VARCHAR},
       #{createUser, jdbcType=VARCHAR},
       #{updateUser, jdbcType=VARCHAR}
     )
@@ -185,6 +189,12 @@
     WHERE university_code = #{universityCode,jdbcType=INTEGER}
     AND school_id = #{schoolID,jdbcType=INTEGER}
     AND student_id = #{studentID,jdbcType=INTEGER};
+  </update>
+  <update id="resetPassword" parameterType="com.shangshufang.apiservice.entity.UniversityStudentEntity" >
+    UPDATE shangshufang_customer.university_student SET
+      password = #{password,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE cellphone = #{cellphone,jdbcType=INTEGER};
   </update>
   <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.UniversityStudentEntity" >
     UPDATE shangshufang_customer.university_student SET
