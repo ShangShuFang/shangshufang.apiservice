@@ -95,6 +95,7 @@ public class UniversityStudentServiceImpl implements UniversityStudentService {
     @Override
     public UnifiedResponse checkEmailExist(String email) {
         try {
+            email = email.replace("%2E", ".");
             int count =  myMapper.checkEmailExist(email);
             Boolean exist =  count > 0;
             return UnifiedResponseManager.buildSearchSuccessResponse(count, exist);

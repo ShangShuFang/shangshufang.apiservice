@@ -169,7 +169,10 @@
     )
   </insert>
   <update id="update" parameterType="com.shangshufang.apiservice.entity.UniversityStudentEntity" >
-    UPDATE shangshufang_customer.university_student SET
+    UPDATE shangshufang_customer.university_student
+    SET university_code = #{universityCode,jdbcType=INTEGER},
+        school_id = #{schoolID,jdbcType=INTEGER},
+        major_id = #{majorID,jdbcType=INTEGER},
       full_name = #{fullName,jdbcType=VARCHAR},
       sex = #{sex,jdbcType=VARCHAR},
       birth = #{birth,jdbcType=VARCHAR},
@@ -178,9 +181,7 @@
       email = #{email,jdbcType=VARCHAR},
       photo = #{photo,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR}
-    WHERE university_code = #{universityCode,jdbcType=INTEGER}
-    AND school_id = #{schoolID,jdbcType=INTEGER}
-    AND student_id = #{studentID,jdbcType=INTEGER};
+    WHERE student_id = #{studentID,jdbcType=INTEGER};
   </update>
   <update id="updatePassword" parameterType="com.shangshufang.apiservice.entity.UniversityStudentEntity" >
     UPDATE shangshufang_customer.university_student SET
