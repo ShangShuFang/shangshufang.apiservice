@@ -13,9 +13,6 @@ public class DirectionController {
     @Autowired
     private DirectionServiceImpl serviceImpl;
 
-    @Autowired
-    private TechnologyDirectionServiceImpl technologyDirectionServiceImpl;
-
     @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{dataStatus}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
@@ -58,13 +55,13 @@ public class DirectionController {
         return serviceImpl.delete(directionID);
     }
 
-    @RequestMapping(value = "/list/direction/{technologyID}", method = RequestMethod.GET)
-    public UnifiedResponse findList4Technology(@PathVariable("technologyID") int technologyID){
-        return technologyDirectionServiceImpl.findList4Technology(technologyID);
-    }
-
-    @RequestMapping(value = "/list/technology/{directionID}", method = RequestMethod.GET)
-    public UnifiedResponse findList4Direction(@PathVariable("directionID") int directionID){
-        return technologyDirectionServiceImpl.findList4Direction(directionID);
-    }
+//    @RequestMapping(value = "/list/direction/{technologyID}", method = RequestMethod.GET)
+//    public UnifiedResponse findList4Technology(@PathVariable("technologyID") int technologyID){
+//        return technologyDirectionServiceImpl.findList4Technology(technologyID);
+//    }
+//
+//    @RequestMapping(value = "/list/technology/{directionID}", method = RequestMethod.GET)
+//    public UnifiedResponse findList4Direction(@PathVariable("directionID") int directionID){
+//        return technologyDirectionServiceImpl.findList4Direction(directionID);
+//    }
 }

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shangshufang.apiservice.mapper.TechnologyCategoryMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.TechnologyCategoryEntity" >
+    <id column="technology_category_id" property="technologyCategoryID" jdbcType="INTEGER" />
+    <result column="technology_category_name" property="technologyCategoryName" jdbcType="VARCHAR" />
+    <result column="direction_id" property="directionID" jdbcType="INTEGER" />
+    <result column="direction_name" property="directionName" jdbcType="VARCHAR" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS total_count
+    FROM shangshufang_base.technology_category
+    WHERE 1 = 1
+    <if test="arg0 != 0">
+      AND direction_id = #{arg0,jdbcType=INTEGER}
+    </if>
+    <if test="arg1 != null">
+      AND data_status = #{arg1,jdbcType=VARCHAR}
+    </if>;
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT a.technology_category_id,
+           a.technology_category_name,
+           a.direction_id,
+           b.direction_name,
+           a.data_status,
+           CASE WHEN A.data_status = 'P' THEN '待审核'
+               WHEN A.data_status = 'A' THEN '正常'
+               WHEN A.data_status = 'D' THEN '禁用'
+               ELSE '未知数据状态'
+               END AS data_status_text,
+           c.admin_name AS create_user,
+           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+           d.admin_name AS update_user,
+           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_base.technology_category a
+    INNER JOIN shangshufang_base.direction b
+    ON a.direction_id = b.direction_id
+    INNER JOIN shangshufang_base.system_admin c
+    ON a.create_user = c.admin_id
+    INNER JOIN shangshufang_base.system_admin d
+    ON a.update_user = d.admin_id
+    WHERE 1 = 1
+    <if test="arg2 != 0">
+      AND a.direction_id = #{arg2,jdbcType=INTEGER}
+    </if>
+    <if test="arg3 != null">
+      AND A.data_status = #{arg3,jdbcType=VARCHAR}
+    </if>
+    ORDER BY a.direction_id, a.create_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+
+  <select id="checkNameExist" resultType="java.lang.Integer">
+    SELECT
+      COUNT(1) AS total_count
+    FROM shangshufang_base.technology_category
+    WHERE direction_id = #{arg0,jdbcType=INTEGER}
+    AND technology_category_name = #{arg1,jdbcType=VARCHAR};
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.TechnologyCategoryEntity" >
+    INSERT INTO shangshufang_base.technology_category (
+        technology_category_name,
+        direction_id,
+        create_user,
+        update_user
+    )
+    VALUES (
+        #{technologyCategoryName, jdbcType=VARCHAR},
+        #{directionID, jdbcType=INTEGER},
+        #{createUser, jdbcType=VARCHAR},
+        #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.TechnologyCategoryEntity" >
+    UPDATE shangshufang_base.technology_category
+    SET technology_category_name = #{technologyCategoryName,jdbcType=VARCHAR},
+        update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE technology_category_id = #{technologyCategoryID,jdbcType=INTEGER}
+    AND direction_id = #{directionID,jdbcType=INTEGER};
+  </update>
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.TechnologyCategoryEntity" >
+    UPDATE shangshufang_base.technology_category
+    SET data_status = #{dataStatus,jdbcType=VARCHAR},
+        update_user = #{updateUser,jdbcType=INTEGER}
+    WHERE technology_category_id = #{technologyCategoryID,jdbcType=INTEGER}
+      AND direction_id = #{directionID,jdbcType=INTEGER};
+  </update>
+  <delete id="delete" parameterType="java.lang.Integer" >
+    DELETE FROM shangshufang_base.technology_category
+    WHERE direction_id = #{arg0,jdbcType=INTEGER}
+      AND technology_category_id = #{arg1,jdbcType=INTEGER};
+  </delete>
+</mapper>

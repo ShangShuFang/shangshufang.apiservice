@@ -12,9 +12,11 @@ public class TechnologyVO extends BaseVO {
     private String technologyThumbnail;
     private String technologyMemo;
     private int knowledgeCount;
-    private int directionCount;
+    private int directionID;
+    private String directionName;
     private int usingCompanyCount;
-    private String directionNames;
+    private String difficultyLevel;
+    private String difficultyLevelText;
     private int languageID;
     private String languageName;
     List<AbilityAnalysisResult4StudentMainInfoVO> topStudentMainInfoList;

@@ -30,8 +30,6 @@ public class TechnologyServiceImpl implements TechnologyService {
     @Autowired
     private TechnologyMapper myMapper;
     @Autowired
-    private TechnologyDirectionMapper technologyDirectionMapper;
-    @Autowired
     private CompanyMapper companyMapper;
     @Autowired
     private AnalysisAbilityMapper analysisAbilityMapper;
@@ -181,7 +179,6 @@ public class TechnologyServiceImpl implements TechnologyService {
     public UnifiedResponse delete(int technologyID) {
         try {
             int affectRow = myMapper.delete(technologyID);
-            affectRow += technologyDirectionMapper.delete(technologyID);
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
         } catch (Exception ex) {
             logger.error(ex.toString());
@@ -192,22 +189,11 @@ public class TechnologyServiceImpl implements TechnologyService {
     @Override
     public UnifiedResponse add(TechnologyDTO dto) {
         try {
-            String[] directions = dto.getDirections().split(",");
             TechnologyEntity entity = new TechnologyEntity();
             ObjectConvertUtils.toBean(dto, entity);
             entity.setCreateUser(dto.getLoginUser());
             entity.setUpdateUser(dto.getLoginUser());
             int affectRow = myMapper.insert(entity);
-
-            for (String direction : directions) {
-                TechnologyDirectionEntity technologyDirectionEntity = new TechnologyDirectionEntity();
-                technologyDirectionEntity.setTechnologyID(entity.getTechnologyID());
-                technologyDirectionEntity.setDirectionID(Integer.parseInt(direction));
-                technologyDirectionEntity.setCreateUser(dto.getLoginUser());
-                technologyDirectionEntity.setUpdateUser(dto.getLoginUser());
-                affectRow += technologyDirectionMapper.insert(technologyDirectionEntity);
-            }
-
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
         } catch (Exception ex) {
             logger.error(ex.toString());
@@ -219,22 +205,9 @@ public class TechnologyServiceImpl implements TechnologyService {
     public UnifiedResponse change(TechnologyDTO dto) {
         try {
             TechnologyEntity entity = new TechnologyEntity();
-            String[] directions = dto.getDirections().split(",");
-
             ObjectConvertUtils.toBean(dto, entity);
             entity.setUpdateUser(dto.getLoginUser());
             int affectRow = myMapper.update(entity);
-
-            affectRow += technologyDirectionMapper.delete(dto.getTechnologyID());
-            for (String direction : directions) {
-                TechnologyDirectionEntity technologyDirectionEntity = new TechnologyDirectionEntity();
-                technologyDirectionEntity.setTechnologyID(entity.getTechnologyID());
-                technologyDirectionEntity.setDirectionID(Integer.parseInt(direction));
-                technologyDirectionEntity.setCreateUser(dto.getLoginUser());
-                technologyDirectionEntity.setUpdateUser(dto.getLoginUser());
-                affectRow += technologyDirectionMapper.insert(technologyDirectionEntity);
-            }
-
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
         } catch (Exception ex) {
             logger.error(ex.toString());

@@ -31,7 +31,6 @@
       A.direction_stars,
       A.direction_thumbnail,
       A.direction_memo,
-      D.technology_count,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未激活'
           WHEN A.data_status = 'A' THEN '正常'
@@ -47,15 +46,6 @@
     ON A.create_user = B.admin_id
     INNER JOIN shangshufang_base.system_admin C
     ON A.update_user = C.admin_id
-    LEFT JOIN
-    (
-      SELECT
-        direction_id,
-        COUNT(1) AS technology_count
-      FROM shangshufang_base.technology_direction_matching
-      GROUP BY direction_id
-    ) D
-    ON A.direction_id = D.direction_id
     WHERE 1 = 1
     <if test="arg2 != null">
       AND A.data_status = #{arg2,jdbcType=VARCHAR}
