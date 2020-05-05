@@ -11,5 +11,6 @@ public class TechnologyDTO extends BaseDTO {
     private String technologyThumbnail;
     private String technologyMemo;
     private int directionID;
+    private int categoryID;
     private String difficultyLevel;
 }

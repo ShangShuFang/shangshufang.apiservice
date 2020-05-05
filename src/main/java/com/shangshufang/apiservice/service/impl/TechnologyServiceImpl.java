@@ -37,16 +37,16 @@ public class TechnologyServiceImpl implements TechnologyService {
     private Logger logger = LogManager.getLogger(TechnologyServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, String dataStatus) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, int directionID, int categoryID, String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<TechnologyVO> modelList = new ArrayList<>();
             dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
-            int totalCount = myMapper.searchTotalCount(dataStatus);
+            int totalCount = myMapper.searchTotalCount(directionID, categoryID, dataStatus);
             if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<TechnologyEntity> entityList =  myMapper.searchList(startIndex, pageSize, dataStatus);
+            List<TechnologyEntity> entityList =  myMapper.searchList(startIndex, pageSize, directionID, categoryID, dataStatus);
             for (TechnologyEntity entity : entityList) {
                 TechnologyVO model = new TechnologyVO();
                 ObjectConvertUtils.toBean(entity, model);
@@ -60,15 +60,15 @@ public class TechnologyServiceImpl implements TechnologyService {
     }
 
     @Override
-    public UnifiedResponse findList4Client(int pageNumber, int pageSize) {
+    public UnifiedResponse findList4Client(int pageNumber, int pageSize, int directionID, int categoryID) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<TechnologyVO> modelList = new ArrayList<>();
-            int totalCount = myMapper.searchTotalCount(DataStatusConstant.ACTIVE);
+            int totalCount = myMapper.searchTotalCount(directionID, categoryID, DataStatusConstant.ACTIVE);
             if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<TechnologyEntity> entityList =  myMapper.searchList4Client(startIndex, pageSize, DataStatusConstant.ACTIVE);
+            List<TechnologyEntity> entityList =  myMapper.searchList4Client(startIndex, pageSize, directionID, categoryID, DataStatusConstant.ACTIVE);
             String lowestRecruitLevel = companyMapper.searchLowestRecruitLevel();
 
             for (TechnologyEntity entity : entityList) {

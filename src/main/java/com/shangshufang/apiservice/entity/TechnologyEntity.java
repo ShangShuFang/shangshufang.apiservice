@@ -12,6 +12,8 @@ public class TechnologyEntity extends BaseEntity {
     private int knowledgeCount;
     private int directionID;
     private String directionName;
+    private int categoryID;
+    private String categoryName;
     private int usingCompanyCount;
     private String difficultyLevel;
     private String difficultyLevelText;

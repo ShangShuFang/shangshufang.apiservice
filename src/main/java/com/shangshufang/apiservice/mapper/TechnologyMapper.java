@@ -8,11 +8,11 @@ import java.util.List;
 
 @Mapper
 public interface TechnologyMapper extends BaseMapper<TechnologyEntity> {
-    int searchTotalCount(@Param("dataStatus") String dataStatus);
+    int searchTotalCount(int directionID, int categoryID, String dataStatus);
 
-    List<TechnologyEntity> searchList(int startIndex, int pageSize, String dataStatus);
+    List<TechnologyEntity> searchList(int startIndex, int pageSize, int directionID, int categoryID, String dataStatus);
 
-    List<TechnologyEntity> searchList4Client(int startIndex, int pageSize, String dataStatus);
+    List<TechnologyEntity> searchList4Client(int startIndex, int pageSize, int directionID, int categoryID, String dataStatus);
 
     List<TechnologyEntity> searchSimpleList();
 

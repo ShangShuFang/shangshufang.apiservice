@@ -6,7 +6,9 @@
     <result column="language_id" property="languageID" jdbcType="INTEGER" />
     <result column="language_name" property="languageName" jdbcType="VARCHAR" />
     <result column="direction_id" property="directionID" jdbcType="INTEGER" />
-    <result column="direction_name" property="directionName" jdbcType="INTEGER" />
+    <result column="direction_name" property="directionName" jdbcType="VARCHAR" />
+    <result column="category_id" property="categoryID" jdbcType="INTEGER" />
+    <result column="category_name" property="categoryName" jdbcType="VARCHAR" />
     <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
     <result column="technology_stars" property="technologyStars" jdbcType="INTEGER" />
     <result column="technology_thumbnail" property="technologyThumbnail" jdbcType="VARCHAR" />
@@ -27,8 +29,14 @@
     COUNT(1) AS TotalCount
     FROM shangshufang_base.technology
     WHERE 1 = 1
-    <if test="dataStatus != null">
-      AND data_status = #{dataStatus,jdbcType=VARCHAR}
+    <if test="arg0 != 0">
+      AND direction_id = #{arg0,jdbcType=INTEGER}
+    </if>
+    <if test="arg1 != 0">
+      AND category_id = #{arg1,jdbcType=INTEGER}
+    </if>
+    <if test="arg2 != null">
+      AND data_status = #{arg2,jdbcType=VARCHAR}
     </if>;
   </select>
   <select id="searchList" resultMap="BaseResultMap">
@@ -42,6 +50,8 @@
       E.language_name,
       A.direction_id,
       F.direction_name,
+      A.category_id,
+      G.technology_category_name AS category_name,
       A.difficulty_level,
       CASE WHEN A.difficulty_level = 'J' THEN '初级'
           WHEN A.difficulty_level = 'M' THEN '中级'
@@ -78,9 +88,17 @@
     ON A.language_id = E.language_id
     LEFT JOIN shangshufang_base.direction F
     ON A.direction_id = F.direction_id
+    LEFT JOIN shangshufang_base.technology_category G
+    ON a.category_id = G.technology_category_id
     WHERE 1 = 1
-    <if test="arg2 != null">
-      AND A.data_status = #{arg2,jdbcType=VARCHAR}
+    <if test="arg2 != 0">
+      AND A.direction_id = #{arg2,jdbcType=INTEGER}
+    </if>
+    <if test="arg3 != 0">
+      AND A.category_id = #{arg3,jdbcType=INTEGER}
+    </if>
+    <if test="arg4 != null">
+      AND A.data_status = #{arg4,jdbcType=VARCHAR}
     </if>
     ORDER BY A.create_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
@@ -135,8 +153,14 @@
     INNER JOIN shangshufang_base.programming_language F
     ON A.language_id = F.language_id
     WHERE 1 = 1
-    <if test="arg2 != null">
-      AND A.data_status = #{arg2,jdbcType=VARCHAR}
+    <if test="arg2 != 0">
+      AND A.direction_id = #{arg2,jdbcType=INTEGER}
+    </if>
+    <if test="arg3 != 0">
+      AND A.category_id = #{arg3,jdbcType=INTEGER}
+    </if>
+    <if test="arg4 != null">
+      AND A.data_status = #{arg4,jdbcType=VARCHAR}
     </if>
     ORDER BY A.technology_stars DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
@@ -200,12 +224,14 @@
     FROM shangshufang_base.technology
     WHERE technology_name = #{arg0,jdbcType=VARCHAR};
   </select>
+
   <insert id="insert" useGeneratedKeys="true" keyProperty="technologyID" parameterType="com.shangshufang.apiservice.entity.TechnologyEntity" >
     INSERT INTO shangshufang_base.technology (
       language_id,
       technology_name,
       technology_stars,
       direction_id,
+      category_id,
       difficulty_level,
       technology_memo,
       create_user,
@@ -216,34 +242,40 @@
       #{technologyName, jdbcType=VARCHAR},
       #{technologyStars, jdbcType=INTEGER},
       #{directionID, jdbcType=INTEGER},
+      #{categoryID, jdbcType=INTEGER},
       #{difficultyLevel, jdbcType=VARCHAR},
       #{technologyMemo, jdbcType=VARCHAR},
       #{createUser, jdbcType=VARCHAR},
       #{updateUser, jdbcType=VARCHAR}
     )
   </insert>
+
   <update id="update" parameterType="com.shangshufang.apiservice.entity.TechnologyEntity" >
     UPDATE shangshufang_base.technology SET
       technology_name = #{technologyName,jdbcType=VARCHAR},
       technology_stars = #{technologyStars,jdbcType=INTEGER},
       direction_id = #{directionID,jdbcType=INTEGER},
+      category_id = #{categoryID,jdbcType=INTEGER},
       difficulty_level = #{difficultyLevel,jdbcType=INTEGER},
       technology_memo = #{technologyMemo,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE technology_id = #{technologyID,jdbcType=INTEGER};
   </update>
+
   <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.TechnologyEntity" >
     UPDATE shangshufang_base.technology SET
       data_status = #{dataStatus,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE technology_id = #{technologyID,jdbcType=INTEGER};
   </update>
+
   <update id="updateThumbnail" parameterType="com.shangshufang.apiservice.entity.TechnologyEntity" >
     UPDATE shangshufang_base.technology SET
       technology_thumbnail = #{technologyThumbnail,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE technology_id = #{technologyID,jdbcType=INTEGER};
   </update>
+
   <delete id="delete" parameterType="java.lang.Integer" >
     DELETE FROM shangshufang_base.technology
     WHERE technology_id = #{technologyID,jdbcType=INTEGER};
