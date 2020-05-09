@@ -9,9 +9,15 @@
     <result column="student_school_name" property="schoolName" jdbcType="VARCHAR" />
     <result column="student_id" property="studentID" jdbcType="INTEGER" />
     <result column="student_name" property="studentName" jdbcType="VARCHAR" />
+
+    <result column="major_id" property="majorID" jdbcType="INTEGER" />
+    <result column="major_name" property="majorName" jdbcType="VARCHAR" />
+
     <result column="photo" property="studentPhoto" jdbcType="VARCHAR" />
     <result column="cellphone" property="studentCellphone" jdbcType="VARCHAR" />
     <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
+
     <result column="knowledge_total_count" property="knowledgeTotalCount" jdbcType="INTEGER" />
     <result column="finish_knowledge_count" property="finishKnowledgeCount" jdbcType="INTEGER" />
     <result column="finish_knowledge_percent" property="finishKnowledgePercent" jdbcType="FLOAT" />
@@ -406,24 +412,35 @@
           ON b.student_university_code = c.university_code
           AND b.student_school_id = c.school_id
           AND b.student_id = c.student_id
-    WHERE a.technology_id = #{arg0,jdbcType=INTEGER}
+        INNER JOIN shangshufang_base.technology d
+            ON a.technology_id = d.technology_id
+    WHERE 1 = 1
+    <if test="arg0 != 0">
+      AND d.direction_id = #{arg0,jdbcType=INTEGER}
+    </if>
     <if test="arg1 != 0">
-      AND b.student_university_code = #{arg1,jdbcType=INTEGER}
+      AND d.category_id = #{arg1,jdbcType=INTEGER}
     </if>
     <if test="arg2 != 0">
-      AND b.student_school_id = #{arg2,jdbcType=INTEGER}
+      AND a.technology_id = #{arg2,jdbcType=INTEGER}
     </if>
     <if test="arg3 != 0">
-      AND a.university_code = #{arg3,jdbcType=INTEGER}
+      AND b.student_university_code = #{arg3,jdbcType=INTEGER}
     </if>
     <if test="arg4 != 0">
-      AND a.school_id = #{arg4,jdbcType=INTEGER}
+      AND b.student_school_id = #{arg4,jdbcType=INTEGER}
     </if>
     <if test="arg5 != 0">
-      AND a.teacher_id = #{arg5,jdbcType=INTEGER}
+      AND a.university_code = #{arg5,jdbcType=INTEGER}
     </if>
-    <if test="arg6 != null">
-      AND c.cellphone = #{arg6,jdbcType=VARCHAR}
+    <if test="arg6 != 0">
+      AND a.school_id = #{arg6,jdbcType=INTEGER}
+    </if>
+    <if test="arg7 != 0">
+      AND a.teacher_id = #{arg7,jdbcType=INTEGER}
+    </if>
+    <if test="arg8 != null">
+      AND c.full_name = #{arg8,jdbcType=VARCHAR}
     </if>;
   </select>
 
@@ -434,10 +451,13 @@
            B.student_school_id,
            A.school_name AS student_school_name,
            a.student_id,
+           A.major_id,
+           A.major_name,
            A.full_name AS student_name,
            A.cellphone,
            A.photo,
-           B.technology_id,
+           A.technology_id,
+           A.technology_name,
            B.knowledge_total_count,
            B.finish_knowledge_count,
            B.finish_knowledge_percent,
@@ -448,10 +468,14 @@
            B.ability_level
     FROM
     (
-        SELECT b.student_university_code,
+        SELECT a.technology_id,
+               g.technology_name,
+               b.student_university_code,
                d.university_name,
                b.student_school_id,
                e.school_name,
+               c.major_id,
+               f.major_name,
                b.student_id,
                c.full_name,
                c.enrollment_year,
@@ -472,24 +496,39 @@
             INNER JOIN shangshufang_customer.school e
                 ON b.student_university_code = e.university_code
                 AND b.student_school_id = e.school_id
-        WHERE a.technology_id = #{arg2,jdbcType=INTEGER}
+            INNER JOIN shangshufang_customer.major f
+                ON c.university_code = f.university_code
+                       AND c.school_id = f.school_id
+                       AND c.major_id = f.major_id
+            INNER JOIN shangshufang_base.technology g
+                ON a.technology_id = g.technology_id
+        WHERE 1 = 1
+        <if test="arg2 != 0">
+          AND g.direction_id = #{arg2,jdbcType=INTEGER}
+        </if>
         <if test="arg3 != 0">
-          AND b.student_university_code = #{arg3,jdbcType=INTEGER}
+          AND g.category_id = #{arg3,jdbcType=INTEGER}
         </if>
         <if test="arg4 != 0">
-          AND b.student_school_id = #{arg4,jdbcType=INTEGER}
+            AND a.technology_id = #{arg4,jdbcType=INTEGER}
         </if>
         <if test="arg5 != 0">
-          AND a.university_code = #{arg5,jdbcType=INTEGER}
+          AND b.student_university_code = #{arg5,jdbcType=INTEGER}
         </if>
         <if test="arg6 != 0">
-          AND a.school_id = #{arg6,jdbcType=INTEGER}
+          AND b.student_school_id = #{arg6,jdbcType=INTEGER}
         </if>
         <if test="arg7 != 0">
-          AND a.teacher_id = #{arg7,jdbcType=INTEGER}
+          AND a.university_code = #{arg7,jdbcType=INTEGER}
         </if>
-        <if test="arg8 != null">
-          AND c.cellphone = #{arg8,jdbcType=VARCHAR}
+        <if test="arg8 != 0">
+          AND a.school_id = #{arg8,jdbcType=INTEGER}
+        </if>
+        <if test="arg9 != 0">
+          AND a.teacher_id = #{arg9,jdbcType=INTEGER}
+        </if>
+        <if test="arg10 != null">
+          AND c.full_name = #{arg10,jdbcType=VARCHAR}
         </if>
         LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER}
     ) A

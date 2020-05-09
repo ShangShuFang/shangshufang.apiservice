@@ -12,18 +12,20 @@ public class CourseController {
     @Autowired
     private CourseServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{teacherID}/{technologyID}/{courseTimeBegin}/{dataStatus}/{isSelf}/{searchType}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{teacherID}/{directionID}/{categoryID}/{technologyID}/{courseTimeBegin}/{dataStatus}/{isSelf}/{searchType}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
                                     @PathVariable("universityCode") int universityCode,
                                     @PathVariable("schoolID") int schoolID,
                                     @PathVariable("teacherID") int teacherID,
+                                    @PathVariable("directionID") int directionID,
+                                    @PathVariable("categoryID") int categoryID,
                                     @PathVariable("technologyID") int technologyID,
                                     @PathVariable("courseTimeBegin") String courseTimeBegin,
                                     @PathVariable("dataStatus") String dataStatus,
                                     @PathVariable("isSelf") boolean isSelf,
                                     @PathVariable("searchType") String searchType) {
-        return serviceImpl.findList(pageNumber, pageSize, universityCode, schoolID, teacherID, technologyID, courseTimeBegin, dataStatus, isSelf, searchType);
+        return serviceImpl.findList(pageNumber, pageSize, universityCode, schoolID, teacherID, directionID, categoryID, technologyID, courseTimeBegin, dataStatus, isSelf, searchType);
     }
 
     @RequestMapping(value = "/list/simple/{universityCode}/{schoolID}/{teacherID}/{technologyID}", method = RequestMethod.GET)

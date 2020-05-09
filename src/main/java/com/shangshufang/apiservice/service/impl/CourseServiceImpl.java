@@ -41,6 +41,8 @@ public class CourseServiceImpl implements CourseService {
                                     int universityCode,
                                     int schoolID,
                                     int teacherID,
+                                    int directionID,
+                                    int categoryID,
                                     int technologyID,
                                     String courseTimeBegin,
                                     String dataStatus,
@@ -64,6 +66,8 @@ public class CourseServiceImpl implements CourseService {
                         technologyID,
                         courseTimeBegin,
                         dataStatus,
+                        directionID,
+                        categoryID,
                         isSelf);
             }else{
                 totalCount = courseMapper.searchTotalCount(
@@ -73,6 +77,8 @@ public class CourseServiceImpl implements CourseService {
                         technologyID,
                         courseTimeBegin,
                         dataStatus,
+                        directionID,
+                        categoryID,
                         isSelf);
             }
 
@@ -91,6 +97,8 @@ public class CourseServiceImpl implements CourseService {
                         dataStatus,
                         startIndex,
                         pageSize,
+                        directionID,
+                        categoryID,
                         isSelf);
             }else {
                 entityList =  courseMapper.searchList(
@@ -102,6 +110,8 @@ public class CourseServiceImpl implements CourseService {
                         dataStatus,
                         startIndex,
                         pageSize,
+                        directionID,
+                        categoryID,
                         isSelf);
             }
 

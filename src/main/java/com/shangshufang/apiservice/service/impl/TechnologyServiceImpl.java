@@ -94,10 +94,10 @@ public class TechnologyServiceImpl implements TechnologyService {
     }
 
     @Override
-    public UnifiedResponse findSimpleList() {
+    public UnifiedResponse findSimpleList(int directionID, int categoryID, String dataStatus) {
         try {
             List<TechnologyVO> modelList = new ArrayList<>();
-            List<TechnologyEntity> entityList =  myMapper.searchSimpleList();
+            List<TechnologyEntity> entityList =  myMapper.searchSimpleList(directionID, categoryID, dataStatus);
             if(entityList.isEmpty()){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }

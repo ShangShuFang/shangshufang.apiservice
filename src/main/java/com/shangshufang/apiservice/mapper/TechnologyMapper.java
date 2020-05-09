@@ -14,7 +14,7 @@ public interface TechnologyMapper extends BaseMapper<TechnologyEntity> {
 
     List<TechnologyEntity> searchList4Client(int startIndex, int pageSize, int directionID, int categoryID, String dataStatus);
 
-    List<TechnologyEntity> searchSimpleList();
+    List<TechnologyEntity> searchSimpleList(int directionID, int categoryID, String dataStatus);
 
     List<TechnologyEntity> searchStudentLearning(int studentUniversityCode, int studentSchoolID, int studentID);
 

@@ -16,6 +16,7 @@ public class AbilityAnalysisResult4StudentMainInfoVO {
     private String studentPhoto;
     private String studentCellphone;
     private int technologyID;
+    private String technologyName;
     private int knowledgeTotalCount;
     private int finishKnowledgeCount;
     private float finishKnowledgePercent;

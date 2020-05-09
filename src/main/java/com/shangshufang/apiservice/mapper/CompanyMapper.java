@@ -7,9 +7,9 @@ import java.util.List;
 
 @Mapper
 public interface CompanyMapper extends BaseMapper<CompanyEntity> {
-    int searchTotalCount(int provinceCode, int cityCode);
+    int searchTotalCount(int provinceCode, int cityCode, String dataStatus);
 
-    List<CompanyEntity> searchList(int startIndex, int pageSize, int provinceCode, int cityCode);
+    List<CompanyEntity> searchList(int startIndex, int pageSize, int provinceCode, int cityCode, String dataStatus);
 
     List<CompanyEntity> searchList4Client();
 

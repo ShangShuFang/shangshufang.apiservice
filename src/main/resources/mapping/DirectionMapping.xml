@@ -50,7 +50,7 @@
     <if test="arg2 != null">
       AND A.data_status = #{arg2,jdbcType=VARCHAR}
     </if>
-    ORDER BY A.update_time DESC
+    ORDER BY A.direction_id
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
   <select id="searchByID" resultMap="BaseResultMap">

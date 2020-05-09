@@ -54,7 +54,7 @@
     <if test="arg3 != null">
       AND A.data_status = #{arg3,jdbcType=VARCHAR}
     </if>
-    ORDER BY a.direction_id, a.create_time DESC
+    ORDER BY a.direction_id
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 

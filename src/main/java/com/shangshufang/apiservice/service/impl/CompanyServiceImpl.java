@@ -1,6 +1,7 @@
 package com.shangshufang.apiservice.service.impl;
 
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
+import com.shangshufang.apiservice.constant.ParameterConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.CompanyDTO;
 import com.shangshufang.apiservice.entity.CompanyEntity;
@@ -23,15 +24,16 @@ public class CompanyServiceImpl implements CompanyService {
     private CompanyMapper myMapper;
     private Logger logger = LogManager.getLogger(CompanyServiceImpl.class);
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, int provinceCode, int cityCode) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, int provinceCode, int cityCode, String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<CompanyVO> modelList = new ArrayList<>();
-            int totalCount = myMapper.searchTotalCount(provinceCode, cityCode);
+            dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
+            int totalCount = myMapper.searchTotalCount(provinceCode, cityCode, dataStatus);
             if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<CompanyEntity> entityList =  myMapper.searchList(startIndex, pageSize, provinceCode, cityCode);
+            List<CompanyEntity> entityList =  myMapper.searchList(startIndex, pageSize, provinceCode, cityCode, dataStatus);
             for (CompanyEntity entity : entityList) {
                 CompanyVO model = new CompanyVO();
                 ObjectConvertUtils.toBean(entity, model);

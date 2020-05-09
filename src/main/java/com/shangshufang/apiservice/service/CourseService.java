@@ -9,6 +9,8 @@ public interface CourseService extends BaseService<CourseDTO> {
                              int universityCode,
                              int schoolID,
                              int teacherID,
+                             int directionID,
+                             int categoryID,
                              int technologyID,
                              String courseTimeBegin,
                              String dataStatus,

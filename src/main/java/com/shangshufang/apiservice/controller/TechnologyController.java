@@ -29,9 +29,11 @@ public class TechnologyController {
         return serviceImpl.findList4Client(pageNumber, pageSize, directionID, categoryID);
     }
 
-    @RequestMapping(value = "/simple", method = RequestMethod.GET)
-    public UnifiedResponse findSimpleList() {
-        return serviceImpl.findSimpleList();
+    @RequestMapping(value = "/simple/{directionID}/{categoryID}/{dataStatus}", method = RequestMethod.GET)
+    public UnifiedResponse findSimpleList(@PathVariable("directionID") int directionID,
+                                          @PathVariable("categoryID") int categoryID,
+                                          @PathVariable("dataStatus") String dataStatus) {
+        return serviceImpl.findSimpleList(directionID, categoryID, dataStatus);
     }
 
     @RequestMapping(value = "/learning/{studentUniversityCode}/{studentSchoolID}/{studentID}", method = RequestMethod.GET)

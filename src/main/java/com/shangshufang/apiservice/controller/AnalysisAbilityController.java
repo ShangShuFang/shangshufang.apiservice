@@ -29,26 +29,30 @@ public class AnalysisAbilityController {
      *
      * @param pageNumber            页码
      * @param pageSize              每页数据
+     * @param directionID           方向编号
+     * @param categoryID            分类编号
      * @param technologyID          技术编号
      * @param studentUniversityCode 学生就读高校编码
      * @param studentSchoolID       学生所在二级学院编号
      * @param teacherUniversityCode 教师所在高校编码
      * @param teacherSchoolID       教师所在二级学院编号
      * @param teacherID             教师编号
-     * @param studentCellphone      学生电话号码
+     * @param studentName           学生姓名
      * @return 学生能力分析结果信息列表
      */
-    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{technologyID}/{studentUniversityCode}/{studentSchoolID}/{teacherUniversityCode}/{teacherSchoolID}/{teacherID}/{studentCellphone}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{directionID}/{categoryID}/{technologyID}/{studentUniversityCode}/{studentSchoolID}/{teacherUniversityCode}/{teacherSchoolID}/{teacherID}/{studentName}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
+                                    @PathVariable("directionID") int directionID,
+                                    @PathVariable("categoryID") int categoryID,
                                     @PathVariable("technologyID") int technologyID,
                                     @PathVariable("studentUniversityCode") int studentUniversityCode,
                                     @PathVariable("studentSchoolID") int studentSchoolID,
                                     @PathVariable("teacherUniversityCode") int teacherUniversityCode,
                                     @PathVariable("teacherSchoolID") int teacherSchoolID,
                                     @PathVariable("teacherID") int teacherID,
-                                    @PathVariable("studentCellphone") String studentCellphone) {
-        return serviceImpl.findList(pageNumber, pageSize, technologyID, studentUniversityCode, studentSchoolID, teacherUniversityCode, teacherSchoolID, teacherID, studentCellphone);
+                                    @PathVariable("studentName") String studentName) {
+        return serviceImpl.findList(pageNumber, pageSize, directionID, categoryID, technologyID, studentUniversityCode, studentSchoolID, teacherUniversityCode, teacherSchoolID, teacherID, studentName);
     }
 
     /**

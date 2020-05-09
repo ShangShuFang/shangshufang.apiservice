@@ -13,6 +13,8 @@ public interface CourseMapper extends BaseMapper<CourseEntity> {
                          int technologyID,
                          String courseTimeBegin,
                          String dataStatus,
+                         int directionID,
+                         int categoryID,
                          boolean isSelf);
 
     List<CourseEntity> searchList(int universityCode,
@@ -23,25 +25,31 @@ public interface CourseMapper extends BaseMapper<CourseEntity> {
                                   String dataStatus,
                                   int startIndex,
                                   int pageSize,
+                                  int directionID,
+                                  int categoryID,
                                   boolean isSelf);
 
     int searchStartedTotalCount(int universityCode,
-                         int schoolID,
-                         int teacherID,
-                         int technologyID,
-                         String courseTimeBegin,
-                         String dataStatus,
-                         boolean isSelf);
+                                int schoolID,
+                                int teacherID,
+                                int technologyID,
+                                String courseTimeBegin,
+                                String dataStatus,
+                                int directionID,
+                                int categoryID,
+                                boolean isSelf);
 
     List<CourseEntity> searchStartedList(int universityCode,
-                                  int schoolID,
-                                  int teacherID,
-                                  int technologyID,
-                                  String courseTimeBegin,
-                                  String dataStatus,
-                                  int startIndex,
-                                  int pageSize,
-                                  boolean isSelf);
+                                         int schoolID,
+                                         int teacherID,
+                                         int technologyID,
+                                         String courseTimeBegin,
+                                         String dataStatus,
+                                         int startIndex,
+                                         int pageSize,
+                                         int directionID,
+                                         int categoryID,
+                                         boolean isSelf);
 
     int searchSimpleTotalCount(int universityCode, int schoolID, int teacherID, int technologyID);
 
@@ -53,10 +61,10 @@ public interface CourseMapper extends BaseMapper<CourseEntity> {
                         String dataStatus);
 
     int checkCourseExist(int universityCode,
-                             int schoolID,
-                             String courseName,
-                             String courseTimeBegin,
-                             String courseTimeEnd);
+                         int schoolID,
+                         String courseName,
+                         String courseTimeBegin,
+                         String courseTimeEnd);
 
     int updateCourseToStart();
 }

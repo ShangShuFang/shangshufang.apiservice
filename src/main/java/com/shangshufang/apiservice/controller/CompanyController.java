@@ -22,12 +22,13 @@ public class CompanyController {
     @Autowired
     private TechnologyUsingServiceImpl technologyUsingService;
 
-    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{provinceCode}/{cityCode}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{provinceCode}/{cityCode}/{dataStatus}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
                                     @PathVariable("provinceCode") int provinceCode,
-                                    @PathVariable("cityCode") int cityCode){
-        return serviceImpl.findList(pageNumber, pageSize, provinceCode, cityCode);
+                                    @PathVariable("cityCode") int cityCode,
+                                    @PathVariable("dataStatus") String dataStatus){
+        return serviceImpl.findList(pageNumber, pageSize, provinceCode, cityCode, dataStatus);
     }
 
     @RequestMapping(value = "/client", method = RequestMethod.GET)

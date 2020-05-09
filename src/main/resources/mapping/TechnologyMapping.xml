@@ -112,8 +112,17 @@
             technology_memo,
             language_id
     FROM shangshufang_base.technology
-    WHERE data_status = 'A'
-    ORDER BY update_time DESC;
+    WHERE 1 = 1
+    <if test="arg0 != 0">
+      AND direction_id = #{arg0,jdbcType=INTEGER}
+    </if>
+    <if test="arg1 != 0">
+      AND category_id = #{arg1,jdbcType=INTEGER}
+    </if>
+    <if test="arg2 != null">
+      AND data_status = #{arg2,jdbcType=VARCHAR}
+    </if>
+    ORDER BY direction_id, category_id, update_time DESC;
   </select>
 
   <select id="searchList4Client" resultMap="BaseResultMap">
@@ -124,6 +133,16 @@
       A.technology_thumbnail,
       A.technology_memo,
       A.language_id,
+      A.direction_id,
+      C.direction_name,
+      A.category_id,
+      D.technology_category_name AS category_name,
+      A.difficulty_level,
+      CASE WHEN A.difficulty_level = 'J' THEN '初级'
+      WHEN A.difficulty_level = 'M' THEN '中级'
+      WHEN A.difficulty_level = 'S' THEN '高级'
+      ELSE '未知数据状态'
+      END AS difficulty_level_text,
       B.knowledge_count,
       E.using_company_count,
       F.language_name
@@ -138,6 +157,10 @@
       GROUP BY technology_id
     ) B
     ON A.technology_id = B.technology_id
+    LEFT JOIN shangshufang_base.direction C
+    ON A.direction_id = C.direction_id
+    LEFT JOIN shangshufang_base.technology_category D
+    ON A.category_id = D.technology_category_id
     LEFT JOIN
     (
       SELECT
@@ -174,6 +197,10 @@
       A.technology_thumbnail,
       A.technology_memo,
       D.knowledge_count,
+      A.direction_id,
+      E.direction_name,
+      A.category_id,
+      F.technology_category_name AS category_name,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未激活'
           WHEN A.data_status = 'A' THEN '正常'
@@ -199,6 +226,10 @@
     GROUP BY technology_id
     ) D
     ON A.technology_id = D.technology_id
+    LEFT JOIN shangshufang_base.direction E
+              ON A.direction_id = E.direction_id
+    LEFT JOIN shangshufang_base.technology_category F
+              ON a.category_id = F.technology_category_id
     WHERE A.technology_id = #{arg0,jdbcType=INTEGER};
   </select>
 

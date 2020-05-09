@@ -142,103 +142,118 @@ public interface AnalysisAbilityMapper {
 
     /**
      * 取得满足条件的学生能力结果的总数
-     * @param technologyID 技术编号
+     * @param directionID           方向编号
+     * @param categoryID            分类编号
+     * @param technologyID          技术编号
      * @param studentUniversityCode 学生所在高校
-     * @param studentSchoolID 学生所在二级学院
+     * @param studentSchoolID       学生所在二级学院
      * @param teacherUniversityCode 教师所在高校
-     * @param teacherSchoolID 教师所在二级学院
-     * @param teacherID 教师编号
-     * @param studentCellphone 学生手机号码
+     * @param teacherSchoolID       教师所在二级学院
+     * @param teacherID             教师编号
+     * @param studentName           学生姓名
      * @return 满足条件的学生能力结果的总数
      */
-    int searchStudentMainResultTotalCount(int technologyID,
-                         int studentUniversityCode,
-                         int studentSchoolID,
-                         int teacherUniversityCode,
-                         int teacherSchoolID,
-                         int teacherID,
-                         String studentCellphone);
+    int searchStudentMainResultTotalCount(int directionID,
+                                          int categoryID,
+                                          int technologyID,
+                                          int studentUniversityCode,
+                                          int studentSchoolID,
+                                          int teacherUniversityCode,
+                                          int teacherSchoolID,
+                                          int teacherID,
+                                          String studentName);
 
     /**
      * 取得满足条件的学生能力结果列表
-     * @param startIndex 开始下标
-     * @param pageSize 查询数量
-     * @param technologyID 技术编号
+     *
+     * @param startIndex            开始下标
+     * @param pageSize              查询数量
+     * @param directionID           方向编号
+     * @param categoryID            分类编号
+     * @param technologyID          技术编号
      * @param studentUniversityCode 学生所在高校
-     * @param studentSchoolID 学生所在二级学院
+     * @param studentSchoolID       学生所在二级学院
      * @param teacherUniversityCode 教师所在高校
-     * @param teacherSchoolID 教师所在二级学院
-     * @param teacherID 教师编号
-     * @param studentCellphone 学生手机号码
+     * @param teacherSchoolID       教师所在二级学院
+     * @param teacherID             教师编号
+     * @param studentName           学生姓名
      * @return 满足条件的学生能力结果列表
      */
     List<AbilityAnalysisResult4StudentMainInfoEntity> searchStudentMainResultList(int startIndex,
                                                                                   int pageSize,
+                                                                                  int directionID,
+                                                                                  int categoryID,
                                                                                   int technologyID,
                                                                                   int studentUniversityCode,
                                                                                   int studentSchoolID,
                                                                                   int teacherUniversityCode,
                                                                                   int teacherSchoolID,
                                                                                   int teacherID,
-                                                                                  String studentCellphone);
+                                                                                  String studentName);
     //endregion
 
     //region 学生能力分析详细信息
 
     /**
      * 取得学生概要信息
+     *
      * @param universityCode 学生所在高校
-     * @param schoolID 学生所在二级学院
-     * @param studentID 学生编号
+     * @param schoolID       学生所在二级学院
+     * @param studentID      学生编号
      * @return 学生概要信息
      */
     AbilityAnalysisResult4StudentSummaryEntity searchStudentSummaryResult(int universityCode, int schoolID, int studentID);
 
     /**
      * 取得学生所学的所有技术
+     *
      * @param universityCode 学生所在高校
-     * @param schoolID 学生所在二级学院
-     * @param studentID 学生编号
+     * @param schoolID       学生所在二级学院
+     * @param studentID      学生编号
      * @return 学生所学的所有技术
      */
     List<AbilityAnalysisResult4LearningTechnologySummaryEntity> searchLearningTechnologyResultList(int universityCode, int schoolID, int studentID);
 
     /**
      * 取得学生指定技术代码规范性问题分析
+     *
      * @param universityCode 学生所在高校
-     * @param schoolID 学生所在二级学院
-     * @param studentID 学生编号
-     * @param languageID 编程语言编号
+     * @param schoolID       学生所在二级学院
+     * @param studentID      学生编号
+     * @param languageID     编程语言编号
      * @return 学生指定技术代码规范性问题分析
      */
     List<AbilityAnalysisResult4CodeGuidelineSummaryEntity> searchCodeStandardAnalysisResultList(int universityCode, int schoolID, int studentID, int languageID);
 
     /**
      * 取得学生已学习的知识点总数
+     *
      * @param universityCode 学生所在高校
-     * @param schoolID 学生所在二级学院
-     * @param studentID 学生编号
-     * @param technologyID 技术编号
+     * @param schoolID       学生所在二级学院
+     * @param studentID      学生编号
+     * @param technologyID   技术编号
      * @return 学生已学习的知识点总数
      */
-    int searchLearningKnowledgeTotalCount (int universityCode, int schoolID, int studentID, int technologyID);
+    int searchLearningKnowledgeTotalCount(int universityCode, int schoolID, int studentID, int technologyID);
 
     /**
      * 取得学生练习题完成数量趋势
+     *
      * @param universityCode 学生所在高校
-     * @param schoolID 学生所在二级学院
-     * @param studentID 学生编号
-     * @param technologyID 技术编号
+     * @param schoolID       学生所在二级学院
+     * @param studentID      学生编号
+     * @param technologyID   技术编号
      * @return 学生练习题完成数量趋势
      */
     List<AbilityAnalysisResult4ExerciseNumberTrendEntity> searchExerciseNumberTrend(int universityCode, int schoolID, int studentID, int technologyID);
 
     /**
      * 取得学生练习题完成百分比趋势
+     *
      * @param universityCode 学生所在高校
-     * @param schoolID 学生所在二级学院
-     * @param studentID 学生编号
-     * @param technologyID 技术编号
+     * @param schoolID       学生所在二级学院
+     * @param studentID      学生编号
+     * @param technologyID   技术编号
      * @return 学生练习题完成百分比趋势
      */
     List<AbilityAnalysisResult4ExercisePercentTrendEntity> searchExercisePercentTrend(int universityCode, int schoolID, int studentID, int technologyID);
@@ -246,12 +261,13 @@ public interface AnalysisAbilityMapper {
 
     /**
      * 取得指定技术，能力最强的前几名的学生
-     * @param technologyID 技术
+     *
+     * @param technologyID       技术
      * @param lowestRecruitLevel 最低级别
-     * @param topNum 取得人数
+     * @param topNum             取得人数
      * @return 指定技术，能力最强的前几名的学生
      */
-    List<AbilityAnalysisResult4StudentMainInfoEntity> searchTopStudentSummary (int technologyID, String lowestRecruitLevel, int topNum);
+    List<AbilityAnalysisResult4StudentMainInfoEntity> searchTopStudentSummary(int technologyID, String lowestRecruitLevel, int topNum);
 
 
 }
