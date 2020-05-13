@@ -4,6 +4,10 @@ import com.shangshufang.apiservice.dto.CourseDTO;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
 
 public interface CourseService extends BaseService<CourseDTO> {
+    UnifiedResponse findListLikeName (int pageNumber,
+                                      int pageSize,
+                                      String content);
+
     UnifiedResponse findList(int pageNumber,
                              int pageSize,
                              int universityCode,

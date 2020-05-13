@@ -36,6 +36,29 @@ public class CourseServiceImpl implements CourseService {
     private Logger logger = LogManager.getLogger(CourseServiceImpl.class);
 
     @Override
+    public UnifiedResponse findListLikeName(int pageNumber, int pageSize, String content) {
+        try {
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<CourseVO> modelList = new ArrayList<>();
+            content = content.equals(ParameterConstant.NO_PARAMETER) ? null : "%" + content + "%";
+            int totalCount = courseMapper.searchTotalCountLikeName(content);
+            if(totalCount == 0) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            List<CourseEntity> entityList = courseMapper.searchListLikeName(startIndex, pageSize, content);
+            for (CourseEntity entity : entityList) {
+                CourseVO model = new CourseVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse findList(int pageNumber,
                                     int pageSize,
                                     int universityCode,

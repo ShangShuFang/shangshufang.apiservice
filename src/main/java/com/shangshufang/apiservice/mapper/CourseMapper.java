@@ -2,11 +2,18 @@ package com.shangshufang.apiservice.mapper;
 
 import com.shangshufang.apiservice.entity.CourseEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 @Mapper
 public interface CourseMapper extends BaseMapper<CourseEntity> {
+    int searchTotalCountLikeName(@Param("content") String content);
+
+    List<CourseEntity> searchListLikeName(int startIndex,
+                           int pageSize,
+                           String name);
+
     int searchTotalCount(int universityCode,
                          int schoolID,
                          int teacherID,

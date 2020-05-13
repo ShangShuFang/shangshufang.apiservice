@@ -12,6 +12,13 @@ public class CourseController {
     @Autowired
     private CourseServiceImpl serviceImpl;
 
+    @RequestMapping(value = "/list/like/{pageNumber}/{pageSize}/{content}", method = RequestMethod.GET)
+    public UnifiedResponse findListLikeName (@PathVariable("pageNumber") int pageNumber,
+                                             @PathVariable("pageSize") int pageSize,
+                                             @PathVariable("content") String content) {
+        return serviceImpl.findListLikeName(pageNumber, pageSize, content);
+    }
+
     @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{teacherID}/{directionID}/{categoryID}/{technologyID}/{courseTimeBegin}/{dataStatus}/{isSelf}/{searchType}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
