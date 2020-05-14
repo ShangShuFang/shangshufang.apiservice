@@ -11,7 +11,8 @@
     <result column="category_name" property="categoryName" jdbcType="VARCHAR" />
     <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
     <result column="technology_stars" property="technologyStars" jdbcType="INTEGER" />
-    <result column="technology_thumbnail" property="technologyThumbnail" jdbcType="VARCHAR" />
+    <result column="technology_thumbnail_square" property="technologyThumbnailSquare" jdbcType="VARCHAR" />
+    <result column="technology_thumbnail_rectangle" property="technologyThumbnailRectangle" jdbcType="VARCHAR" />
     <result column="technology_memo" property="technologyMemo" jdbcType="VARCHAR" />
     <result column="difficulty_level" property="difficultyLevel" jdbcType="VARCHAR" />
     <result column="difficulty_level_text" property="difficultyLevelText" jdbcType="VARCHAR" />
@@ -44,7 +45,8 @@
       A.technology_id,
       A.technology_name,
       A.technology_stars,
-      A.technology_thumbnail,
+      A.technology_thumbnail_square,
+      A.technology_thumbnail_rectangle,
       A.technology_memo,
       A.language_id,
       E.language_name,
@@ -108,7 +110,8 @@
     SELECT  technology_id,
             technology_name,
             technology_stars,
-            technology_thumbnail,
+            technology_thumbnail_square,
+            technology_thumbnail_rectangle,
             technology_memo,
             language_id
     FROM shangshufang_base.technology
@@ -130,7 +133,8 @@
       A.technology_id,
       A.technology_name,
       A.technology_stars,
-      A.technology_thumbnail,
+      A.technology_thumbnail_square,
+      A.technology_thumbnail_rectangle,
       A.technology_memo,
       A.language_id,
       A.direction_id,
@@ -194,7 +198,8 @@
       A.technology_id,
       A.technology_name,
       A.technology_stars,
-      A.technology_thumbnail,
+      A.technology_thumbnail_square,
+      A.technology_thumbnail_rectangle,
       A.technology_memo,
       D.knowledge_count,
       A.direction_id,
@@ -235,8 +240,9 @@
 
   <select id="searchStudentLearning" resultMap="BaseResultMap">
     SELECT A.technology_id,
-        B.technology_name,
-        B.technology_thumbnail
+           B.technology_name,
+           B.technology_thumbnail_square,
+           B.technology_thumbnail_rectangle
     FROM
     (
         SELECT DISTINCT technology_id
@@ -301,9 +307,10 @@
   </update>
 
   <update id="updateThumbnail" parameterType="com.shangshufang.apiservice.entity.TechnologyEntity" >
-    UPDATE shangshufang_base.technology SET
-      technology_thumbnail = #{technologyThumbnail,jdbcType=VARCHAR},
-      update_user = #{updateUser,jdbcType=VARCHAR}
+    UPDATE shangshufang_base.technology
+    SET technology_thumbnail_square = #{technologyThumbnailSquare,jdbcType=VARCHAR},
+        technology_thumbnail_rectangle = #{technologyThumbnailRectangle,jdbcType=VARCHAR},
+        update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE technology_id = #{technologyID,jdbcType=INTEGER};
   </update>
 

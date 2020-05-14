@@ -10,7 +10,7 @@
     <result column="language_id" property="languageID" jdbcType="INTEGER"/>
     <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
     <result column="technology_name" property="technologyName" jdbcType="VARCHAR"/>
-    <result column="technology_thumbnail" property="technologyThumbnail" jdbcType="VARCHAR"/>
+    <result column="technology_thumbnail_rectangle" property="technologyThumbnail" jdbcType="VARCHAR"/>
     <result column="course_name" property="courseName" jdbcType="VARCHAR"/>
     <result column="teacher_id" property="teacherID" jdbcType="INTEGER"/>
     <result column="teacher_name" property="teacherName" jdbcType="VARCHAR"/>
@@ -18,7 +18,8 @@
     <result column="course_time_begin" property="courseTimeBegin" jdbcType="TIMESTAMP"/>
     <result column="course_time_end" property="courseTimeEnd" jdbcType="TIMESTAMP"/>
     <result column="course_introduction" property="courseIntroduction" jdbcType="VARCHAR"/>
-    <result column="course_technology_using_company_count" property="courseTechnologyUsingCompanyCount" jdbcType="INTEGER"/>
+    <result column="course_technology_using_company_count" property="courseTechnologyUsingCompanyCount"
+            jdbcType="INTEGER"/>
     <result column="course_knowledge_count" property="courseKnowledgeCount" jdbcType="INTEGER"/>
     <result column="technology_knowledge_count" property="technologyKnowledgeCount" jdbcType="INTEGER"/>
     <result column="course_knowledge_exercises_count" property="courseKnowledgeExercisesCount" jdbcType="INTEGER"/>
@@ -36,185 +37,187 @@
   <select id="searchTotalCountLikeName" resultType="java.lang.Integer">
     SELECT COUNT(1) AS totalcount
     FROM shangshufang_customer.course a
-           INNER JOIN shangshufang_customer.university_customer b
-                      ON a.teacher_id = b.customer_id
-    WHERE a.data_status != 'D'
+    INNER JOIN shangshufang_customer.university_customer b
+    ON a.teacher_id = b.customer_id
+    WHERE a.data_status != '3'
     <if test="content != null">
       AND (a.course_name LIKE #{content,jdbcType=VARCHAR} OR b.full_name LIKE #{content,jdbcType=VARCHAR})
     </if>
   </select>
   <select id="searchListLikeName" resultMap="BaseResultMap">
     SELECT a.course_id,
-           a.university_code,
-           b.university_name,
-           a.school_id,
-           c.school_name,
-           a.technology_id,
-           d.technology_name,
-           d.technology_thumbnail,
-           a.course_name,
-           a.teacher_id,
-           e.full_name                                     AS teacher_name,
-           e.photo                                         AS teacher_photo,
-           DATE_FORMAT(a.course_time_begin, '%Y-%m-%d')    AS course_time_begin,
-           DATE_FORMAT(a.course_time_end, '%Y-%m-%d')      AS course_time_end,
-           a.course_introduction,
-           f.course_technology_using_company_count,
-           g.course_knowledge_count,
-           h.technology_knowledge_count,
-           i.course_knowledge_exercises_count,
-           IFNULL(j.course_sing_up_count, 0)               AS course_sing_up_count,
-           IFNULL(k.course_question_finish, 0)             AS course_question_finish,
-           IFNULL(l.course_question, 0)                    AS course_question,
-           CONCAT(TRUNCATE(TRUNCATE(IFNULL(n.course_class_finish_count, 0) / IFNULL(m.course_class_total_count, 0), 2) * 100, 0), '%')                   AS course_process,
-           a.data_status,
-           CASE
-             WHEN a.data_status = 'P' THEN '未开始'
-             WHEN a.data_status = 'A' THEN '进行中'
-             WHEN a.data_status = 'S' THEN '已暂停'
-             WHEN a.data_status = 'F' THEN '已结束'
-             WHEN a.data_status = 'D' THEN '已删除'
-             ELSE '未知数据状态'
-             END                                           AS data_status_text,
-           e.full_name                                     AS create_user,
-           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-           e.full_name                                     AS update_user,
-           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    a.university_code,
+    b.university_name,
+    a.school_id,
+    c.school_name,
+    a.technology_id,
+    d.technology_name,
+    d.technology_thumbnail_rectangle,
+    a.course_name,
+    a.teacher_id,
+    e.full_name AS teacher_name,
+    e.photo AS teacher_photo,
+    DATE_FORMAT(a.course_time_begin, '%Y-%m-%d') AS course_time_begin,
+    DATE_FORMAT(a.course_time_end, '%Y-%m-%d') AS course_time_end,
+    a.course_introduction,
+    f.course_technology_using_company_count,
+    g.course_knowledge_count,
+    h.technology_knowledge_count,
+    i.course_knowledge_exercises_count,
+    IFNULL(j.course_sing_up_count, 0) AS course_sing_up_count,
+    IFNULL(k.course_question_finish, 0) AS course_question_finish,
+    IFNULL(l.course_question, 0) AS course_question,
+    CONCAT(TRUNCATE(TRUNCATE(IFNULL(n.course_class_finish_count, 0) / IFNULL(m.course_class_total_count, 0), 2) * 100,
+    0), '%') AS course_process,
+    a.data_status,
+    CASE
+    WHEN a.data_status = '0' THEN '未开始'
+    WHEN a.data_status = '1' THEN '进行中'
+    WHEN a.data_status = '2' THEN '已结束'
+    WHEN a.data_status = '3' THEN '已删除'
+    WHEN a.data_status = '4' THEN '已暂停'
+    ELSE '未知数据状态'
+    END AS data_status_text,
+    e.full_name AS create_user,
+    DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+    e.full_name AS update_user,
+    DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
     FROM (
-           SELECT a.course_id,
-                  a.university_code,
-                  a.school_id,
-                  a.technology_id,
-                  a.course_name,
-                  a.teacher_id,
-                  a.course_time_begin,
-                  a.course_time_end,
-                  a.course_introduction,
-                  a.data_status,
-                  a.create_time,
-                  a.update_time
-           FROM shangshufang_customer.course a
-                  INNER JOIN shangshufang_base.technology b
-                             ON a.technology_id = b.technology_id
-                  INNER JOIN shangshufang_customer.university_customer c
-                             ON a.teacher_id = c.customer_id
-           WHERE a.data_status != 'D'
-            <if test="arg2 != null">
-              AND (a.course_name LIKE #{arg2,jdbcType=VARCHAR} OR c.full_name LIKE #{arg2,jdbcType=VARCHAR})
-            </if>
-           ORDER BY a.update_time DESC
-           LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER}
-         ) a
-           INNER JOIN shangshufang_customer.university b
-                      ON a.university_code = b.university_code
-           INNER JOIN shangshufang_customer.school c
-                      ON a.university_code = c.university_code
-                        AND a.school_id = c.school_id
-           INNER JOIN shangshufang_base.technology d
-                      ON a.technology_id = d.technology_id
-           INNER JOIN shangshufang_customer.university_customer e
-                      ON a.university_code = e.university_code
-                        AND a.school_id = e.school_id
-                        AND a.teacher_id = e.customer_id
-           INNER JOIN
-         (
-           SELECT technology_id,
-                  COUNT(DISTINCT company_id) AS course_technology_using_company_count
-           FROM shangshufang_customer.technology_using
-           GROUP BY technology_id
-         ) f
-         ON a.technology_id = f.technology_id
-           INNER JOIN
-         (
-           SELECT university_code,
-                  school_id,
-                  course_id,
-                  technology_id,
-                  COUNT(DISTINCT knowledge_id) AS course_knowledge_count
-           FROM shangshufang_customer.course_plan
-           GROUP BY university_code, school_id, course_id, technology_id
-         ) g
-         ON a.university_code = g.university_code
-           AND a.school_id = g.school_id
-           AND a.course_id = g.course_id
-           AND a.technology_id = g.technology_id
-           INNER JOIN
-         (
-           SELECT technology_id,
-                  COUNT(1) AS technology_knowledge_count
-           FROM shangshufang_base.technology_knowledge
-           WHERE data_status = 'A'
-           GROUP BY technology_id
-         ) h
-         ON a.technology_id = h.technology_id
-           LEFT JOIN
-         (
-           SELECT a.course_id,
-                  COUNT(1) AS course_knowledge_exercises_count
-           FROM shangshufang_customer.course a
-                  INNER JOIN shangshufang_customer.course_plan b
-                             ON a.university_code = b.university_code
-                               AND a.school_id = b.school_id
-                               AND a.course_id = b.course_id
-                               AND a.technology_id = b.technology_id
-                  INNER JOIN shangshufang_base.technology_knowledge_exercises c
-                             ON b.technology_id = c.technology_id
-                               AND b.knowledge_id = c.knowledge_id
-                               AND c.data_status = 'A'
-                  INNER JOIN shangshufang_base.technology d
-                             ON a.technology_id = d.technology_id
-                  INNER JOIN shangshufang_customer.university_customer e
-                             ON a.teacher_id = e.customer_id
-           WHERE a.data_status != 'D'
-            <if test="arg2 != null">
-              AND (a.course_name LIKE #{arg2,jdbcType=VARCHAR} OR e.full_name LIKE #{arg2,jdbcType=VARCHAR})
-            </if>
-           GROUP BY a.course_id
-         ) i
-         ON a.course_id = i.course_id
-           LEFT JOIN
-         (
-           SELECT course_id, COUNT(1) AS course_sing_up_count
-           FROM shangshufang_customer.course_sign_up
-           GROUP BY course_id
-         ) j
-         ON a.course_id = j.course_id
-           LEFT JOIN
-         (
-           SELECT a.course_id,
-                  COUNT(DISTINCT a.question_id) AS course_question_finish
-           FROM shangshufang_customer.course_question a
-                  INNER JOIN shangshufang_customer.course_question_leave_message b
-                             ON a.question_id = b.question_id
-                               AND b.data_status = 'A'
-           WHERE a.data_status = 'A'
-           GROUP BY a.course_id
-         ) k
-         ON a.course_id = k.course_id
-           LEFT JOIN
-         (
-           SELECT course_id,
-                  COUNT(1) AS course_question
-           FROM shangshufang_customer.course_question
-           WHERE data_status = 'A'
-           GROUP BY course_id
-         ) l
-         ON a.course_id = l.course_id
-           LEFT JOIN
-         (
-           SELECT course_id, COUNT(DISTINCT course_class) AS course_class_total_count
-           FROM shangshufang_customer.course_plan
-           GROUP BY course_id
-         ) m
-         ON a.course_id = m.course_id
-           LEFT JOIN
-         (
-           SELECT course_id, COUNT(DISTINCT course_class) AS course_class_finish_count
-           FROM shangshufang_customer.course_plan
-           WHERE data_status = 'F'
-           GROUP BY course_id
-         ) n
-         ON a.course_id = n.course_id;
+    SELECT a.course_id,
+    a.university_code,
+    a.school_id,
+    a.technology_id,
+    a.course_name,
+    a.teacher_id,
+    a.course_time_begin,
+    a.course_time_end,
+    a.course_introduction,
+    a.data_status,
+    a.create_time,
+    a.update_time
+    FROM shangshufang_customer.course a
+    INNER JOIN shangshufang_base.technology b
+    ON a.technology_id = b.technology_id
+    INNER JOIN shangshufang_customer.university_customer c
+    ON a.teacher_id = c.customer_id
+    WHERE a.data_status != '3'
+    <if test="arg2 != null">
+      AND (a.course_name LIKE #{arg2,jdbcType=VARCHAR} OR c.full_name LIKE #{arg2,jdbcType=VARCHAR})
+    </if>
+    ORDER BY a.data_status, a.update_time DESC
+    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER}
+    ) a
+    INNER JOIN shangshufang_customer.university b
+    ON a.university_code = b.university_code
+    INNER JOIN shangshufang_customer.school c
+    ON a.university_code = c.university_code
+    AND a.school_id = c.school_id
+    INNER JOIN shangshufang_base.technology d
+    ON a.technology_id = d.technology_id
+    INNER JOIN shangshufang_customer.university_customer e
+    ON a.university_code = e.university_code
+    AND a.school_id = e.school_id
+    AND a.teacher_id = e.customer_id
+    INNER JOIN
+    (
+    SELECT technology_id,
+    COUNT(DISTINCT company_id) AS course_technology_using_company_count
+    FROM shangshufang_customer.technology_using
+    GROUP BY technology_id
+    ) f
+    ON a.technology_id = f.technology_id
+    INNER JOIN
+    (
+    SELECT university_code,
+    school_id,
+    course_id,
+    technology_id,
+    COUNT(DISTINCT knowledge_id) AS course_knowledge_count
+    FROM shangshufang_customer.course_plan
+    GROUP BY university_code, school_id, course_id, technology_id
+    ) g
+    ON a.university_code = g.university_code
+    AND a.school_id = g.school_id
+    AND a.course_id = g.course_id
+    AND a.technology_id = g.technology_id
+    INNER JOIN
+    (
+    SELECT technology_id,
+    COUNT(1) AS technology_knowledge_count
+    FROM shangshufang_base.technology_knowledge
+    WHERE data_status = 'A'
+    GROUP BY technology_id
+    ) h
+    ON a.technology_id = h.technology_id
+    LEFT JOIN
+    (
+    SELECT a.course_id,
+    COUNT(1) AS course_knowledge_exercises_count
+    FROM shangshufang_customer.course a
+    INNER JOIN shangshufang_customer.course_plan b
+    ON a.university_code = b.university_code
+    AND a.school_id = b.school_id
+    AND a.course_id = b.course_id
+    AND a.technology_id = b.technology_id
+    INNER JOIN shangshufang_base.technology_knowledge_exercises c
+    ON b.technology_id = c.technology_id
+    AND b.knowledge_id = c.knowledge_id
+    AND c.data_status = 'A'
+    INNER JOIN shangshufang_base.technology d
+    ON a.technology_id = d.technology_id
+    INNER JOIN shangshufang_customer.university_customer e
+    ON a.teacher_id = e.customer_id
+    WHERE a.data_status != '3'
+    <if test="arg2 != null">
+      AND (a.course_name LIKE #{arg2,jdbcType=VARCHAR} OR e.full_name LIKE #{arg2,jdbcType=VARCHAR})
+    </if>
+    GROUP BY a.course_id
+    ) i
+    ON a.course_id = i.course_id
+    LEFT JOIN
+    (
+    SELECT course_id, COUNT(1) AS course_sing_up_count
+    FROM shangshufang_customer.course_sign_up
+    GROUP BY course_id
+    ) j
+    ON a.course_id = j.course_id
+    LEFT JOIN
+    (
+    SELECT a.course_id,
+    COUNT(DISTINCT a.question_id) AS course_question_finish
+    FROM shangshufang_customer.course_question a
+    INNER JOIN shangshufang_customer.course_question_leave_message b
+    ON a.question_id = b.question_id
+    AND b.data_status = 'A'
+    WHERE a.data_status = 'A'
+    GROUP BY a.course_id
+    ) k
+    ON a.course_id = k.course_id
+    LEFT JOIN
+    (
+    SELECT course_id,
+    COUNT(1) AS course_question
+    FROM shangshufang_customer.course_question
+    WHERE data_status = 'A'
+    GROUP BY course_id
+    ) l
+    ON a.course_id = l.course_id
+    LEFT JOIN
+    (
+    SELECT course_id, COUNT(DISTINCT course_class) AS course_class_total_count
+    FROM shangshufang_customer.course_plan
+    GROUP BY course_id
+    ) m
+    ON a.course_id = m.course_id
+    LEFT JOIN
+    (
+    SELECT course_id, COUNT(DISTINCT course_class) AS course_class_finish_count
+    FROM shangshufang_customer.course_plan
+    WHERE data_status = 'F'
+    GROUP BY course_id
+    ) n
+    ON a.course_id = n.course_id
+    ORDER BY a.data_status, a.update_time DESC;
   </select>
 
   <select id="searchTotalCount" resultType="java.lang.Integer">
@@ -223,7 +226,7 @@
     FROM shangshufang_customer.course a
     INNER JOIN shangshufang_base.technology b
     ON a.technology_id = b.technology_id
-    WHERE a.data_status != 'D'
+    WHERE a.data_status != '3'
     <if test="arg8 == true">
       AND a.university_code = #{arg0,jdbcType=INTEGER}
     </if>
@@ -261,7 +264,7 @@
     C.school_name,
     A.technology_id,
     D.technology_name,
-    D.technology_thumbnail,
+    D.technology_thumbnail_rectangle,
     A.course_name,
     A.teacher_id,
     E.full_name AS teacher_name,
@@ -279,11 +282,11 @@
     CONCAT(TRUNCATE(TRUNCATE(IFNULL(N.course_class_finish_count, 0) / IFNULL(M.course_class_total_count, 0), 2) * 100,
     0), '%') AS course_process,
     A.data_status,
-    CASE WHEN A.data_status = 'P' THEN '未开始'
-    WHEN A.data_status = 'A' THEN '进行中'
-    WHEN A.data_status = 'S' THEN '已暂停'
-    WHEN A.data_status = 'F' THEN '已结束'
-    WHEN A.data_status = 'D' THEN '已删除'
+    CASE WHEN A.data_status = '0' THEN '未开始'
+    WHEN A.data_status = '1' THEN '进行中'
+    WHEN A.data_status = '2' THEN '已结束'
+    WHEN A.data_status = '3' THEN '已删除'
+    WHEN A.data_status = '4' THEN '已暂停'
     ELSE '未知数据状态'
     END AS data_status_text,
     E.full_name AS create_user,
@@ -308,12 +311,14 @@
     FROM shangshufang_customer.course a
     INNER JOIN shangshufang_base.technology b
     ON a.technology_id = b.technology_id
-    WHERE a.data_status != 'D'
-    <if test="arg10 == true">
-      AND a.university_code = #{arg0,jdbcType=INTEGER}
-    </if>
-    <if test="arg10 != true">
-      AND a.university_code != #{arg0,jdbcType=INTEGER}
+    WHERE a.data_status != '3'
+    <if test="arg0 != 0">
+      <if test="arg10 == true">
+        AND a.university_code = #{arg0,jdbcType=INTEGER}
+      </if>
+      <if test="arg10 != true">
+        AND a.university_code != #{arg0,jdbcType=INTEGER}
+      </if>
     </if>
     <if test="arg1 != 0">
       AND a.school_id = #{arg1,jdbcType=INTEGER}
@@ -336,7 +341,7 @@
     <if test="arg9 != 0">
       AND b.category_id = #{arg9,jdbcType=INTEGER}
     </if>
-    ORDER BY a.update_time DESC
+    ORDER BY a.data_status, a.update_time DESC
     LIMIT #{arg6,jdbcType=INTEGER}, #{arg7,jdbcType=INTEGER}
     ) A
     INNER JOIN shangshufang_customer.university B
@@ -402,7 +407,7 @@
     AND C.data_status = 'A'
     INNER JOIN shangshufang_base.technology d
     ON A.technology_id = d.technology_id
-    WHERE A.data_status != 'D'
+    WHERE A.data_status != '3'
     <if test="arg10 == true">
       AND A.university_code = #{arg0,jdbcType=INTEGER}
     </if>
@@ -477,7 +482,8 @@
     WHERE data_status = 'F'
     GROUP BY course_id
     ) N
-    ON A.course_id = N.course_id;
+    ON A.course_id = N.course_id
+    ORDER BY a.data_status, a.update_time DESC;
   </select>
 
   <select id="searchStartedTotalCount" resultType="java.lang.Integer">
@@ -486,7 +492,7 @@
     FROM shangshufang_customer.course a
     INNER JOIN shangshufang_base.technology b
     ON a.technology_id = b.technology_id
-    WHERE a.data_status != 'D'
+    WHERE a.data_status != '3'
     <if test="arg0 != 0">
       <if test="arg8 == true">
         AND a.university_code = #{arg0,jdbcType=INTEGER}
@@ -526,7 +532,7 @@
     C.school_name,
     A.technology_id,
     D.technology_name,
-    D.technology_thumbnail,
+    D.technology_thumbnail_rectangle,
     A.course_name,
     A.teacher_id,
     E.full_name AS teacher_name,
@@ -541,13 +547,14 @@
     IFNULL(J.course_sing_up_count, 0) AS course_sing_up_count,
     IFNULL(K.course_question_finish, 0) AS course_question_finish,
     IFNULL(L.course_question, 0) AS course_question,
-    CONCAT(TRUNCATE(TRUNCATE(IFNULL(N.course_class_finish_count, 0) / IFNULL(M.course_class_total_count, 0), 2) * 100, 0), '%') AS course_process,
+    CONCAT(TRUNCATE(TRUNCATE(IFNULL(N.course_class_finish_count, 0) / IFNULL(M.course_class_total_count, 0), 2) * 100,
+    0), '%') AS course_process,
     A.data_status,
-    CASE WHEN A.data_status = 'P' THEN '未开始'
-    WHEN A.data_status = 'A' THEN '进行中'
-    WHEN A.data_status = 'S' THEN '已暂停'
-    WHEN A.data_status = 'F' THEN '已结束'
-    WHEN A.data_status = 'D' THEN '已删除'
+    CASE WHEN A.data_status = '0' THEN '未开始'
+    WHEN A.data_status = '1' THEN '进行中'
+    WHEN A.data_status = '2' THEN '已结束'
+    WHEN A.data_status = '3' THEN '已删除'
+    WHEN A.data_status = '4' THEN '已暂停'
     ELSE '未知数据状态'
     END AS data_status_text,
     E.full_name AS create_user,
@@ -572,12 +579,14 @@
     FROM shangshufang_customer.course a
     INNER JOIN shangshufang_base.technology b
     ON a.technology_id = b.technology_id
-    WHERE a.data_status != 'D'
-    <if test="arg10 == true">
-      AND a.university_code = #{arg0,jdbcType=INTEGER}
-    </if>
-    <if test="arg10 != true">
-      AND a.university_code != #{arg0,jdbcType=INTEGER}
+    WHERE a.data_status != '3'
+    <if test="arg0 != 0">
+      <if test="arg10 == true">
+        AND a.university_code = #{arg0,jdbcType=INTEGER}
+      </if>
+      <if test="arg10 != true">
+        AND a.university_code != #{arg0,jdbcType=INTEGER}
+      </if>
     </if>
     <if test="arg1 != 0">
       AND a.school_id = #{arg1,jdbcType=INTEGER}
@@ -600,7 +609,7 @@
     <if test="arg9 != 0">
       AND b.category_id = #{arg9,jdbcType=INTEGER}
     </if>
-    ORDER BY a.update_time DESC
+    ORDER BY a.data_status, a.update_time DESC
     LIMIT #{arg6,jdbcType=INTEGER}, #{arg7,jdbcType=INTEGER}
     ) A
     INNER JOIN shangshufang_customer.university B
@@ -665,7 +674,7 @@
     AND C.data_status = 'A'
     INNER JOIN shangshufang_base.technology d
     ON A.technology_id = d.technology_id
-    WHERE A.data_status != 'D'
+    WHERE A.data_status != '3'
     <if test="arg10 == true">
       AND A.university_code = #{arg0,jdbcType=INTEGER}
     </if>
@@ -740,13 +749,14 @@
     WHERE data_status = 'F'
     GROUP BY course_id
     ) N
-    ON A.course_id = N.course_id;
+    ON A.course_id = N.course_id
+    ORDER BY a.data_status, a.update_time DESC;
   </select>
 
   <select id="searchSimpleTotalCount" resultType="java.lang.Integer">
     SELECT COUNT(1) AS total_count
     FROM shangshufang_customer.course
-    WHERE data_status != 'D'
+    WHERE data_status != '3'
       AND university_code = #{arg0,jdbcType=INTEGER}
       AND school_id = #{arg1,jdbcType=INTEGER}
       AND teacher_id = #{arg2,jdbcType=INTEGER}
@@ -761,7 +771,7 @@
            DATE_FORMAT(course_time_begin, '%Y-%m-%d') AS course_time_begin,
            DATE_FORMAT(course_time_end, '%Y-%m-%d')   AS course_time_end
     FROM shangshufang_customer.course
-    WHERE data_status != 'D'
+    WHERE data_status != '3'
       AND university_code = #{arg0,jdbcType=INTEGER}
       AND school_id = #{arg1,jdbcType=INTEGER}
       AND teacher_id = #{arg2,jdbcType=INTEGER}
@@ -777,7 +787,7 @@
     A.technology_id,
     D.language_id,
     D.technology_name,
-    D.technology_thumbnail,
+    D.technology_thumbnail_rectangle,
     A.course_name,
     A.teacher_id,
     E.full_name AS teacher_name,
@@ -795,11 +805,11 @@
     CONCAT(TRUNCATE(TRUNCATE(IFNULL(N.course_class_finish_count, 0) / IFNULL(M.course_class_total_count, 0), 2) * 100,
     0), '%') AS course_process,
     A.data_status,
-    CASE WHEN A.data_status = 'P' THEN '未开始'
-    WHEN A.data_status = 'A' THEN '进行中'
-    WHEN A.data_status = 'S' THEN '已暂停'
-    WHEN A.data_status = 'F' THEN '已结束'
-    WHEN A.data_status = 'D' THEN '已删除'
+    CASE WHEN A.data_status = '0' THEN '未开始'
+    WHEN A.data_status = '1' THEN '进行中'
+    WHEN A.data_status = '2' THEN '已结束'
+    WHEN A.data_status = '3' THEN '已删除'
+    WHEN A.data_status = '4' THEN '已暂停'
     ELSE '未知数据状态'
     END AS data_status_text,
     E.full_name AS create_user,
@@ -822,7 +832,7 @@
     create_time,
     update_time
     FROM shangshufang_customer.course
-    WHERE data_status != 'D'
+    WHERE data_status != '3'
     AND university_code = #{arg0,jdbcType=INTEGER}
     AND school_id = #{arg1,jdbcType=INTEGER}
     AND course_id = #{arg2,jdbcType=INTEGER}
@@ -890,7 +900,7 @@
     ON B.technology_id = C.technology_id
     AND B.knowledge_id = C.knowledge_id
     AND C.data_status = 'A'
-    WHERE A.data_status != 'D'
+    WHERE A.data_status != '3'
     AND A.university_code = #{arg0,jdbcType=INTEGER}
     AND A.school_id = #{arg1,jdbcType=INTEGER}
     AND A.course_id = #{arg2,jdbcType=INTEGER}
@@ -1018,9 +1028,9 @@
   </update>
   <update id="updateCourseToStart">
     UPDATE shangshufang_customer.course
-    SET data_status = 'A',
+    SET data_status = '1',
         update_user = 0
     WHERE DATE_FORMAT(course_time_begin, '%Y-%m-%d') &lt;= date_format(now(), '%Y-%m-%d')
-      AND data_status = 'P';
+      AND data_status = '0';
   </update>
 </mapper>

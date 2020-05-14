@@ -1,9 +1,9 @@
 package com.shangshufang.apiservice.constant;
 
 public class CourseStatus {
-    public static final String Pending = "P";
-    public static final String Active = "A";
-    public static final String Suspend = "S";
-    public static final String Finished = "F";
-    public static final String Delete = "D";
+    public static final String Pending = "0";
+    public static final String Active = "1";
+    public static final String Finished = "2";
+    public static final String Delete = "3";
+    public static final String Suspend = "4";
 }

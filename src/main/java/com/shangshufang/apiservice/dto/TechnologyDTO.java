@@ -8,7 +8,8 @@ public class TechnologyDTO extends BaseDTO {
     private int languageID;
     private String technologyName;
     private int technologyStars;
-    private String technologyThumbnail;
+    private String technologyThumbnailSquare;
+    private String technologyThumbnailRectangle;
     private String technologyMemo;
     private int directionID;
     private int categoryID;
