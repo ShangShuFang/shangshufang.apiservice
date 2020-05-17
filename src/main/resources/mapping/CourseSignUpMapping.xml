@@ -1,307 +1,298 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.shangshufang.apiservice.mapper.CourseSignUpMapper" >
-  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.CourseSignUpEntity" >
-    <id column="sign_up_id" property="signUpID" jdbcType="INTEGER" />
-    <result column="student_university_code" property="studentUniversityCode" jdbcType="INTEGER" />
-    <result column="student_university_name" property="studentUniversityName" jdbcType="VARCHAR" />
-    <result column="student_school_id" property="studentSchoolID" jdbcType="INTEGER" />
-    <result column="student_school_name" property="studentSchoolName" jdbcType="VARCHAR" />
-    <result column="student_id" property="studentID" jdbcType="INTEGER" />
-    <result column="student_name" property="studentName" jdbcType="VARCHAR" />
-    <result column="student_photo" property="studentPhoto" jdbcType="VARCHAR" />
-    <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
-    <result column="enrollment_year" property="enrollmentYear" jdbcType="VARCHAR" />
-    <result column="position_site" property="positionSite" jdbcType="FLOAT" />
-    <result column="ability_level" property="abilityLevel" jdbcType="VARCHAR" />
-    <result column="is_assistant" property="assistant" jdbcType="BIT" />
-    <result column="course_university_code" property="courseUniversityCode" jdbcType="INTEGER" />
-    <result column="course_university_name" property="courseUniversityName" jdbcType="VARCHAR" />
-    <result column="course_school_id" property="courseSchoolID" jdbcType="INTEGER" />
-    <result column="course_school_name" property="courseSchoolName" jdbcType="VARCHAR" />
-    <result column="course_id" property="courseID" jdbcType="INTEGER" />
-    <result column="course_name" property="courseName" jdbcType="VARCHAR" />
-    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
-    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
-    <result column="create_user" property="createUser" jdbcType="INTEGER" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
-    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+<mapper namespace="com.shangshufang.apiservice.mapper.CourseSignUpMapper">
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.CourseSignUpEntity">
+    <id column="sign_up_id" property="signUpID" jdbcType="INTEGER"/>
+    <result column="student_university_code" property="studentUniversityCode" jdbcType="INTEGER"/>
+    <result column="student_university_name" property="studentUniversityName" jdbcType="VARCHAR"/>
+    <result column="student_school_id" property="studentSchoolID" jdbcType="INTEGER"/>
+    <result column="student_school_name" property="studentSchoolName" jdbcType="VARCHAR"/>
+    <result column="student_id" property="studentID" jdbcType="INTEGER"/>
+    <result column="student_name" property="studentName" jdbcType="VARCHAR"/>
+    <result column="student_photo" property="studentPhoto" jdbcType="VARCHAR"/>
+    <result column="cellphone" property="cellphone" jdbcType="VARCHAR"/>
+    <result column="enrollment_year" property="enrollmentYear" jdbcType="VARCHAR"/>
+    <result column="position_site" property="positionSite" jdbcType="FLOAT"/>
+    <result column="ability_level" property="abilityLevel" jdbcType="VARCHAR"/>
+    <result column="is_assistant" property="assistant" jdbcType="BIT"/>
+    <result column="course_university_code" property="courseUniversityCode" jdbcType="INTEGER"/>
+    <result column="course_university_name" property="courseUniversityName" jdbcType="VARCHAR"/>
+    <result column="course_school_id" property="courseSchoolID" jdbcType="INTEGER"/>
+    <result column="course_school_name" property="courseSchoolName" jdbcType="VARCHAR"/>
+    <result column="course_id" property="courseID" jdbcType="INTEGER"/>
+    <result column="course_name" property="courseName" jdbcType="VARCHAR"/>
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR"/>
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR"/>
+    <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
   </resultMap>
   <select id="searchCourseSignUpTotalCount" resultType="java.lang.Integer">
-    SELECT
-    COUNT(1) AS TotalCount
+    SELECT COUNT(1) AS totalcount
     FROM shangshufang_customer.course_sign_up
     WHERE course_university_code = #{arg0,jdbcType=INTEGER}
-    AND course_school_id = #{arg1,jdbcType=INTEGER}
-    AND course_id = #{arg2,jdbcType=INTEGER};
+      AND course_school_id = #{arg1,jdbcType=INTEGER}
+      AND course_id = #{arg2,jdbcType=INTEGER};
   </select>
   <select id="searchCourseSignUpList" resultMap="BaseResultMap">
-    SELECT
-    A.sign_up_id,
-    A.student_university_code,
-    B.university_name AS student_university_name,
-    A.student_school_id,
-    C.school_name AS student_school_name,
-    A.student_id,
-    F.full_name AS student_name,
-    F.photo AS student_photo,
-    F.cellphone,
-    F.enrollment_year,
-    H.ability_level,
-    H.position_site,
-    F.is_assistant,
-    A.course_university_code,
-    D.university_name AS course_university_name,
-    A.course_school_id,
-    E.school_name AS course_school_name,
-    A.course_id,
-    G.course_name,
-    A.data_status,
-    CASE WHEN A.data_status = 'A' THEN '报名成功'
-        WHEN A.data_status = 'C' THEN '报名取消'
-        ELSE '未知数据状态'
-    END AS data_status_text,
-    DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-    DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
-    FROM shangshufang_customer.course_sign_up A
-    INNER JOIN shangshufang_customer.university B
-    ON A.student_university_code = B.university_code
-    INNER JOIN shangshufang_customer.school C
-    ON A.student_university_code = C.university_code
-    AND A.student_school_id = C.school_id
-    INNER JOIN shangshufang_customer.university D
-    ON A.course_university_code = D.university_code
-    INNER JOIN shangshufang_customer.school E
-    ON A.course_university_code = E.university_code
-    AND A.course_school_id = E.school_id
-    INNER JOIN shangshufang_customer.university_student F
-    ON A.student_university_code = F.university_code
-    AND A.student_school_id = F.school_id
-    AND A.student_id = F.student_id
-    INNER JOIN shangshufang_customer.course G
-    ON A.course_university_code = G.university_code
-    AND A.course_school_id = G.school_id
-    AND A.course_id = G.course_id
-    INNER JOIN shangshufang_customer.university_student_ability_analysis H
-     ON A.student_university_code = H.student_university_code
-       AND A.student_school_id = H.student_school_id
-       AND A.student_id = H.student_id
-    WHERE A.course_university_code = #{arg2,jdbcType=INTEGER}
-    AND A.course_school_id = #{arg3,jdbcType=INTEGER}
-    AND A.course_id = #{arg4,jdbcType=INTEGER}
-    ORDER BY A.update_time DESC, A.student_id
+    SELECT a.sign_up_id,
+           a.student_university_code,
+           b.university_name                               AS student_university_name,
+           a.student_school_id,
+           c.school_name                                   AS student_school_name,
+           a.student_id,
+           f.full_name                                     AS student_name,
+           f.photo                                         AS student_photo,
+           f.cellphone,
+           f.enrollment_year,
+           h.ability_level,
+           h.position_site,
+           f.is_assistant,
+           a.course_university_code,
+           d.university_name                               AS course_university_name,
+           a.course_school_id,
+           e.school_name                                   AS course_school_name,
+           a.course_id,
+           g.course_name,
+           a.data_status,
+           CASE
+             WHEN a.data_status = 'A' THEN '报名成功'
+             WHEN a.data_status = 'C' THEN '报名取消'
+             ELSE '未知数据状态'
+             END                                           AS data_status_text,
+           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.course_sign_up a
+           INNER JOIN shangshufang_customer.university b
+                      ON a.student_university_code = b.university_code
+           INNER JOIN shangshufang_customer.school c
+                      ON a.student_university_code = c.university_code
+                        AND a.student_school_id = c.school_id
+           INNER JOIN shangshufang_customer.university d
+                      ON a.course_university_code = d.university_code
+           INNER JOIN shangshufang_customer.school e
+                      ON a.course_university_code = e.university_code
+                        AND a.course_school_id = e.school_id
+           INNER JOIN shangshufang_customer.university_student f
+                      ON a.student_university_code = f.university_code
+                        AND a.student_school_id = f.school_id
+                        AND a.student_id = f.student_id
+           INNER JOIN shangshufang_customer.course g
+                      ON a.course_university_code = g.university_code
+                        AND a.course_school_id = g.school_id
+                        AND a.course_id = g.course_id
+           INNER JOIN shangshufang_customer.university_student_ability_analysis h
+                      ON a.student_university_code = h.student_university_code
+                        AND a.student_school_id = h.student_school_id
+                        AND a.student_id = h.student_id
+    WHERE a.course_university_code = #{arg2,jdbcType=INTEGER}
+      AND a.course_school_id = #{arg3,jdbcType=INTEGER}
+      AND a.course_id = #{arg4,jdbcType=INTEGER}
+    ORDER BY a.update_time DESC, a.student_id
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 
   <select id="searchAllCourseSignUpList" resultMap="BaseResultMap">
-    SELECT
-    A.sign_up_id,
-    A.student_university_code,
-    B.university_name AS student_university_name,
-    A.student_school_id,
-    C.school_name AS student_school_name,
-    A.student_id,
-    F.full_name AS student_name,
-    F.photo AS student_photo,
-    F.cellphone,
-    F.enrollment_year,
-    F.is_assistant,
-    A.course_university_code,
-    D.university_name AS course_university_name,
-    A.course_school_id,
-    E.school_name AS course_school_name,
-    A.course_id,
-    G.course_name,
-    A.data_status,
-    CASE WHEN A.data_status = 'A' THEN '报名成功'
-        WHEN A.data_status = 'C' THEN '报名取消'
-        ELSE '未知数据状态'
-    END AS data_status_text,
-    DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-    DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
-    FROM shangshufang_customer.course_sign_up A
-    INNER JOIN shangshufang_customer.university B
-    ON A.student_university_code = B.university_code
-    INNER JOIN shangshufang_customer.school C
-    ON A.student_university_code = C.university_code
-    AND A.student_school_id = C.school_id
-    INNER JOIN shangshufang_customer.university D
-    ON A.course_university_code = D.university_code
-    INNER JOIN shangshufang_customer.school E
-    ON A.course_university_code = E.university_code
-    AND A.course_school_id = E.school_id
-    INNER JOIN shangshufang_customer.university_student F
-    ON A.student_university_code = F.university_code
-    AND A.student_school_id = F.school_id
-    AND A.student_id = F.student_id
-    INNER JOIN shangshufang_customer.course G
-    ON A.course_university_code = G.university_code
-    AND A.course_school_id = G.school_id
-    AND A.course_id = G.course_id
-    WHERE A.course_university_code = #{arg0,jdbcType=INTEGER}
-    AND A.course_school_id = #{arg1,jdbcType=INTEGER}
-    AND A.course_id = #{arg2,jdbcType=INTEGER}
-    AND A.data_status = 'A'
-    ORDER BY A.update_time;
+    SELECT a.sign_up_id,
+           a.student_university_code,
+           b.university_name                               AS student_university_name,
+           a.student_school_id,
+           c.school_name                                   AS student_school_name,
+           a.student_id,
+           f.full_name                                     AS student_name,
+           f.photo                                         AS student_photo,
+           f.cellphone,
+           f.enrollment_year,
+           f.is_assistant,
+           a.course_university_code,
+           d.university_name                               AS course_university_name,
+           a.course_school_id,
+           e.school_name                                   AS course_school_name,
+           a.course_id,
+           g.course_name,
+           a.data_status,
+           CASE
+             WHEN a.data_status = 'A' THEN '报名成功'
+             WHEN a.data_status = 'C' THEN '报名取消'
+             ELSE '未知数据状态'
+             END                                           AS data_status_text,
+           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.course_sign_up a
+           INNER JOIN shangshufang_customer.university b
+                      ON a.student_university_code = b.university_code
+           INNER JOIN shangshufang_customer.school c
+                      ON a.student_university_code = c.university_code
+                        AND a.student_school_id = c.school_id
+           INNER JOIN shangshufang_customer.university d
+                      ON a.course_university_code = d.university_code
+           INNER JOIN shangshufang_customer.school e
+                      ON a.course_university_code = e.university_code
+                        AND a.course_school_id = e.school_id
+           INNER JOIN shangshufang_customer.university_student f
+                      ON a.student_university_code = f.university_code
+                        AND a.student_school_id = f.school_id
+                        AND a.student_id = f.student_id
+           INNER JOIN shangshufang_customer.course g
+                      ON a.course_university_code = g.university_code
+                        AND a.course_school_id = g.school_id
+                        AND a.course_id = g.course_id
+    WHERE a.course_university_code = #{arg0,jdbcType=INTEGER}
+      AND a.course_school_id = #{arg1,jdbcType=INTEGER}
+      AND a.course_id = #{arg2,jdbcType=INTEGER}
+      AND a.data_status = 'A'
+    ORDER BY a.update_time;
   </select>
 
   <select id="searchStudentSignUpTotalCount" resultType="java.lang.Integer">
-    SELECT
-    COUNT(1) AS TotalCount
+    SELECT COUNT(1) AS totalcount
     FROM shangshufang_customer.course_sign_up
     WHERE course_university_code = #{arg0,jdbcType=INTEGER}
-    AND course_school_id = #{arg1,jdbcType=INTEGER}
-    AND student_id = #{arg2,jdbcType=INTEGER};
+      AND course_school_id = #{arg1,jdbcType=INTEGER}
+      AND student_id = #{arg2,jdbcType=INTEGER};
   </select>
   <select id="searchStudentSignUpList" resultMap="BaseResultMap">
-    SELECT
-    A.sign_up_id,
-    A.student_university_code,
-    B.university_name AS student_university_name,
-    A.student_school_id,
-    C.school_name AS student_school_name,
-    A.student_id,
-    F.full_name AS student_name,
-    F.photo AS student_photo,
-    F.cellphone,
-    F.enrollment_year,
-    F.is_assistant,
-    A.course_university_code,
-    D.university_name AS course_university_name,
-    A.course_school_id,
-    E.school_name AS course_school_name,
-    A.course_id,
-    G.course_name,
-    A.data_status,
-    CASE WHEN A.data_status = 'A' THEN '报名成功'
-        WHEN A.data_status = 'C' THEN '报名取消'
-        ELSE '未知数据状态'
-    END AS data_status_text,
-    DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-    DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
-    FROM shangshufang_customer.course_sign_up A
-    INNER JOIN shangshufang_customer.university B
-    ON A.student_university_code = B.university_code
-    INNER JOIN shangshufang_customer.school C
-    ON A.student_university_code = C.university_code
-    AND A.student_school_id = C.school_id
-    INNER JOIN shangshufang_customer.university D
-    ON A.course_university_code = D.university_code
-    INNER JOIN shangshufang_customer.school E
-    ON A.course_university_code = E.university_code
-    AND A.course_school_id = E.school_id
-    INNER JOIN shangshufang_customer.university_student F
-    ON A.student_university_code = F.university_code
-    AND A.student_school_id = F.school_id
-    AND A.student_id = F.student_id
-    INNER JOIN shangshufang_customer.course G
-    ON A.course_university_code = G.university_code
-    AND A.course_school_id = G.school_id
-    AND A.course_id = G.course_id
-    WHERE A.course_university_code = #{arg2,jdbcType=INTEGER}
-    AND A.course_school_id = #{arg3,jdbcType=INTEGER}
-    AND A.student_id = #{arg4,jdbcType=INTEGER}
-    ORDER BY A.update_time DESC
+    SELECT a.sign_up_id,
+           a.student_university_code,
+           b.university_name                               AS student_university_name,
+           a.student_school_id,
+           c.school_name                                   AS student_school_name,
+           a.student_id,
+           f.full_name                                     AS student_name,
+           f.photo                                         AS student_photo,
+           f.cellphone,
+           f.enrollment_year,
+           f.is_assistant,
+           a.course_university_code,
+           d.university_name                               AS course_university_name,
+           a.course_school_id,
+           e.school_name                                   AS course_school_name,
+           a.course_id,
+           g.course_name,
+           a.data_status,
+           CASE
+             WHEN a.data_status = 'A' THEN '报名成功'
+             WHEN a.data_status = 'C' THEN '报名取消'
+             ELSE '未知数据状态'
+             END                                           AS data_status_text,
+           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.course_sign_up a
+           INNER JOIN shangshufang_customer.university b
+                      ON a.student_university_code = b.university_code
+           INNER JOIN shangshufang_customer.school c
+                      ON a.student_university_code = c.university_code
+                        AND a.student_school_id = c.school_id
+           INNER JOIN shangshufang_customer.university d
+                      ON a.course_university_code = d.university_code
+           INNER JOIN shangshufang_customer.school e
+                      ON a.course_university_code = e.university_code
+                        AND a.course_school_id = e.school_id
+           INNER JOIN shangshufang_customer.university_student f
+                      ON a.student_university_code = f.university_code
+                        AND a.student_school_id = f.school_id
+                        AND a.student_id = f.student_id
+           INNER JOIN shangshufang_customer.course g
+                      ON a.course_university_code = g.university_code
+                        AND a.course_school_id = g.school_id
+                        AND a.course_id = g.course_id
+    WHERE a.course_university_code = #{arg2,jdbcType=INTEGER}
+      AND a.course_school_id = #{arg3,jdbcType=INTEGER}
+      AND a.student_id = #{arg4,jdbcType=INTEGER}
+    ORDER BY a.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 
   <select id="searchTechnologyCourseSignUpTotalCount" resultType="java.lang.Integer">
-    SELECT
-        COUNT(1) AS total_count
-    FROM shangshufang_customer.course A
-    INNER JOIN shangshufang_customer.course_sign_up B
-    ON A.course_id = B.course_id
-    WHERE A.technology_id = #{arg0,jdbcType=INTEGER}
-    AND A.data_status = 'A'
-    AND B.data_status = 'A'
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.course a
+           INNER JOIN shangshufang_customer.course_sign_up b
+                      ON a.course_id = b.course_id
+    WHERE a.technology_id = #{arg0,jdbcType=INTEGER}
+      AND a.data_status = '1'
+      AND b.data_status = 'A'
   </select>
   <select id="searchTechnologyCourseSignUpList" resultMap="BaseResultMap">
-    SELECT
-      A.course_id,
-      A.course_name,
-      B.sign_up_id,
-      B.student_university_code,
-      C.university_name AS student_university_name,
-      B.student_school_id,
-      D.school_name AS student_school_name,
-      B.student_id,
-      G.full_name AS student_name,
-      G.photo AS student_photo,
-      G.cellphone,
-      G.enrollment_year,
-      G.is_assistant,
-      B.course_university_code,
-      E.university_name AS course_university_name,
-      B.course_school_id,
-      F.school_name AS course_school_name,
-      H.ability_level,
-      H.position_site,
-      B.data_status,
-      CASE WHEN B.data_status = 'A' THEN '报名成功'
-        WHEN B.data_status = 'C' THEN '报名取消'
-        ELSE '未知数据状态'
-      END AS data_status_text,
-      DATE_FORMAT(B.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-      DATE_FORMAT(B.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
-    FROM shangshufang_customer.course A
-    INNER JOIN shangshufang_customer.course_sign_up B
-    ON A.course_id = B.course_id
-    INNER JOIN shangshufang_customer.university C
-    ON B.student_university_code = C.university_code
-    INNER JOIN shangshufang_customer.school D
-    ON B.student_university_code = D.university_code
-    AND B.student_school_id = D.school_id
-    INNER JOIN shangshufang_customer.university E
-    ON B.course_university_code = E.university_code
-    INNER JOIN shangshufang_customer.school F
-    ON B.course_university_code = F.university_code
-    AND B.course_school_id = F.school_id
-    INNER JOIN shangshufang_customer.university_student G
-    ON B.student_university_code = G.university_code
-    AND B.student_school_id = G.school_id
-    AND B.student_id = G.student_id
-    INNER JOIN shangshufang_customer.university_student_ability_analysis H
-    ON G.university_code = H.student_university_code
-    AND G.school_id = H.student_school_id
-    AND G.student_id = H.student_id
-    AND H.technology_id = #{arg2,jdbcType=INTEGER}
-    WHERE A.technology_id = #{arg2,jdbcType=INTEGER}
-    AND A.data_status = 'A'
-    AND B.data_status = 'A'
-    ORDER BY B.update_time DESC, G.student_id ASC
+    SELECT a.course_id,
+           a.course_name,
+           b.sign_up_id,
+           b.student_university_code,
+           c.university_name                               AS student_university_name,
+           b.student_school_id,
+           d.school_name                                   AS student_school_name,
+           b.student_id,
+           g.full_name                                     AS student_name,
+           g.photo                                         AS student_photo,
+           g.cellphone,
+           CONCAT(LEFT(g.enrollment_year, 4), '年')        AS enrollment_year,
+           g.is_assistant,
+           b.course_university_code,
+           e.university_name                               AS course_university_name,
+           b.course_school_id,
+           f.school_name                                   AS course_school_name,
+           h.ability_level,
+           h.position_site,
+           b.data_status,
+           CASE
+             WHEN b.data_status = 'A' THEN '报名成功'
+             WHEN b.data_status = 'C' THEN '报名取消'
+             ELSE '未知数据状态'
+             END                                           AS data_status_text,
+           DATE_FORMAT(b.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+           DATE_FORMAT(b.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.course a
+           LEFT JOIN shangshufang_customer.course_sign_up b
+                     ON a.course_id = b.course_id
+           LEFT JOIN shangshufang_customer.university c
+                     ON b.student_university_code = c.university_code
+           LEFT JOIN shangshufang_customer.school d
+                     ON b.student_university_code = d.university_code
+                       AND b.student_school_id = d.school_id
+           LEFT JOIN shangshufang_customer.university e
+                     ON b.course_university_code = e.university_code
+           LEFT JOIN shangshufang_customer.school f
+                     ON b.course_university_code = f.university_code
+                       AND b.course_school_id = f.school_id
+           LEFT JOIN shangshufang_customer.university_student g
+                     ON b.student_id = g.student_id
+           LEFT JOIN shangshufang_customer.university_student_ability_analysis h
+                     ON g.university_code = h.student_university_code
+                       AND g.school_id = h.student_school_id
+                       AND g.student_id = h.student_id
+                       AND h.technology_id = #{arg2,jdbcType=INTEGER}
+    WHERE a.technology_id = #{arg2,jdbcType=INTEGER}
+      AND a.data_status = '1'
+      AND b.data_status = 'A'
+    ORDER BY b.update_time DESC, g.student_id
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 
-  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.CourseSignUpEntity" >
-    INSERT INTO shangshufang_customer.course_sign_up (
-      student_university_code,
-      student_school_id,
-      student_id,
-      course_university_code,
-      course_school_id,
-      course_id,
-      create_user,
-      update_user
-    )
-    VALUES (
-      #{studentUniversityCode, jdbcType=INTEGER},
-      #{studentSchoolID, jdbcType=INTEGER},
-      #{studentID, jdbcType=INTEGER},
-      #{courseUniversityCode, jdbcType=INTEGER},
-      #{courseSchoolID, jdbcType=INTEGER},
-      #{courseID, jdbcType=INTEGER},
-      #{createUser, jdbcType=VARCHAR},
-      #{updateUser, jdbcType=VARCHAR}
-    )
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.CourseSignUpEntity">
+    INSERT INTO shangshufang_customer.course_sign_up (student_university_code,
+                                                      student_school_id,
+                                                      student_id,
+                                                      course_university_code,
+                                                      course_school_id,
+                                                      course_id,
+                                                      create_user,
+                                                      update_user)
+    VALUES (#{studentUniversityCode, jdbcType=INTEGER},
+            #{studentSchoolID, jdbcType=INTEGER},
+            #{studentID, jdbcType=INTEGER},
+            #{courseUniversityCode, jdbcType=INTEGER},
+            #{courseSchoolID, jdbcType=INTEGER},
+            #{courseID, jdbcType=INTEGER},
+            #{createUser, jdbcType=VARCHAR},
+            #{updateUser, jdbcType=VARCHAR})
   </insert>
-  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.CourseSignUpEntity" >
-    UPDATE shangshufang_customer.course_sign_up SET
-      data_status = #{dataStatus,jdbcType=VARCHAR},
-      update_user = #{updateUser,jdbcType=VARCHAR}
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.CourseSignUpEntity">
+    UPDATE shangshufang_customer.course_sign_up
+    SET data_status = #{dataStatus,jdbcType=VARCHAR},
+        update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE student_university_code = #{studentUniversityCode,jdbcType=INTEGER}
-    AND student_school_id = #{studentSchoolID,jdbcType=INTEGER}
-    AND student_id = #{studentID,jdbcType=INTEGER};
-    AND sign_up_id = #{signUpID,jdbcType=INTEGER};
+      AND student_school_id = #{studentSchoolID,jdbcType=INTEGER}
+      AND student_id = #{studentID,jdbcType=INTEGER}
+      AND sign_up_id = #{signUpID,jdbcType=INTEGER};
   </update>
 </mapper>

@@ -205,7 +205,14 @@
       A.direction_id,
       E.direction_name,
       A.category_id,
+      A.difficulty_level,
+      CASE WHEN A.difficulty_level = 'J' THEN '初级'
+           WHEN A.difficulty_level = 'M' THEN '中级'
+           WHEN A.difficulty_level = 'S' THEN '高级'
+           ELSE '未知数据状态'
+      END AS difficulty_level_text,
       F.technology_category_name AS category_name,
+      G.using_company_count,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未激活'
           WHEN A.data_status = 'A' THEN '正常'
@@ -235,6 +242,18 @@
               ON A.direction_id = E.direction_id
     LEFT JOIN shangshufang_base.technology_category F
               ON a.category_id = F.technology_category_id
+    LEFT JOIN
+         (
+           SELECT
+             technology_id,
+             COUNT(1) AS using_company_count
+           FROM shangshufang_customer.technology_using A
+                  INNER JOIN shangshufang_customer.company B
+                             ON A.company_id = B.company_id
+                               AND B.data_status = 'A'
+           GROUP BY technology_id
+         ) G
+         ON A.technology_id = G.technology_id
     WHERE A.technology_id = #{arg0,jdbcType=INTEGER};
   </select>
 
