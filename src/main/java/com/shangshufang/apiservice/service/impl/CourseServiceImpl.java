@@ -163,6 +163,28 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public UnifiedResponse findList4Student(int pageNumber, int pageSize, int directionID, int categoryID, int technologyID, int universityCode, int schoolID, boolean isSelf, int studentID) {
+        try {
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<CourseVO> modelList = new ArrayList<>();
+            int totalCount = courseMapper.searchTotalCount4Student(directionID, categoryID, technologyID, universityCode, schoolID, isSelf, studentID);
+            if(totalCount == 0) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            List<CourseEntity> entityList = courseMapper.searchList4Student(startIndex, pageSize, directionID, categoryID, technologyID, universityCode, schoolID, isSelf, studentID);
+            for (CourseEntity entity : entityList) {
+                CourseVO model = new CourseVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse findSimpleList(int universityCode, int schoolID, int teacherID, int technologyID) {
         try {
             List<CourseVO> modelList = new ArrayList<>();

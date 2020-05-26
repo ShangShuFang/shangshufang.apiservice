@@ -10,6 +10,5 @@ public class UniversityStudentExercisesDTO extends BaseDTO {
     private int courseID;
     private int courseClass;
     private int assignCount;
-
     private String sourceCodeGitUrl;
 }

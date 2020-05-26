@@ -45,10 +45,10 @@
            f.full_name                                     AS student_name,
            f.photo                                         AS student_photo,
            f.cellphone,
-           f.enrollment_year,
+           LEFT(f.enrollment_year, 4)                      AS enrollment_year,
            h.ability_level,
            h.position_site,
-           f.is_assistant,
+           a.is_assistant,
            a.course_university_code,
            d.university_name                               AS course_university_name,
            a.course_school_id,
@@ -103,8 +103,8 @@
            f.full_name                                     AS student_name,
            f.photo                                         AS student_photo,
            f.cellphone,
-           f.enrollment_year,
-           f.is_assistant,
+           LEFT(f.enrollment_year, 4)                      AS enrollment_year,
+           a.is_assistant,
            a.course_university_code,
            d.university_name                               AS course_university_name,
            a.course_school_id,
@@ -162,8 +162,8 @@
            f.full_name                                     AS student_name,
            f.photo                                         AS student_photo,
            f.cellphone,
-           f.enrollment_year,
-           f.is_assistant,
+           LEFT(f.enrollment_year, 4)                      AS enrollment_year,
+           a.is_assistant,
            a.course_university_code,
            d.university_name                               AS course_university_name,
            a.course_school_id,
@@ -225,8 +225,8 @@
            g.full_name                                     AS student_name,
            g.photo                                         AS student_photo,
            g.cellphone,
-           CONCAT(LEFT(g.enrollment_year, 4), '年')        AS enrollment_year,
-           g.is_assistant,
+           LEFT(g.enrollment_year, 4)                      AS enrollment_year,
+           b.is_assistant,
            b.course_university_code,
            e.university_name                               AS course_university_name,
            b.course_school_id,
@@ -268,6 +268,25 @@
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 
+  <select id="searchIsSignUpCourse" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS totalcount
+    FROM shangshufang_customer.course_sign_up
+    WHERE student_id = #{studentID,jdbcType=INTEGER}
+        AND course_university_code = #{universityCode,jdbcType=INTEGER}
+      AND course_school_id = #{schoolID,jdbcType=INTEGER}
+      AND course_id = #{courseID,jdbcType=INTEGER};
+  </select>
+
+  <select id="searchIsAssistant" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS totalcount
+    FROM shangshufang_customer.course_sign_up
+    WHERE student_id = #{studentID,jdbcType=INTEGER}
+      AND course_university_code = #{universityCode,jdbcType=INTEGER}
+      AND course_school_id = #{schoolID,jdbcType=INTEGER}
+      AND course_id = #{courseID,jdbcType=INTEGER}
+      AND is_assistant = 1;
+  </select>
+
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.CourseSignUpEntity">
     INSERT INTO shangshufang_customer.course_sign_up (student_university_code,
                                                       student_school_id,
@@ -286,6 +305,7 @@
             #{createUser, jdbcType=VARCHAR},
             #{updateUser, jdbcType=VARCHAR})
   </insert>
+
   <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.CourseSignUpEntity">
     UPDATE shangshufang_customer.course_sign_up
     SET data_status = #{dataStatus,jdbcType=VARCHAR},
@@ -294,5 +314,15 @@
       AND student_school_id = #{studentSchoolID,jdbcType=INTEGER}
       AND student_id = #{studentID,jdbcType=INTEGER}
       AND sign_up_id = #{signUpID,jdbcType=INTEGER};
+  </update>
+
+  <update id="updateAssistant" parameterType="com.shangshufang.apiservice.entity.CourseSignUpEntity">
+    UPDATE shangshufang_customer.course_sign_up
+    SET is_assistant = #{assistant,jdbcType=BIT},
+        update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE student_id = #{studentID,jdbcType=INTEGER}
+      AND course_university_code = #{courseUniversityCode,jdbcType=INTEGER}
+      AND course_school_id = #{courseSchoolID,jdbcType=INTEGER}
+      AND course_id = #{courseID,jdbcType=INTEGER};
   </update>
 </mapper>

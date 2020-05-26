@@ -17,6 +17,4 @@ public interface UniversityStudentService extends BaseService<UniversityStudentD
     UnifiedResponse changePassword(UniversityStudentDTO dto);
 
     UnifiedResponse resetPassword(UniversityStudentDTO dto);
-
-    UnifiedResponse changeAssistant(UniversityStudentDTO dto);
 }

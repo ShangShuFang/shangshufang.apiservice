@@ -16,7 +16,6 @@
     <result column="sex" property="sex" jdbcType="VARCHAR" />
     <result column="account_role" property="accountRole" jdbcType="VARCHAR" />
     <result column="account_role_text" property="accountRoleText" jdbcType="VARCHAR" />
-    <result column="is_assistant" property="assistant" jdbcType="BIT" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -150,7 +149,6 @@
     WHEN a.data_status = 'D' THEN '禁用'
     ELSE '未知数据状态'
     END AS data_status_text,
-    0 AS is_assistant,
     IFNULL(e.admin_name, g.full_name) AS create_user,
     DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
     IFNULL(f.admin_name, h.full_name) AS update_user,

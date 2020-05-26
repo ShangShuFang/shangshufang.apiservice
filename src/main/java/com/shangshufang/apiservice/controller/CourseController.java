@@ -3,6 +3,7 @@ package com.shangshufang.apiservice.controller;
 import com.shangshufang.apiservice.dto.CourseDTO;
 import com.shangshufang.apiservice.service.impl.CourseServiceImpl;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,19 @@ public class CourseController {
         return serviceImpl.findListLikeName(pageNumber, pageSize, content);
     }
 
+    @RequestMapping(value = "/list/student/{pageNumber}/{pageSize}/{directionID}/{categoryID}/{technologyID}/{universityCode}/{schoolID}/{isSelf}/{studentID}", method = RequestMethod.GET)
+    public UnifiedResponse findList4Student (@PathVariable("pageNumber") int pageNumber,
+                                             @PathVariable("pageSize") int pageSize,
+                                             @PathVariable("directionID") int directionID,
+                                             @PathVariable("categoryID") int categoryID,
+                                             @PathVariable("technologyID") int technologyID,
+                                             @PathVariable("universityCode") int universityCode,
+                                             @PathVariable("schoolID") int schoolID,
+                                             @PathVariable("isSelf") boolean isSelf,
+                                             @PathVariable("studentID") int studentID) {
+        return serviceImpl.findList4Student(pageNumber, pageSize, directionID, categoryID, technologyID, universityCode,schoolID, isSelf, studentID);
+    }
+    
     @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{teacherID}/{directionID}/{categoryID}/{technologyID}/{courseTimeBegin}/{dataStatus}/{isSelf}/{searchType}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,

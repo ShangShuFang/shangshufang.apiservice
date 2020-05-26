@@ -2,6 +2,7 @@ package com.shangshufang.apiservice.mapper;
 
 import com.shangshufang.apiservice.entity.CourseSignUpEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -20,4 +21,16 @@ public interface CourseSignUpMapper extends BaseMapper<CourseSignUpEntity> {
     int searchTechnologyCourseSignUpTotalCount(int technologyID);
 
     List<CourseSignUpEntity> searchTechnologyCourseSignUpList(int startIndex, int pageSize, int technologyID);
+
+    int searchIsSignUpCourse(@Param("studentID") int studentID,
+                             @Param("universityCode") int universityCode,
+                             @Param("schoolID") int schoolID,
+                             @Param("courseID") int courseID);
+
+    int searchIsAssistant(@Param("studentID") int studentID,
+                          @Param("universityCode") int universityCode,
+                          @Param("schoolID") int schoolID,
+                          @Param("courseID") int courseID);
+
+    int updateAssistant(CourseSignUpEntity entity);
 }

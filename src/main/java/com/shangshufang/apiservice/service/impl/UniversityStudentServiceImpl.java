@@ -134,21 +134,6 @@ public class UniversityStudentServiceImpl implements UniversityStudentService {
     }
 
     @Override
-    public UnifiedResponse changeAssistant(UniversityStudentDTO dto) {
-        try {
-            UniversityStudentEntity entity = new UniversityStudentEntity();
-            ObjectConvertUtils.toBean(dto, entity);
-            entity.setAssistant(dto.getAssistant());
-            entity.setUpdateUser(dto.getLoginUser());
-            int affectRow = myMapper.updateAssistant(entity);
-            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
-        } catch (Exception ex) {
-            logger.error(ex.toString());
-            return UnifiedResponseManager.buildExceptionResponse();
-        }
-    }
-
-    @Override
     public UnifiedResponse add(UniversityStudentDTO dto) {
         try {
             UniversityStudentEntity entity = new UniversityStudentEntity();

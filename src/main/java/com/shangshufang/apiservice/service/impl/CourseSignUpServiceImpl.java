@@ -91,6 +91,46 @@ public class CourseSignUpServiceImpl implements CourseSignUpService {
     }
 
     @Override
+    public UnifiedResponse checkIsSignUpCourse(int studentID, int universityCode, int schoolID, int courseID) {
+        try {
+            int totalCount = myMapper.searchIsSignUpCourse(studentID, universityCode, schoolID, courseID);
+            boolean isSignUp = totalCount > 0;
+
+            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, isSignUp);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse checkIsAssistant(int studentID, int universityCode, int schoolID, int courseID) {
+        try {
+            int totalCount = myMapper.searchIsAssistant(studentID, universityCode, schoolID, courseID);
+            boolean isSignUp = totalCount > 0;
+
+            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, isSignUp);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse changeAssistant(CourseSignUpDTO dto) {
+        try {
+            CourseSignUpEntity entity = new CourseSignUpEntity();
+            ObjectConvertUtils.toBean(dto, entity);
+            entity.setUpdateUser(dto.getLoginUser());
+            int affectRow = myMapper.updateAssistant(entity);
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse add(CourseSignUpDTO dto) {
         try {
             CourseSignUpEntity entity = new CourseSignUpEntity();

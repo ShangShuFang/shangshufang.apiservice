@@ -2,6 +2,7 @@ package com.shangshufang.apiservice.service;
 
 import com.shangshufang.apiservice.dto.CourseDTO;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
+import org.apache.ibatis.annotations.Param;
 
 public interface CourseService extends BaseService<CourseDTO> {
     UnifiedResponse findListLikeName (int pageNumber,
@@ -20,6 +21,16 @@ public interface CourseService extends BaseService<CourseDTO> {
                              String dataStatus,
                              boolean isSelf,
                              String searchType);
+
+    UnifiedResponse findList4Student(int pageNumber,
+                                     int pageSize,
+                                     int directionID,
+                                     int categoryID,
+                                     int technologyID,
+                                     int universityCode,
+                                     int schoolID,
+                                     boolean isSelf,
+                                     int studentID);
 
     UnifiedResponse findSimpleList(int universityCode, int schoolID, int teacherID, int technologyID);
 

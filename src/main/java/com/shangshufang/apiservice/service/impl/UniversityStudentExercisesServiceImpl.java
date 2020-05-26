@@ -57,6 +57,30 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
     }
 
     @Override
+    public UnifiedResponse findList4Student(int pageNumber, int pageSize, int studentID, int courseID, String dataStatus, String studentName, boolean isSelf) {
+        try {
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<UniversityStudentExercisesVO> modelList = new ArrayList<>();
+            dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
+            studentName = studentName.equals(ParameterConstant.NO_PARAMETER) ? null : studentName;
+            int totalCount = universityStudentExercisesMapper.searchTotalCount4Student(studentID, courseID, dataStatus, studentName, isSelf);
+            if(totalCount == 0){
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            List<UniversityStudentExercisesEntity> entityList =  universityStudentExercisesMapper.searchList4Student(startIndex, pageSize, studentID, courseID, dataStatus, studentName, isSelf);
+            for (UniversityStudentExercisesEntity entity : entityList) {
+                UniversityStudentExercisesVO model = new UniversityStudentExercisesVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse assign(UniversityStudentExercisesDTO dto) {
         try{
             int affectRow = 0;
@@ -132,7 +156,16 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
 
     @Override
     public UnifiedResponse change(UniversityStudentExercisesDTO dto) {
-        return null;
+        try {
+            UniversityStudentExercisesEntity entity = new UniversityStudentExercisesEntity();
+            ObjectConvertUtils.toBean(dto, entity);
+            entity.setUpdateUser(dto.getLoginUser());
+            int affectRow = universityStudentExercisesMapper.update(entity);
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
     }
 
     @Override

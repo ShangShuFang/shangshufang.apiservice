@@ -11,4 +11,5 @@ public class CourseSignUpDTO extends BaseDTO {
     private int courseUniversityCode;
     private int courseSchoolID;
     private int courseID;
+    private int assistant;
 }

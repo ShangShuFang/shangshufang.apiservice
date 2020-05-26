@@ -11,8 +11,28 @@ public interface CourseMapper extends BaseMapper<CourseEntity> {
     int searchTotalCountLikeName(@Param("content") String content);
 
     List<CourseEntity> searchListLikeName(int startIndex,
-                           int pageSize,
-                           String name);
+                                          int pageSize,
+                                          String name);
+
+
+    int searchTotalCount4Student(@Param("directionID") int directionID,
+                                 @Param("categoryID") int categoryID,
+                                 @Param("technologyID") int technologyID,
+                                 @Param("universityCode") int universityCode,
+                                 @Param("schoolID") int schoolID,
+                                 @Param("isSelf") boolean isSelf,
+                                 @Param("studentID") int studentID);
+
+    List<CourseEntity> searchList4Student(@Param("startIndex") int startIndex,
+                                          @Param("pageSize") int pageSize,
+                                          @Param("directionID") int directionID,
+                                          @Param("categoryID") int categoryID,
+                                          @Param("technologyID") int technologyID,
+                                          @Param("universityCode") int universityCode,
+                                          @Param("schoolID") int schoolID,
+                                          @Param("isSelf") boolean isSelf,
+                                          @Param("studentID") int studentID);
+
 
     int searchTotalCount(int universityCode,
                          int schoolID,

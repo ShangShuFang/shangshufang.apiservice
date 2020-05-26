@@ -19,5 +19,4 @@ public class UniversityStudentVO extends BaseVO {
     private String password;
     private String email;
     private String photo;
-    private int assistant;
 }

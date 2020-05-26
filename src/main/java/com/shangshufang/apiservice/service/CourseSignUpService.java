@@ -9,4 +9,10 @@ public interface CourseSignUpService extends BaseService<CourseSignUpDTO> {
     UnifiedResponse findStudentSignUpList(int pageNumber, int pageSize, int universityCode, int schoolID, int studentID);
 
     UnifiedResponse findTechnologyCourseSignUpList(int pageNumber, int pageSize, int technologyID);
+
+    UnifiedResponse checkIsSignUpCourse(int studentID, int universityCode, int schoolID, int courseID);
+
+    UnifiedResponse checkIsAssistant(int studentID, int universityCode, int schoolID, int courseID);
+
+    UnifiedResponse changeAssistant(CourseSignUpDTO dto);
 }
