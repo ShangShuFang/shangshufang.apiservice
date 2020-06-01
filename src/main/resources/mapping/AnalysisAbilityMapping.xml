@@ -402,141 +402,100 @@
   <!-- region 学生能力分析概要信息 -->
   <select id="searchStudentMainResultTotalCount" resultType="java.lang.Integer">
     SELECT COUNT(1) AS total_count
-    FROM shangshufang_customer.course a
-        INNER JOIN shangshufang_customer.course_sign_up b
-          ON a.university_code = b.course_university_code
-          AND a.school_id = b.course_school_id
-          AND a.course_id = b.course_id
-          AND b.data_status = 'A'
-        INNER JOIN shangshufang_customer.university_student c
-          ON b.student_university_code = c.university_code
-          AND b.student_school_id = c.school_id
-          AND b.student_id = c.student_id
-        INNER JOIN shangshufang_base.technology d
-            ON a.technology_id = d.technology_id
-    WHERE 1 = 1
-    <if test="arg0 != 0">
-      AND d.direction_id = #{arg0,jdbcType=INTEGER}
-    </if>
-    <if test="arg1 != 0">
-      AND d.category_id = #{arg1,jdbcType=INTEGER}
-    </if>
-    <if test="arg2 != 0">
-      AND a.technology_id = #{arg2,jdbcType=INTEGER}
-    </if>
-    <if test="arg3 != 0">
-      AND b.student_university_code = #{arg3,jdbcType=INTEGER}
-    </if>
-    <if test="arg4 != 0">
-      AND b.student_school_id = #{arg4,jdbcType=INTEGER}
-    </if>
-    <if test="arg5 != 0">
-      AND a.university_code = #{arg5,jdbcType=INTEGER}
-    </if>
-    <if test="arg6 != 0">
-      AND a.school_id = #{arg6,jdbcType=INTEGER}
-    </if>
-    <if test="arg7 != 0">
-      AND a.teacher_id = #{arg7,jdbcType=INTEGER}
-    </if>
-    <if test="arg8 != null">
-      AND c.full_name = #{arg8,jdbcType=VARCHAR}
-    </if>;
+    FROM shangshufang_customer.university_student_ability_analysis a
+        INNER JOIN shangshufang_customer.university_student b
+            ON a.student_id = b.student_id
+        INNER JOIN shangshufang_base.technology c
+            ON a.technology_id = c.technology_id
+    <where>
+      <if test="directionID != 0">
+        c.direction_id = #{directionID,jdbcType=INTEGER}
+      </if>
+      <if test="categoryID != 0">
+        AND c.category_id = #{categoryID,jdbcType=INTEGER}
+      </if>
+      <if test="technologyID != 0">
+        AND c.technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+      <if test="universityCode != 0">
+        AND a.student_university_code = #{universityCode,jdbcType=INTEGER}
+      </if>
+      <if test="schoolID != 0">
+        AND a.student_school_id = #{schoolID,jdbcType=INTEGER}
+      </if>
+      <if test="studentName != null">
+        AND b.full_name = #{studentName,jdbcType=VARCHAR}
+      </if>
+      <if test="studentID != 0">
+        AND a.student_id != #{studentID,jdbcType=INTEGER}
+      </if>
+    </where>;
   </select>
 
   <select id="searchStudentMainResultList" resultMap="StudentMainResultMap">
-    SELECT B.analysis_id,
-           B.student_university_code,
-           A.university_name AS student_university_name,
-           B.student_school_id,
-           A.school_name AS student_school_name,
-           a.student_id,
-           A.major_id,
-           A.major_name,
-           A.full_name AS student_name,
-           A.cellphone,
-           A.photo,
-           A.technology_id,
-           A.technology_name,
-           B.knowledge_total_count,
-           B.finish_knowledge_count,
-           B.finish_knowledge_percent,
-           B.finish_exercises_count,
-           B.once_compilation_success_rate,
-           B.once_run_success_rate,
-           B.position_site AS position_site,
-           B.ability_level
-    FROM
-    (
-        SELECT a.technology_id,
-               g.technology_name,
-               b.student_university_code,
-               d.university_name,
-               b.student_school_id,
-               e.school_name,
-               c.major_id,
-               f.major_name,
-               b.student_id,
-               c.full_name,
-               c.enrollment_year,
-               c.cellphone,
-               c.photo
-        FROM shangshufang_customer.course a
-            INNER JOIN shangshufang_customer.course_sign_up b
-                ON a.university_code = b.course_university_code
-                AND a.school_id = b.course_school_id
-                AND a.course_id = b.course_id
-                AND b.data_status = 'A'
-            INNER JOIN shangshufang_customer.university_student c
-                ON b.student_university_code = c.university_code
-                AND b.student_school_id = c.school_id
-                AND b.student_id = c.student_id
-            INNER JOIN shangshufang_customer.university d
-                ON b.student_university_code = d.university_code
-            INNER JOIN shangshufang_customer.school e
-                ON b.student_university_code = e.university_code
-                AND b.student_school_id = e.school_id
-            INNER JOIN shangshufang_customer.major f
-                ON c.university_code = f.university_code
-                       AND c.school_id = f.school_id
-                       AND c.major_id = f.major_id
-            INNER JOIN shangshufang_base.technology g
-                ON a.technology_id = g.technology_id
-        WHERE 1 = 1
-        <if test="arg2 != 0">
-          AND g.direction_id = #{arg2,jdbcType=INTEGER}
-        </if>
-        <if test="arg3 != 0">
-          AND g.category_id = #{arg3,jdbcType=INTEGER}
-        </if>
-        <if test="arg4 != 0">
-            AND a.technology_id = #{arg4,jdbcType=INTEGER}
-        </if>
-        <if test="arg5 != 0">
-          AND b.student_university_code = #{arg5,jdbcType=INTEGER}
-        </if>
-        <if test="arg6 != 0">
-          AND b.student_school_id = #{arg6,jdbcType=INTEGER}
-        </if>
-        <if test="arg7 != 0">
-          AND a.university_code = #{arg7,jdbcType=INTEGER}
-        </if>
-        <if test="arg8 != 0">
-          AND a.school_id = #{arg8,jdbcType=INTEGER}
-        </if>
-        <if test="arg9 != 0">
-          AND a.teacher_id = #{arg9,jdbcType=INTEGER}
-        </if>
-        <if test="arg10 != null">
-          AND c.full_name = #{arg10,jdbcType=VARCHAR}
-        </if>
-        LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER}
-    ) A
-    INNER JOIN shangshufang_customer.university_student_ability_analysis B
-    ON A.student_university_code = B.student_university_code
-    AND A.student_school_id = B.student_school_id
-    AND A.student_id = B.student_id
-    ORDER BY B.position_site DESC;
+    SELECT
+      a.analysis_id,
+      a.student_university_code,
+      c.university_name AS student_university_name,
+      a.student_school_id,
+      d.school_name AS student_school_name,
+      b.major_id,
+      e.major_name,
+      a.student_id,
+      b.full_name AS student_name,
+      LEFT(b.enrollment_year, 4) AS enrollment_year,
+      b.cellphone,
+      b.photo,
+      a.technology_id,
+      f.technology_name,
+      a.knowledge_total_count,
+      a.finish_knowledge_count,
+      a.finish_knowledge_percent,
+      a.finish_exercises_count,
+      a.once_compilation_success_rate,
+      a.once_run_success_rate,
+      a.position_site,
+      a.standard_score,
+      a.ability_level
+    FROM shangshufang_customer.university_student_ability_analysis a
+           INNER JOIN shangshufang_customer.university_student b
+                      ON a.student_id = b.student_id
+           INNER JOIN shangshufang_customer.university c
+                      ON b.university_code = c.university_code
+           INNER JOIN shangshufang_customer.school d
+                      ON b.university_code = d.university_code
+                        AND b.school_id = d.school_id
+           INNER JOIN shangshufang_customer.major e
+                      ON b.university_code = e.university_code
+                        AND b.school_id = e.school_id
+                        AND b.major_id = e.major_id
+           INNER JOIN shangshufang_base.technology f
+                      ON a.technology_id = f.technology_id
+    <where>
+      <if test="directionID != 0">
+        f.direction_id = #{directionID,jdbcType=INTEGER}
+      </if>
+      <if test="categoryID != 0">
+        AND f.category_id = #{categoryID,jdbcType=INTEGER}
+      </if>
+      <if test="technologyID != 0">
+        AND f.technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+      <if test="universityCode != 0">
+        AND a.student_university_code = #{universityCode,jdbcType=INTEGER}
+      </if>
+      <if test="schoolID != 0">
+        AND a.student_school_id = #{schoolID,jdbcType=INTEGER}
+      </if>
+      <if test="studentName != null">
+        AND b.full_name = #{studentName,jdbcType=VARCHAR}
+      </if>
+      <if test="studentID != 0">
+        AND a.student_id != #{studentID,jdbcType=INTEGER}
+      </if>
+    </where>
+    ORDER BY a.position_site DESC
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
   <!-- endregion -->
 

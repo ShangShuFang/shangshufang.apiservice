@@ -167,16 +167,16 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
     }
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, int directionID, int categoryID, int technologyID, int studentUniversityCode, int studentSchoolID, int teacherUniversityCode, int teacherSchoolID, int teacherID, String studentName) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, int directionID, int categoryID, int technologyID, int studentUniversityCode, int studentSchoolID, String studentName, int studentID) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<AbilityAnalysisResult4StudentMainInfoVO> modelList = new ArrayList<>();
             studentName = studentName.equals(ParameterConstant.NO_PARAMETER) ? null : studentName;
-            int totalCount = myMapper.searchStudentMainResultTotalCount(directionID, categoryID, technologyID, studentUniversityCode, studentSchoolID, teacherUniversityCode, teacherSchoolID, teacherID, studentName);
+            int totalCount = myMapper.searchStudentMainResultTotalCount(directionID, categoryID, technologyID, studentUniversityCode, studentSchoolID, studentName, studentID);
             if (totalCount == 0) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<AbilityAnalysisResult4StudentMainInfoEntity> entityList = myMapper.searchStudentMainResultList(startIndex, pageSize, directionID, categoryID, technologyID, studentUniversityCode, studentSchoolID, teacherUniversityCode, teacherSchoolID, teacherID, studentName);
+            List<AbilityAnalysisResult4StudentMainInfoEntity> entityList = myMapper.searchStudentMainResultList(startIndex, pageSize, directionID, categoryID, technologyID, studentUniversityCode, studentSchoolID, studentName, studentID);
             for (AbilityAnalysisResult4StudentMainInfoEntity entity : entityList) {
                 AbilityAnalysisResult4StudentMainInfoVO model = new AbilityAnalysisResult4StudentMainInfoVO();
                 ObjectConvertUtils.toBean(entity, model);

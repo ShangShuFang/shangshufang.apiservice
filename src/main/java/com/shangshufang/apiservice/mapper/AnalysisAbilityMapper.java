@@ -142,26 +142,23 @@ public interface AnalysisAbilityMapper {
 
     /**
      * 取得满足条件的学生能力结果的总数
-     * @param directionID           方向编号
-     * @param categoryID            分类编号
-     * @param technologyID          技术编号
-     * @param studentUniversityCode 学生所在高校
-     * @param studentSchoolID       学生所在二级学院
-     * @param teacherUniversityCode 教师所在高校
-     * @param teacherSchoolID       教师所在二级学院
-     * @param teacherID             教师编号
-     * @param studentName           学生姓名
+     *
+     * @param directionID    方向编号
+     * @param categoryID     分类编号
+     * @param technologyID   技术编号
+     * @param universityCode 学生所在高校
+     * @param schoolID       学生所在二级学院
+     * @param studentName    学生姓名
+     * @param studentID      学生编号（需排除）
      * @return 满足条件的学生能力结果的总数
      */
-    int searchStudentMainResultTotalCount(int directionID,
-                                          int categoryID,
-                                          int technologyID,
-                                          int studentUniversityCode,
-                                          int studentSchoolID,
-                                          int teacherUniversityCode,
-                                          int teacherSchoolID,
-                                          int teacherID,
-                                          String studentName);
+    int searchStudentMainResultTotalCount(@Param("directionID") int directionID,
+                                          @Param("categoryID") int categoryID,
+                                          @Param("technologyID") int technologyID,
+                                          @Param("universityCode") int universityCode,
+                                          @Param("schoolID") int schoolID,
+                                          @Param("studentName") String studentName,
+                                          @Param("studentID") int studentID);
 
     /**
      * 取得满足条件的学生能力结果列表
@@ -171,25 +168,21 @@ public interface AnalysisAbilityMapper {
      * @param directionID           方向编号
      * @param categoryID            分类编号
      * @param technologyID          技术编号
-     * @param studentUniversityCode 学生所在高校
-     * @param studentSchoolID       学生所在二级学院
-     * @param teacherUniversityCode 教师所在高校
-     * @param teacherSchoolID       教师所在二级学院
-     * @param teacherID             教师编号
+     * @param universityCode        学生所在高校
+     * @param schoolID              学生所在二级学院
      * @param studentName           学生姓名
+     * @param studentID             学生编号（需排除）
      * @return 满足条件的学生能力结果列表
      */
-    List<AbilityAnalysisResult4StudentMainInfoEntity> searchStudentMainResultList(int startIndex,
-                                                                                  int pageSize,
-                                                                                  int directionID,
-                                                                                  int categoryID,
-                                                                                  int technologyID,
-                                                                                  int studentUniversityCode,
-                                                                                  int studentSchoolID,
-                                                                                  int teacherUniversityCode,
-                                                                                  int teacherSchoolID,
-                                                                                  int teacherID,
-                                                                                  String studentName);
+    List<AbilityAnalysisResult4StudentMainInfoEntity> searchStudentMainResultList(@Param("startIndex") int startIndex,
+                                                                                  @Param("pageSize") int pageSize,
+                                                                                  @Param("directionID") int directionID,
+                                                                                  @Param("categoryID") int categoryID,
+                                                                                  @Param("technologyID") int technologyID,
+                                                                                  @Param("universityCode") int universityCode,
+                                                                                  @Param("schoolID") int schoolID,
+                                                                                  @Param("studentName") String studentName,
+                                                                                  @Param("studentID") int studentID);
     //endregion
 
     //region 学生能力分析详细信息

@@ -5,7 +5,15 @@ import com.shangshufang.apiservice.vo.UnifiedResponse;
 public interface AnalysisAbilityService {
     UnifiedResponse analyse();
 
-    UnifiedResponse findList(int pageNumber, int pageSize, int directionID, int categoryID, int technologyID, int studentUniversityCode, int studentSchoolID, int teacherUniversityCode, int teacherSchoolID, int teacherID, String studentName);
+    UnifiedResponse findList(int pageNumber,
+                             int pageSize,
+                             int directionID,
+                             int categoryID,
+                             int technologyID,
+                             int studentUniversityCode,
+                             int studentSchoolID,
+                             String studentName,
+                             int studentID);
 
     UnifiedResponse findStudentSummaryResult(int universityCode, int schoolID, int studentID);
 
