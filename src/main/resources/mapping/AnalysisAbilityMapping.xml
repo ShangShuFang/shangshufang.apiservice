@@ -789,7 +789,11 @@
 
   <select id="searchTopStudentSummary" resultMap="StudentMainResultMap">
     SELECT a.student_university_code,
+           c.university_name AS student_university_name,
            a.student_school_id,
+           d.school_name AS student_school_name,
+           b.major_id,
+           e.major_name,
            a.student_id,
            b.full_name AS student_name,
            b.photo,
@@ -805,9 +809,13 @@
            a.ability_level
     FROM shangshufang_customer.university_student_ability_analysis a
            INNER JOIN shangshufang_customer.university_student b
-                      ON a.student_university_code = b.university_code
-                        AND a.student_school_id = b.school_id
-                        AND a.student_id = b.student_id
+               ON a.student_id = b.student_id
+           INNER JOIN shangshufang_customer.university c
+               ON b.university_code = c.university_code
+           INNER JOIN shangshufang_customer.school d
+               ON b.school_id = d.school_id
+           INNER JOIN shangshufang_customer.major e
+                ON b.major_id = e.major_id
     WHERE a.technology_id = #{arg0,jdbcType=INTEGER}
       AND a.ability_level &gt;= #{arg1,jdbcType=VARCHAR}
     ORDER BY a.standard_score DESC

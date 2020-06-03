@@ -21,6 +21,12 @@ public class UniversityStudentController {
         return serviceImpl.findList(pageNumber, pageSize, universityCode, schoolID, fullName);
     }
 
+    @RequestMapping(value = "/list/top/{technologyID}/{topNumber}", method = RequestMethod.GET)
+    public UnifiedResponse findTopList(@PathVariable("technologyID") int technologyID,
+                                    @PathVariable("topNumber") int topNumber){
+        return serviceImpl.findTopList(technologyID, topNumber);
+    }
+
     @RequestMapping(value = "/any/{universityCode}/{schoolID}/{studentID}", method = RequestMethod.GET)
     public UnifiedResponse find(@PathVariable("universityCode") int universityCode,
                                 @PathVariable("schoolID") int schoolID,

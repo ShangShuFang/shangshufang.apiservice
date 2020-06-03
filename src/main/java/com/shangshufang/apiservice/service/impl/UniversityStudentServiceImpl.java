@@ -5,10 +5,14 @@ import com.shangshufang.apiservice.constant.DataStatusConstant;
 import com.shangshufang.apiservice.constant.ParameterConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.UniversityStudentDTO;
+import com.shangshufang.apiservice.entity.AbilityAnalysisResult4StudentMainInfoEntity;
 import com.shangshufang.apiservice.entity.UniversityStudentEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
+import com.shangshufang.apiservice.mapper.AnalysisAbilityMapper;
+import com.shangshufang.apiservice.mapper.CompanyMapper;
 import com.shangshufang.apiservice.mapper.UniversityStudentMapper;
 import com.shangshufang.apiservice.service.UniversityStudentService;
+import com.shangshufang.apiservice.vo.AbilityAnalysisResult4StudentMainInfoVO;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
 import com.shangshufang.apiservice.vo.UniversityStudentVO;
 import org.apache.logging.log4j.LogManager;
@@ -23,7 +27,11 @@ import java.util.List;
 public class UniversityStudentServiceImpl implements UniversityStudentService {
     @Autowired
     private UniversityStudentMapper myMapper;
-    private Logger logger = LogManager.getLogger(UniversityStudentServiceImpl.class);
+    @Autowired
+    private CompanyMapper companyMapper;
+    @Autowired
+    private AnalysisAbilityMapper analysisAbilityMapper;
+    private final Logger logger = LogManager.getLogger(UniversityStudentServiceImpl.class);
 
     @Override
     public UnifiedResponse findList(int pageNumber, int pageSize, int universityCode, int schoolID, String fullName) {
@@ -42,6 +50,27 @@ public class UniversityStudentServiceImpl implements UniversityStudentService {
                 modelList.add(model);
             }
             return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse findTopList(int technologyID, int topNumber) {
+        try {
+            List<AbilityAnalysisResult4StudentMainInfoVO> modelList = new ArrayList<>();
+            String lowestRecruitLevel = companyMapper.searchLowestRecruitLevel();
+            List<AbilityAnalysisResult4StudentMainInfoEntity> entityList = analysisAbilityMapper.searchTopStudentSummary(technologyID, lowestRecruitLevel, topNumber);
+            if (entityList.isEmpty()) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            for (AbilityAnalysisResult4StudentMainInfoEntity entity : entityList) {
+                AbilityAnalysisResult4StudentMainInfoVO model = new AbilityAnalysisResult4StudentMainInfoVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
         } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();
