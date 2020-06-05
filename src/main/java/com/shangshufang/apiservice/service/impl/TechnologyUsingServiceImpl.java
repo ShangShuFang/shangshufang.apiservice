@@ -1,5 +1,6 @@
 package com.shangshufang.apiservice.service.impl;
 
+import com.shangshufang.apiservice.common.JsonUtils;
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
 import com.shangshufang.apiservice.dto.TechnologyUsingDTO;
 import com.shangshufang.apiservice.entity.TechnologyUsingEntity;
@@ -20,14 +21,14 @@ import java.util.List;
 public class TechnologyUsingServiceImpl implements TechnologyUsingService {
     @Autowired
     private TechnologyUsingMapper myMapper;
-    private Logger logger = LogManager.getLogger(TechnologyUsingServiceImpl.class);
+    private final Logger logger = LogManager.getLogger(TechnologyUsingServiceImpl.class);
 
     @Override
     public UnifiedResponse findUsingTechnologyList(int companyID) {
         try {
             List<TechnologyUsingVO> modelList = new ArrayList<>();
 
-            List<TechnologyUsingEntity> entityList =  myMapper.searchUsingTechnologyList(companyID);
+            List<TechnologyUsingEntity> entityList = myMapper.searchUsingTechnologyList(companyID);
             for (TechnologyUsingEntity entity : entityList) {
                 TechnologyUsingVO model = new TechnologyUsingVO();
                 ObjectConvertUtils.toBean(entity, model);
@@ -43,12 +44,10 @@ public class TechnologyUsingServiceImpl implements TechnologyUsingService {
     @Override
     public UnifiedResponse add(TechnologyUsingDTO dto) {
         try {
-            String[] usingTechnologies = dto.getTechnologyIdList().split(",");
+            List<TechnologyUsingEntity> entityList = JsonUtils.deserializationToObject(dto.getJsonData(), TechnologyUsingEntity.class);
             int affectRow = myMapper.delete(dto.getCompanyID());
-            for (String usingTechnology : usingTechnologies) {
-                TechnologyUsingEntity entity = new TechnologyUsingEntity();
+            for (TechnologyUsingEntity entity : entityList) {
                 entity.setCompanyID(dto.getCompanyID());
-                entity.setTechnologyID(Integer.parseInt(usingTechnology));
                 entity.setCreateUser(dto.getLoginUser());
                 entity.setUpdateUser(dto.getLoginUser());
                 affectRow += myMapper.insert(entity);

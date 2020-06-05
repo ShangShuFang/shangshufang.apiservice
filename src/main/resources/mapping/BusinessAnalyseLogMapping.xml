@@ -27,7 +27,7 @@
   <select id="searchTotalCount" resultType="java.lang.Integer">
     SELECT
     COUNT(1) AS TotalCount
-    FROM shangshufang_base.business_analyse_log;
+    FROM shangshufang_log.business_analyse_log;
   </select>
   <select id="searchList" resultMap="BaseResultMap">
     SELECT

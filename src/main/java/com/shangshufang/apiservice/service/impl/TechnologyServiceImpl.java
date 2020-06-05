@@ -9,10 +9,7 @@ import com.shangshufang.apiservice.entity.AbilityAnalysisResult4StudentMainInfoE
 import com.shangshufang.apiservice.entity.TechnologyDirectionEntity;
 import com.shangshufang.apiservice.entity.TechnologyEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
-import com.shangshufang.apiservice.mapper.AnalysisAbilityMapper;
-import com.shangshufang.apiservice.mapper.CompanyMapper;
-import com.shangshufang.apiservice.mapper.TechnologyDirectionMapper;
-import com.shangshufang.apiservice.mapper.TechnologyMapper;
+import com.shangshufang.apiservice.mapper.*;
 import com.shangshufang.apiservice.service.TechnologyService;
 import com.shangshufang.apiservice.vo.AbilityAnalysisResult4StudentMainInfoVO;
 import com.shangshufang.apiservice.vo.TechnologyVO;
@@ -30,7 +27,7 @@ public class TechnologyServiceImpl implements TechnologyService {
     @Autowired
     private TechnologyMapper myMapper;
     @Autowired
-    private CompanyMapper companyMapper;
+    private TechnologyUsingMapper technologyUsingMapper;
     @Autowired
     private AnalysisAbilityMapper analysisAbilityMapper;
 
@@ -69,11 +66,11 @@ public class TechnologyServiceImpl implements TechnologyService {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
             List<TechnologyEntity> entityList =  myMapper.searchList4Client(startIndex, pageSize, directionID, categoryID, DataStatusConstant.ACTIVE);
-            String lowestRecruitLevel = companyMapper.searchLowestRecruitLevel();
 
             for (TechnologyEntity entity : entityList) {
                 TechnologyVO model = new TechnologyVO();
                 List<AbilityAnalysisResult4StudentMainInfoVO> topStudentMainInfoModelList = new ArrayList<>();
+                String lowestRecruitLevel = technologyUsingMapper.searchLowestRecruitLevel(entity.getTechnologyID());
                 List<AbilityAnalysisResult4StudentMainInfoEntity> topStudentMainInfoEntityList = analysisAbilityMapper.searchTopStudentSummary(entity.getTechnologyID(), lowestRecruitLevel, 4);
                 if (!topStudentMainInfoEntityList.isEmpty()) {
                     for (AbilityAnalysisResult4StudentMainInfoEntity topStudentMainInfoEntity : topStudentMainInfoEntityList) {

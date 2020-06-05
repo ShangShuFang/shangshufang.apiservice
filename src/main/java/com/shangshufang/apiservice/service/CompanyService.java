@@ -18,7 +18,5 @@ public interface CompanyService extends BaseService<CompanyDTO> {
 
     UnifiedResponse changeMemo(CompanyDTO dto);
 
-    UnifiedResponse changeRecruitLevel(CompanyDTO dto);
-
     UnifiedResponse delete(int companyID);
 }

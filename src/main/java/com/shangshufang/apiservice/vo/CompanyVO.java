@@ -18,7 +18,6 @@ public class CompanyVO extends BaseVO {
     private String cellphone;
     private String businessLicense;
     private String brand;
-    private String recruitLevel;
     private String memo;
     private int usingTechnologyCount;
     private int usingKnowledgeCount;

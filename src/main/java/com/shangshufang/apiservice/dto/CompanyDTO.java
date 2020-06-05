@@ -15,6 +15,5 @@ public class CompanyDTO extends BaseDTO {
     private String cellphone;
     private String businessLicense;
     private String brand;
-    private String recruitLevel;
     private String memo;
 }

@@ -16,7 +16,6 @@
     <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
     <result column="business_license" property="businessLicense" jdbcType="VARCHAR" />
     <result column="brand" property="brand" jdbcType="VARCHAR" />
-    <result column="recruit_level" property="recruitLevel" jdbcType="VARCHAR" />
     <result column="memo" property="memo" jdbcType="VARCHAR" />
     <result column="using_technology_count" property="usingTechnologyCount" jdbcType="INTEGER" />
     <result column="using_knowledge_count" property="usingKnowledgeCount" jdbcType="INTEGER" />
@@ -58,7 +57,6 @@
       A.cellphone,
       A.business_license,
       A.brand,
-      A.recruit_level,
       A.memo,
       IFNULL(E.using_technology_count,0) AS using_technology_count,
       IFNULL(F.using_knowledge_count, 0) AS using_knowledge_count,
@@ -131,7 +129,6 @@
       A.cellphone,
       A.business_license,
       A.brand,
-      A.recruit_level,
       A.memo
     FROM shangshufang_customer.company A
     INNER JOIN shangshufang_base.china_region B
@@ -159,7 +156,6 @@
       A.cellphone,
       A.business_license,
       A.brand,
-      A.recruit_level,
       A.memo,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未激活'
@@ -183,11 +179,6 @@
     INNER JOIN shangshufang_base.system_admin F
     ON A.update_user = F.admin_id
     WHERE A.company_id = #{arg0,jdbcType=INTEGER};
-  </select>
-
-  <select id="searchLowestRecruitLevel" resultType="java.lang.String">
-    SELECT MIN(recruit_level) AS recruit_level
-    FROM shangshufang_customer.company;
   </select>
 
   <select id="checkCompanyNameExist" resultType="java.lang.Integer">
@@ -259,12 +250,6 @@
   <update id="updateMemo" parameterType="com.shangshufang.apiservice.entity.CompanyEntity" >
     UPDATE shangshufang_customer.company SET
       memo = #{memo,jdbcType=VARCHAR},
-      update_user = #{updateUser,jdbcType=VARCHAR}
-    WHERE company_id = #{companyID,jdbcType=INTEGER};
-  </update>
-  <update id="updateRecruitLevel" parameterType="com.shangshufang.apiservice.entity.CompanyEntity" >
-    UPDATE shangshufang_customer.company SET
-      recruit_level = #{recruitLevel,jdbcType=VARCHAR},
       update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE company_id = #{companyID,jdbcType=INTEGER};
   </update>

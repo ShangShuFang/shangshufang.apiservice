@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class TechnologyUsingDTO extends BaseDTO {
     private int companyID;
-    private String technologyIdList;
+    private String jsonData;
 }

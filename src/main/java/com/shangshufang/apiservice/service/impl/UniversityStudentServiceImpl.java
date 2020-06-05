@@ -9,7 +9,7 @@ import com.shangshufang.apiservice.entity.AbilityAnalysisResult4StudentMainInfoE
 import com.shangshufang.apiservice.entity.UniversityStudentEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
 import com.shangshufang.apiservice.mapper.AnalysisAbilityMapper;
-import com.shangshufang.apiservice.mapper.CompanyMapper;
+import com.shangshufang.apiservice.mapper.TechnologyUsingMapper;
 import com.shangshufang.apiservice.mapper.UniversityStudentMapper;
 import com.shangshufang.apiservice.service.UniversityStudentService;
 import com.shangshufang.apiservice.vo.AbilityAnalysisResult4StudentMainInfoVO;
@@ -28,7 +28,7 @@ public class UniversityStudentServiceImpl implements UniversityStudentService {
     @Autowired
     private UniversityStudentMapper myMapper;
     @Autowired
-    private CompanyMapper companyMapper;
+    private TechnologyUsingMapper technologyUsingMapper;
     @Autowired
     private AnalysisAbilityMapper analysisAbilityMapper;
     private final Logger logger = LogManager.getLogger(UniversityStudentServiceImpl.class);
@@ -60,7 +60,7 @@ public class UniversityStudentServiceImpl implements UniversityStudentService {
     public UnifiedResponse findTopList(int technologyID, int topNumber) {
         try {
             List<AbilityAnalysisResult4StudentMainInfoVO> modelList = new ArrayList<>();
-            String lowestRecruitLevel = companyMapper.searchLowestRecruitLevel();
+            String lowestRecruitLevel = technologyUsingMapper.searchLowestRecruitLevel(technologyID);
             List<AbilityAnalysisResult4StudentMainInfoEntity> entityList = analysisAbilityMapper.searchTopStudentSummary(technologyID, lowestRecruitLevel, topNumber);
             if (entityList.isEmpty()) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);

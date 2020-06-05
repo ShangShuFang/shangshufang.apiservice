@@ -7,37 +7,49 @@
     <result column="company_name" property="companyName" jdbcType="VARCHAR" />
     <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
     <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
+    <result column="recruit_level" property="recruitLevel" jdbcType="VARCHAR" />
+    <result column="using_technology" property="usingTechnology" jdbcType="INTEGER" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_user" property="updateUser" jdbcType="INTEGER" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <select id="searchUsingTechnologyList" resultMap="BaseResultMap">
-    SELECT
-      A.using_id,
-      A.company_id,
-      B.company_name,
-      A.technology_id,
-      C.technology_name
-    FROM shangshufang_customer.technology_using A
-    INNER JOIN shangshufang_customer.company B
-    ON A.company_id = B.company_id
-    INNER JOIN shangshufang_base.technology C
-    ON A.technology_id = C.technology_id
-    WHERE A.company_id = #{arg0,jdbcType=INTEGER}
-    ORDER BY A.technology_id;
+    SELECT a.technology_id,
+           a.technology_name,
+           !ISNULL(b.technology_id) AS `using_technology`,
+           b.recruit_level
+    FROM shangshufang_base.technology a
+           LEFT JOIN
+         (
+           SELECT technology_id,
+                  recruit_level
+           FROM shangshufang_customer.technology_using
+           WHERE company_id = #{companyID,jdbcType=INTEGER}
+         ) b
+         ON a.technology_id = b.technology_id
+    ORDER BY a.technology_id;
+  </select>
+
+  <select id="searchLowestRecruitLevel" resultType="java.lang.String">
+    SELECT MIN(recruit_level) AS recruit_level
+    FROM shangshufang_customer.technology_using
+    WHERE technology_id =  #{technologyID,jdbcType=INTEGER}
+    LIMIT 1;
   </select>
 
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.TechnologyUsingEntity" >
     INSERT INTO shangshufang_customer.technology_using (
       company_id,
       technology_id,
+      recruit_level,
       create_user,
       update_user
     )
     VALUES (
       #{companyID, jdbcType=INTEGER},
       #{technologyID, jdbcType=INTEGER},
+      #{recruitLevel, jdbcType=VARCHAR},
       #{createUser, jdbcType=VARCHAR},
       #{updateUser, jdbcType=VARCHAR}
     )
