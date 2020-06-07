@@ -34,7 +34,7 @@ public interface AnalysisAbilityService {
                                             int studentID,
                                             int technologyID);
 
-    UnifiedResponse findWeaknessKnowledgeList(int pageNumber,
+    UnifiedResponse findLearningKnowledgeList(int pageNumber,
                                               int pageSize,
                                               int studentUniversityCode,
                                               int studentSchoolID,

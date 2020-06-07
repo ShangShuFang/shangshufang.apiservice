@@ -136,130 +136,189 @@
   <select id="searchDataSource4KnowledgeCount" resultType="java.lang.Integer">
     SELECT COUNT(1) AS knowledge_total_count
     FROM shangshufang_base.technology_knowledge
-    WHERE technology_id = #{technologyID,jdbcType=INTEGER};
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+    LIMIT 1;
   </select>
 
   <select id="searchDataSource4FinishKnowledgeCount" resultType="java.lang.Integer">
     SELECT COUNT(1) AS finish_knowledge_count
-    FROM (
-           SELECT a.student_university_code,
-                  a.student_school_id,
-                  a.student_id,
-                  a.technology_id,
-                  a.knowledge_id,
-                  IF(IFNULL(b.finish_exercises_count, 0) = a.total_exercises_count, 1, 0) AS finish_knowledge_flag
-           FROM (
-                  SELECT student_university_code,
-                         student_school_id,
-                         student_id,
-                         technology_id,
-                         knowledge_id,
-                         COUNT(1) AS total_exercises_count
-                  FROM shangshufang_customer.university_student_exercises
-                  WHERE student_university_code = #{arg0,jdbcType=INTEGER}
-                    AND student_school_id = #{arg1,jdbcType=INTEGER}
-                    AND student_id = #{arg2,jdbcType=INTEGER}
-                    AND technology_id = #{arg3,jdbcType=INTEGER}
-                  GROUP BY student_university_code, student_school_id, student_id, technology_id, knowledge_id
-                ) a
-                  LEFT JOIN
-                (
-                  SELECT student_university_code,
-                         student_school_id,
-                         student_id,
-                         technology_id,
-                         knowledge_id,
-                         COUNT(1) AS finish_exercises_count
-                  FROM shangshufang_customer.university_student_exercises
-                  WHERE student_university_code = #{arg0,jdbcType=INTEGER}
-                    AND student_school_id = #{arg1,jdbcType=INTEGER}
-                    AND student_id = #{arg2,jdbcType=INTEGER}
-                    AND technology_id = #{arg3,jdbcType=INTEGER}
-                    AND data_status = 'S'
-                  GROUP BY student_university_code, student_school_id, student_id, technology_id, knowledge_id
-                ) b
-                ON a.student_university_code = b.student_university_code
-                  AND a.student_school_id = b.student_school_id
-                  AND a.student_id = b.student_id
-                  AND a.technology_id = b.technology_id
-                  AND a.knowledge_id = b.knowledge_id
-         ) c
-    WHERE finish_knowledge_flag = 1;
-  </select>
-
-  <select id="searchFinishKnowledgeList" resultMap="KnowledgeMap">
-    SELECT c.technology_id,
-           c.knowledge_id,
-           d.knowledge_name
-    FROM (
-           SELECT a.technology_id,
-                  a.knowledge_id,
-                  IF(IFNULL(b.finish_exercises_count, 0) = a.total_exercises_count, 1, 0) AS finish_knowledge_flag
-           FROM (
-                  SELECT student_university_code,
-                         student_school_id,
-                         student_id,
-                         technology_id,
-                         knowledge_id,
-                         COUNT(1) AS total_exercises_count
-                  FROM shangshufang_customer.university_student_exercises
-                  WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
-                    AND student_school_id = #{schoolID,jdbcType=INTEGER}
-                    AND student_id = #{studentID,jdbcType=INTEGER}
-                    AND technology_id = #{technologyID,jdbcType=INTEGER}
-                  GROUP BY student_university_code, student_school_id, student_id, technology_id, knowledge_id
-                ) a
-                  LEFT JOIN
-                (
-                  SELECT student_university_code,
-                         student_school_id,
-                         student_id,
-                         technology_id,
-                         knowledge_id,
-                         COUNT(1) AS finish_exercises_count
-                  FROM shangshufang_customer.university_student_exercises
-                  WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
-                    AND student_school_id = #{schoolID,jdbcType=INTEGER}
-                    AND student_id = #{studentID,jdbcType=INTEGER}
-                    AND technology_id = #{technologyID,jdbcType=INTEGER}
-                    AND data_status = 'S'
-                  GROUP BY student_university_code, student_school_id, student_id, technology_id, knowledge_id
-                ) b
-                ON a.student_university_code = b.student_university_code
-                  AND a.student_school_id = b.student_school_id
-                  AND a.student_id = b.student_id
-                  AND a.technology_id = b.technology_id
-                  AND a.knowledge_id = b.knowledge_id
-         ) c
-    INNER JOIN shangshufang_base.technology_knowledge d
-    ON c.technology_id = d.technology_id
-    AND c.knowledge_id = d.knowledge_id
-    WHERE finish_knowledge_flag = 1
-    ORDER BY knowledge_id
-    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
-  </select>
-
-  <select id="searchWeaknessKnowledgeList" resultMap="KnowledgeMap">
-    SELECT a.technology_id,
-           a.knowledge_id,
-           b.knowledge_name
     FROM
       (
-        SELECT technology_id,
-               knowledge_id
+        SELECT DISTINCT technology_id, knowledge_id
         FROM shangshufang_customer.university_student_exercises
         WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
           AND student_school_id = #{schoolID,jdbcType=INTEGER}
           AND student_id = #{studentID,jdbcType=INTEGER}
           AND technology_id = #{technologyID,jdbcType=INTEGER}
-          AND data_status IN ('W', 'R')
-        GROUP BY technology_id, knowledge_id
-        LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+          AND data_status = 'S'
       ) a
-        INNER JOIN shangshufang_base.technology_knowledge b
-         ON a.technology_id = b.technology_id
-           AND a.knowledge_id = b.knowledge_id
-        ORDER BY a.knowledge_id;
+        LEFT JOIN
+      (
+        SELECT DISTINCT technology_id, knowledge_id
+        FROM shangshufang_customer.university_student_exercises
+        WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+          AND student_school_id = #{schoolID,jdbcType=INTEGER}
+          AND student_id = #{studentID,jdbcType=INTEGER}
+          AND technology_id = #{technologyID,jdbcType=INTEGER}
+          AND data_status != 'S'
+      ) b
+      ON a.technology_id = b.technology_id
+        AND a.knowledge_id = b.knowledge_id
+    WHERE b.knowledge_id IS NULL
+    LIMIT 1;
+  </select>
+
+  <select id="searchFinishKnowledgeList" resultMap="KnowledgeMap">
+    SELECT a.technology_id, a.knowledge_id, c.knowledge_name
+    FROM
+      (
+        SELECT DISTINCT technology_id, knowledge_id
+        FROM shangshufang_customer.university_student_exercises
+        WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+          AND student_school_id = #{schoolID,jdbcType=INTEGER}
+          AND student_id = #{studentID,jdbcType=INTEGER}
+          AND technology_id = #{technologyID,jdbcType=INTEGER}
+          AND data_status = 'S'
+      ) a
+      LEFT JOIN
+      (
+        SELECT DISTINCT technology_id, knowledge_id
+        FROM shangshufang_customer.university_student_exercises
+        WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+          AND student_school_id = #{schoolID,jdbcType=INTEGER}
+          AND student_id = #{studentID,jdbcType=INTEGER}
+          AND technology_id = #{technologyID,jdbcType=INTEGER}
+          AND data_status != 'S'
+      ) b
+      ON a.technology_id = b.technology_id
+        AND a.knowledge_id = b.knowledge_id
+      INNER JOIN
+      (
+        SELECT technology_id, knowledge_id, knowledge_name
+        FROM shangshufang_base.technology_knowledge
+        WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+      ) c
+      ON a.technology_id = c.technology_id
+        AND a.knowledge_id = c.knowledge_id
+    WHERE b.knowledge_id IS NULL
+    ORDER BY a.knowledge_id
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+  </select>
+
+  <select id="searchLearningKnowledgeList" resultMap="KnowledgeMap">
+    SELECT u.technology_id, u.knowledge_id, c.knowledge_name
+    FROM
+      (
+        SELECT a.technology_id, a.knowledge_id
+        FROM
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status != 'P'
+          ) a
+          LEFT JOIN
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status = 'P'
+          ) b
+          ON a.technology_id = b.technology_id
+            AND a.knowledge_id = b.knowledge_id
+        WHERE b.knowledge_id IS NOT NULL
+
+        UNION
+
+        SELECT a.technology_id, a.knowledge_id
+        FROM
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status != 'S'
+          ) a
+          LEFT JOIN
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status = 'S'
+          ) b
+          ON a.technology_id = b.technology_id
+            AND a.knowledge_id = b.knowledge_id
+        WHERE b.knowledge_id IS NOT NULL
+
+        UNION
+
+        SELECT a.technology_id, a.knowledge_id
+        FROM
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status = 'W'
+          ) a
+            LEFT JOIN
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status != 'W'
+          ) b
+          ON a.technology_id = b.technology_id
+            AND a.knowledge_id = b.knowledge_id
+        WHERE b.knowledge_id IS NULL
+
+        UNION
+
+        SELECT a.technology_id, a.knowledge_id
+        FROM
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status = 'R'
+          ) a
+            LEFT JOIN
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status != 'R'
+          ) b
+          ON a.technology_id = b.technology_id
+            AND a.knowledge_id = b.knowledge_id
+        WHERE b.knowledge_id IS NULL
+      ) u
+      INNER JOIN shangshufang_base.technology_knowledge c
+        ON u.technology_id = c.technology_id
+        AND u.knowledge_id = c.knowledge_id
+    ORDER BY u.knowledge_id;
   </select>
 
   <select id="searchNoLearningKnowledgeList" resultMap="KnowledgeMap">
@@ -291,8 +350,7 @@
 
         UNION
 
-        SELECT
-          a.technology_id, a.knowledge_id, c.knowledge_name
+        SELECT a.technology_id, a.knowledge_id, c.knowledge_name
         FROM
           (
             SELECT DISTINCT technology_id, knowledge_id
@@ -314,18 +372,15 @@
               AND data_status != 'P'
           ) b
           ON a.technology_id = b.technology_id
-            ANd a.knowledge_id = b.knowledge_id
+            AND a.knowledge_id = b.knowledge_id
             INNER JOIN
           (
-            SELECT technology_id,
-                   knowledge_id,
-                   knowledge_name
+            SELECT technology_id, knowledge_id, knowledge_name
             FROM shangshufang_base.technology_knowledge
             WHERE technology_id = #{technologyID,jdbcType=INTEGER}
-              AND data_status = 'A'
           ) c
           ON a.technology_id = c.technology_id
-            ANd a.knowledge_id = c.knowledge_id
+            AND a.knowledge_id = c.knowledge_id
         WHERE b.knowledge_id IS NULL
       ) u
     ORDER BY u.knowledge_id
@@ -765,12 +820,116 @@
   </select>
 
   <select id="searchLearningKnowledgeTotalCount" resultType="java.lang.Integer">
-    SELECT COUNT(DISTINCT knowledge_id) AS TotalCount
-    FROM shangshufang_customer.university_student_exercises
-    WHERE student_university_code = #{arg0,jdbcType=INTEGER}
-      AND student_school_id = #{arg1,jdbcType=INTEGER}
-      AND student_id = #{arg2,jdbcType=INTEGER}
-      AND technology_id = #{arg3,jdbcType=INTEGER};
+    SELECT COUNT(1) AS total_count
+    FROM
+      (
+        SELECT a.technology_id, a.knowledge_id
+        FROM
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status != 'P'
+          ) a
+            LEFT JOIN
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status = 'P'
+          ) b
+          ON a.technology_id = b.technology_id
+            AND a.knowledge_id = b.knowledge_id
+        WHERE b.knowledge_id IS NOT NULL
+
+        UNION
+
+        SELECT a.technology_id, a.knowledge_id
+        FROM
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status != 'S'
+          ) a
+            LEFT JOIN
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status = 'S'
+          ) b
+          ON a.technology_id = b.technology_id
+            AND a.knowledge_id = b.knowledge_id
+        WHERE b.knowledge_id IS NOT NULL
+
+        UNION
+
+        SELECT a.technology_id, a.knowledge_id
+        FROM
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status = 'W'
+          ) a
+            LEFT JOIN
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status != 'W'
+          ) b
+          ON a.technology_id = b.technology_id
+            AND a.knowledge_id = b.knowledge_id
+        WHERE b.knowledge_id IS NULL
+
+        UNION
+
+        SELECT a.technology_id, a.knowledge_id
+        FROM
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status = 'R'
+          ) a
+            LEFT JOIN
+          (
+            SELECT DISTINCT technology_id, knowledge_id
+            FROM shangshufang_customer.university_student_exercises
+            WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
+              AND student_school_id = #{schoolID,jdbcType=INTEGER}
+              AND student_id = #{studentID,jdbcType=INTEGER}
+              AND technology_id = #{technologyID,jdbcType=INTEGER}
+              AND data_status != 'R'
+          ) b
+          ON a.technology_id = b.technology_id
+            AND a.knowledge_id = b.knowledge_id
+        WHERE b.knowledge_id IS NULL
+      ) u
+    LIMIT 1;
   </select>
 
   <select id="searchExerciseNumberTrend" resultMap="ExerciseNumberTrendMap">

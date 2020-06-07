@@ -10,7 +10,7 @@ public class AbilityAnalysisResult4KnowledgeSummaryVO {
     private int studentID;
     private int technologyID;
     private int knowledgeTotalCount;
-    private int weaknessKnowledgeCount;
+//    private int weaknessKnowledgeCount;
     private int graspKnowledgeCount;
     private int noLearningKnowledgeCount;
     private float learningPercentCount;

@@ -176,14 +176,14 @@ public class AnalysisAbilityController {
      * @param technologyID          技术编号
      * @return 较薄弱掌握的知识点列表
      */
-    @RequestMapping(value = "/list/weakness_knowledge/{pageNumber}/{pageSize}/{studentUniversityCode}/{studentSchoolID}/{studentID}/{technologyID}", method = RequestMethod.GET)
-    public UnifiedResponse findWeaknessKnowledgeList(@PathVariable("pageNumber") int pageNumber,
+    @RequestMapping(value = "/list/learning_knowledge/{pageNumber}/{pageSize}/{studentUniversityCode}/{studentSchoolID}/{studentID}/{technologyID}", method = RequestMethod.GET)
+    public UnifiedResponse findLearningKnowledgeList(@PathVariable("pageNumber") int pageNumber,
                                                      @PathVariable("pageSize") int pageSize,
                                                      @PathVariable("studentUniversityCode") int studentUniversityCode,
                                                      @PathVariable("studentSchoolID") int studentSchoolID,
                                                      @PathVariable("studentID") int studentID,
                                                      @PathVariable("technologyID") int technologyID) {
-        return serviceImpl.findWeaknessKnowledgeList(pageNumber, pageSize, studentUniversityCode, studentSchoolID, studentID, technologyID);
+        return serviceImpl.findLearningKnowledgeList(pageNumber, pageSize, studentUniversityCode, studentSchoolID, studentID, technologyID);
     }
 
     /**

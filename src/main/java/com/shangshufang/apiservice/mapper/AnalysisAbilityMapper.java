@@ -31,13 +31,16 @@ public interface AnalysisAbilityMapper {
     /**
      * 取得当前学生指定技术已掌握的知识点数量
      *
-     * @param studentUniversityCode 学生所在高校编码
-     * @param studentSchoolID       学生所在二级学院编号
+     * @param universityCode        学生所在高校编码
+     * @param schoolID              学生所在二级学院编号
      * @param studentID             学生编号
      * @param technologyID          技术编号
      * @return 当前学生指定技术已掌握的知识点数量
      */
-    int searchDataSource4FinishKnowledgeCount(int studentUniversityCode, int studentSchoolID, int studentID, int technologyID);
+    int searchDataSource4FinishKnowledgeCount(@Param("universityCode") int universityCode,
+                                              @Param("schoolID") int schoolID,
+                                              @Param("studentID") int studentID,
+                                              @Param("technologyID")int technologyID);
 
     /**
      * 取得当前学生指定技术已完成的习题数量
@@ -227,7 +230,10 @@ public interface AnalysisAbilityMapper {
      * @param technologyID   技术编号
      * @return 学生已学习的知识点总数
      */
-    int searchLearningKnowledgeTotalCount(int universityCode, int schoolID, int studentID, int technologyID);
+    int searchLearningKnowledgeTotalCount(@Param("universityCode") int universityCode,
+                                          @Param("schoolID") int schoolID,
+                                          @Param("studentID") int studentID,
+                                          @Param("technologyID")int technologyID);
 
     /**
      * 取得学生练习题完成数量趋势
@@ -289,7 +295,7 @@ public interface AnalysisAbilityMapper {
      * @param technologyID 技术编号
      * @return 较薄弱的知识点列表
      */
-    List<TechnologyKnowledgeEntity> searchWeaknessKnowledgeList (@Param("startIndex") int startIndex,
+    List<TechnologyKnowledgeEntity> searchLearningKnowledgeList (@Param("startIndex") int startIndex,
                                                                  @Param("pageSize") int pageSize,
                                                                  @Param("universityCode") int universityCode,
                                                                  @Param("schoolID") int schoolID,

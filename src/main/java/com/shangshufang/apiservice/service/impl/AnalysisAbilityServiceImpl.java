@@ -240,13 +240,13 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
             int learningKnowledgeCount = myMapper.searchLearningKnowledgeTotalCount(universityCode, schoolID, studentID, technologyID);
 
             //Step4: 取得当前学生未学习的知识点总数
-            int noLearningKnowledgeCount = knowledgeTotalCount - learningKnowledgeCount;
+            int noLearningKnowledgeCount = knowledgeTotalCount - finishKnowledgeCount - learningKnowledgeCount;
 
             //Step5: 取得当前学生掌握薄弱的知识点总数
-            int weaknessKnowledgeCount = learningKnowledgeCount - finishKnowledgeCount;
+            //int weaknessKnowledgeCount = learningKnowledgeCount - finishKnowledgeCount;
 
             //Step5: 取得当前学生学习完成度
-            DecimalFormat df = new DecimalFormat("0.00");
+                DecimalFormat df = new DecimalFormat("0.00");
             float finishKnowledgePercent = Float.parseFloat(df.format((float) finishKnowledgeCount / knowledgeTotalCount)) * 100;
 
             model.setUniversityCode(universityCode);
@@ -255,9 +255,9 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
             model.setTechnologyID(technologyID);
             model.setKnowledgeTotalCount(knowledgeTotalCount);
             model.setGraspKnowledgeCount(finishKnowledgeCount);
-            model.setWeaknessKnowledgeCount(weaknessKnowledgeCount);
+            model.setLearningPercentCount(learningKnowledgeCount);
             model.setNoLearningKnowledgeCount(noLearningKnowledgeCount);
-            model.setLearningPercentCount(finishKnowledgePercent);
+//            model.setWeaknessKnowledgeCount(weaknessKnowledgeCount);
             return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.ONE_SEARCH_COUNT, model);
         } catch (Exception ex) {
             logger.error(ex.toString());
@@ -352,7 +352,7 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
     }
 
     @Override
-    public UnifiedResponse findWeaknessKnowledgeList(int pageNumber,
+    public UnifiedResponse findLearningKnowledgeList(int pageNumber,
                                                      int pageSize,
                                                      int studentUniversityCode,
                                                      int studentSchoolID,
@@ -361,7 +361,7 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<TechnologyKnowledgeVO> modelList = new ArrayList<>();
-            List<TechnologyKnowledgeEntity> entityList = myMapper.searchWeaknessKnowledgeList(startIndex, pageSize, studentUniversityCode, studentSchoolID, studentID, technologyID);
+            List<TechnologyKnowledgeEntity> entityList = myMapper.searchLearningKnowledgeList(startIndex, pageSize, studentUniversityCode, studentSchoolID, studentID, technologyID);
             if (entityList.isEmpty()) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
