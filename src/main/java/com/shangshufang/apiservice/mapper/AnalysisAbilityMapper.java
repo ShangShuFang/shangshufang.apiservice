@@ -262,5 +262,55 @@ public interface AnalysisAbilityMapper {
      */
     List<AbilityAnalysisResult4StudentMainInfoEntity> searchTopStudentSummary(int technologyID, String lowestRecruitLevel, int topNum);
 
+    /**
+     * 取得学生已经掌握的知识点列表
+     * @param startIndex 高校编码
+     * @param pageSize 高校编码
+     * @param universityCode 高校编码
+     * @param schoolID 二级学院编号
+     * @param studentID 学生编号
+     * @param technologyID 技术编号
+     * @return 已掌握的知识点列表
+     */
+    List<TechnologyKnowledgeEntity> searchFinishKnowledgeList (@Param("startIndex") int startIndex,
+                                                               @Param("pageSize") int pageSize,
+                                                               @Param("universityCode") int universityCode,
+                                                               @Param("schoolID") int schoolID,
+                                                               @Param("studentID") int studentID,
+                                                               @Param("technologyID") int technologyID);
+
+    /**
+     * 取得学生较薄弱的知识点列表
+     * @param startIndex 高校编码
+     * @param pageSize 高校编码
+     * @param universityCode 高校编码
+     * @param schoolID 二级学院编号
+     * @param studentID 学生编号
+     * @param technologyID 技术编号
+     * @return 较薄弱的知识点列表
+     */
+    List<TechnologyKnowledgeEntity> searchWeaknessKnowledgeList (@Param("startIndex") int startIndex,
+                                                                 @Param("pageSize") int pageSize,
+                                                                 @Param("universityCode") int universityCode,
+                                                                 @Param("schoolID") int schoolID,
+                                                                 @Param("studentID") int studentID,
+                                                                 @Param("technologyID") int technologyID);
+
+    /**
+     * 取得学生未掌握的知识点列表
+     * @param startIndex 高校编码
+     * @param pageSize 高校编码
+     * @param universityCode 高校编码
+     * @param schoolID 二级学院编号
+     * @param studentID 学生编号
+     * @param technologyID 技术编号
+     * @return 未掌握的知识点列表
+     */
+    List<TechnologyKnowledgeEntity> searchNoLearningKnowledgeList (@Param("startIndex") int startIndex,
+                                                                   @Param("pageSize") int pageSize,
+                                                                   @Param("universityCode") int universityCode,
+                                                                   @Param("schoolID") int schoolID,
+                                                                   @Param("studentID") int studentID,
+                                                                   @Param("technologyID") int technologyID);
 
 }

@@ -33,13 +33,24 @@ public class UniversityStudentExercisesController {
         return serviceImpl.findList4Student(pageNumber, pageSize, studentID, courseID, dataStatus, studentName, isSelf);
     }
 
-    @RequestMapping(value="/assign", method = RequestMethod.POST)
-    public UnifiedResponse assign(@RequestBody UniversityStudentExercisesDTO dto){
+    @RequestMapping(value = "/list/student/technology/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{studentID}/{technologyID}/{dataStatus}", method = RequestMethod.GET)
+    public UnifiedResponse findList4Technology(@PathVariable("pageNumber") int pageNumber,
+                                               @PathVariable("pageSize") int pageSize,
+                                               @PathVariable("universityCode") int universityCode,
+                                               @PathVariable("schoolID") int schoolID,
+                                               @PathVariable("studentID") int studentID,
+                                               @PathVariable("technologyID") int technologyID,
+                                               @PathVariable("dataStatus") String dataStatus) {
+        return serviceImpl.findList4Technology(pageNumber, pageSize, universityCode, schoolID, studentID, technologyID, dataStatus);
+    }
+
+    @RequestMapping(value = "/assign", method = RequestMethod.POST)
+    public UnifiedResponse assign(@RequestBody UniversityStudentExercisesDTO dto) {
         return serviceImpl.assign(dto);
     }
 
     @RequestMapping(value = "/change", method = RequestMethod.PUT)
-    public UnifiedResponse change(@RequestBody UniversityStudentExercisesDTO dto){
+    public UnifiedResponse change(@RequestBody UniversityStudentExercisesDTO dto) {
         return serviceImpl.change(dto);
     }
 }

@@ -27,5 +27,26 @@ public interface AnalysisAbilityService {
 
     UnifiedResponse findExercisePercentResultList(int studentUniversityCode, int studentSchoolID, int studentID, int technologyID);
 
+    UnifiedResponse findFinishKnowledgeList(int pageNumber,
+                                            int pageSize,
+                                            int studentUniversityCode,
+                                            int studentSchoolID,
+                                            int studentID,
+                                            int technologyID);
+
+    UnifiedResponse findWeaknessKnowledgeList(int pageNumber,
+                                              int pageSize,
+                                              int studentUniversityCode,
+                                              int studentSchoolID,
+                                              int studentID,
+                                              int technologyID);
+
+    UnifiedResponse findNoLearningKnowledgeList(int pageNumber,
+                                                int pageSize,
+                                                int studentUniversityCode,
+                                                int studentSchoolID,
+                                                int studentID,
+                                                int technologyID);
+
 
 }

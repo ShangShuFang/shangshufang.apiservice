@@ -25,4 +25,18 @@ public interface UniversityStudentExercisesMapper extends BaseMapper<UniversityS
                                                               @Param("dataStatus") String dataStatus,
                                                               @Param("studentName") String studentName,
                                                               @Param("isSelf") boolean isSelf);
+
+    int searchTotalCount4Technology(@Param("universityCode") int universityCode,
+                                    @Param("schoolID") int schoolID,
+                                    @Param("studentID") int studentID,
+                                    @Param("technologyID") int technologyID,
+                                    @Param("dataStatus") String dataStatus);
+
+    List<UniversityStudentExercisesEntity> searchList4Technology(@Param("startIndex") int startIndex,
+                                                                 @Param("pageSize") int pageSize,
+                                                                 @Param("universityCode") int universityCode,
+                                                                 @Param("schoolID") int schoolID,
+                                                                 @Param("studentID") int studentID,
+                                                                 @Param("technologyID") int technologyID,
+                                                                 @Param("dataStatus") String dataStatus);
 }

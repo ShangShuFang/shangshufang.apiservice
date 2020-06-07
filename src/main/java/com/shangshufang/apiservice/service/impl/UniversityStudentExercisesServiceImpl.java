@@ -81,6 +81,29 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
     }
 
     @Override
+    public UnifiedResponse findList4Technology(int pageNumber, int pageSize, int universityCode, int schoolID, int studentID, int technologyID, String dataStatus) {
+        try {
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<UniversityStudentExercisesVO> modelList = new ArrayList<>();
+            dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
+            int totalCount = universityStudentExercisesMapper.searchTotalCount4Technology(universityCode, schoolID, studentID, technologyID, dataStatus);
+            if(totalCount == 0) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            List<UniversityStudentExercisesEntity> entityList =  universityStudentExercisesMapper.searchList4Technology(startIndex, pageSize, universityCode, schoolID, studentID, technologyID, dataStatus);
+            for (UniversityStudentExercisesEntity entity : entityList) {
+                UniversityStudentExercisesVO model = new UniversityStudentExercisesVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse assign(UniversityStudentExercisesDTO dto) {
         try{
             int affectRow = 0;

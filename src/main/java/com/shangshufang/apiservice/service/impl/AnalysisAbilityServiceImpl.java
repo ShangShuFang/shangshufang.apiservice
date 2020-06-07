@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.rmi.server.ExportException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -314,6 +315,84 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
             }
             for (AbilityAnalysisResult4ExercisePercentTrendEntity entity : entityList) {
                 AbilityAnalysisResult4ExercisePercentTrendVO model = new AbilityAnalysisResult4ExercisePercentTrendVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse findFinishKnowledgeList(int pageNumber,
+                                                   int pageSize,
+                                                   int studentUniversityCode,
+                                                   int studentSchoolID,
+                                                   int studentID,
+                                                   int technologyID) {
+        try {
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<TechnologyKnowledgeVO> modelList = new ArrayList<>();
+            List<TechnologyKnowledgeEntity> entityList = myMapper.searchFinishKnowledgeList(startIndex, pageSize, studentUniversityCode, studentSchoolID, studentID, technologyID);
+            if (entityList.isEmpty()) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            for (TechnologyKnowledgeEntity entity : entityList) {
+                TechnologyKnowledgeVO model = new TechnologyKnowledgeVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse findWeaknessKnowledgeList(int pageNumber,
+                                                     int pageSize,
+                                                     int studentUniversityCode,
+                                                     int studentSchoolID,
+                                                     int studentID,
+                                                     int technologyID) {
+        try {
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<TechnologyKnowledgeVO> modelList = new ArrayList<>();
+            List<TechnologyKnowledgeEntity> entityList = myMapper.searchWeaknessKnowledgeList(startIndex, pageSize, studentUniversityCode, studentSchoolID, studentID, technologyID);
+            if (entityList.isEmpty()) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            for (TechnologyKnowledgeEntity entity : entityList) {
+                TechnologyKnowledgeVO model = new TechnologyKnowledgeVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse findNoLearningKnowledgeList(int pageNumber,
+                                                       int pageSize,
+                                                       int studentUniversityCode,
+                                                       int studentSchoolID,
+                                                       int studentID,
+                                                       int technologyID) {
+        try {
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<TechnologyKnowledgeVO> modelList = new ArrayList<>();
+            List<TechnologyKnowledgeEntity> entityList = myMapper.searchNoLearningKnowledgeList(startIndex, pageSize, studentUniversityCode, studentSchoolID, studentID, technologyID);
+            if (entityList.isEmpty()) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            for (TechnologyKnowledgeEntity entity : entityList) {
+                TechnologyKnowledgeVO model = new TechnologyKnowledgeVO();
                 ObjectConvertUtils.toBean(entity, model);
                 modelList.add(model);
             }

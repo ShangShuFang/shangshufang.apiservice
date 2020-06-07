@@ -211,7 +211,6 @@
     ORDER BY A.course_class, A.student_id, A.knowledge_id, A.exercises_document_id, A.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
-
   <select id="searchTotalCount4Student" resultType="java.lang.Integer">
     SELECT COUNT(1) AS total_count
     FROM shangshufang_customer.university_student_exercises a
@@ -231,7 +230,6 @@
       AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
     </if>;
   </select>
-
   <select id="searchList4Student" resultMap="BaseResultMap">
     SELECT
     A.student_exercises_id,
@@ -372,6 +370,152 @@
     LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
 
+  <select id="searchTotalCount4Technology" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.university_student_exercises a
+    INNER JOIN shangshufang_customer.university_student b
+    ON a.student_id = b.student_id
+    WHERE a.technology_id = #{technologyID,jdbcType=INTEGER}
+    AND a.student_university_code = #{universityCode,jdbcType=INTEGER}
+    AND a.student_school_id = #{schoolID,jdbcType=INTEGER}
+    AND a.student_id = #{studentID,jdbcType=INTEGER}
+    <if test="dataStatus != null">
+      AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
+    </if>;
+  </select>
+
+  <select id="searchList4Technology" resultMap="BaseResultMap">
+    SELECT
+      A.student_exercises_id,
+      A.student_university_code,
+      B.university_name AS student_university_name,
+      A.student_school_id,
+      C.school_name AS student_school_name,
+      A.student_id,
+      F.full_name AS student_name,
+      F.photo AS student_photo,
+      F.cellphone,
+      F.enrollment_year,
+      N.ability_level,
+      N.position_site,
+      A.course_university_code,
+      D.university_name AS course_university_name,
+      A.course_school_id,
+      E.school_name AS course_school_name,
+      A.course_id,
+      G.course_name,
+      A.course_class,
+      A.technology_id,
+      I.technology_name,
+      A.learning_phase_id,
+      J.learning_phase_name,
+      A.knowledge_id,
+      K.knowledge_name,
+      A.exercises_document_id,
+      H.document_url AS exercises_document_url,
+      H.answer_url AS exercises_answer_url,
+      A.source_code_git_url,
+      A.data_status,
+      CASE WHEN A.data_status = 'P' THEN '未练习'
+      WHEN A.data_status = 'W' THEN '待批改'
+      WHEN A.data_status = 'R' THEN '待修改'
+      WHEN A.data_status = 'S' THEN '已通过'
+      ELSE '未知数据状态'
+      END AS data_status_text,
+      M.reviewer_id,
+      M.reviewer_name_teacher,
+      M.reviewer_name_student,
+      M.reviewer_type,
+      DATE_FORMAT(M.update_time, '%Y-%m-%d %H:%i:%s') AS review_time,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.university_student_exercises A
+    INNER JOIN shangshufang_customer.university B
+    ON A.student_university_code = B.university_code
+    INNER JOIN shangshufang_customer.school C
+    ON A.student_university_code = C.university_code
+    AND A.student_school_id = C.school_id
+    INNER JOIN shangshufang_customer.university D
+    ON A.course_university_code = D.university_code
+    INNER JOIN shangshufang_customer.school E
+    ON A.course_university_code = E.university_code
+    AND A.course_school_id = E.school_id
+    INNER JOIN shangshufang_customer.university_student F
+    ON A.student_id = F.student_id
+    INNER JOIN shangshufang_customer.course G
+    ON A.course_university_code = G.university_code
+    AND A.course_school_id = G.school_id
+    AND A.course_id = G.course_id
+    INNER JOIN shangshufang_base.technology_knowledge_exercises H
+    ON A.technology_id = H.technology_id
+    AND A.knowledge_id = H.knowledge_id
+    AND A.exercises_document_id = H.exercises_id
+    INNER JOIN shangshufang_base.technology I
+    ON A.technology_id = I.technology_id
+    INNER JOIN shangshufang_base.learning_phase J
+    ON A.learning_phase_id = J.learning_phase_id
+    INNER JOIN shangshufang_base.technology_knowledge K
+    ON A.technology_id = K.technology_id
+    AND A.learning_phase_id = K.learning_phase_id
+    AND A.knowledge_id = K.knowledge_id
+    AND K.data_status = 'A'
+    LEFT JOIN
+    (
+    SELECT
+    C.student_exercises_id,
+    C.reviewer_id,
+    C.reviewer_type,
+    D.full_name AS reviewer_name_teacher,
+    E.full_name AS reviewer_name_student,
+    C.update_time
+    FROM
+    (
+    SELECT
+    A.review_id,
+    A.student_exercises_id,
+    A.update_time,
+    B.reviewer_id,
+    B.reviewer_university_code,
+    B.reviewer_school_id,
+    B.reviewer_type
+    FROM
+    (
+    SELECT
+    student_exercises_id,
+    MAX(review_id) AS review_id,
+    MAX(update_time) AS update_time
+    FROM shangshufang_customer.university_student_exercises_review
+    GROUP BY student_exercises_id
+    ) A
+    INNER JOIN shangshufang_customer.university_student_exercises_review B
+    ON A.review_id = B.review_id
+    AND A.student_exercises_id = B.student_exercises_id
+    ) C
+    LEFT JOIN shangshufang_customer.university_customer D
+    ON C.reviewer_university_code = D.university_code
+    AND C.reviewer_school_id = D.school_id
+    AND C.reviewer_id = D.customer_id
+    AND C.reviewer_type = 'T'
+    LEFT JOIN shangshufang_customer.university_student E
+    ON C.reviewer_university_code = E.university_code
+    AND C.reviewer_school_id = E.school_id
+    AND C.reviewer_id = E.student_id
+    AND C.reviewer_type = 'S'
+    ) M
+    ON A.student_exercises_id = M.student_exercises_id
+    INNER JOIN shangshufang_customer.university_student_ability_analysis N
+    ON A.student_id = N.student_id
+    WHERE a.technology_id = #{technologyID,jdbcType=INTEGER}
+    AND a.student_university_code = #{universityCode,jdbcType=INTEGER}
+    AND a.student_school_id = #{schoolID,jdbcType=INTEGER}
+    AND a.student_id = #{studentID,jdbcType=INTEGER}
+    <if test="dataStatus != null">
+      AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
+    </if>
+
+    ORDER BY A.course_class, A.knowledge_id, A.exercises_document_id, A.update_time DESC
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+  </select>
 
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.UniversityStudentExercisesEntity">
     INSERT INTO shangshufang_customer.university_student_exercises (

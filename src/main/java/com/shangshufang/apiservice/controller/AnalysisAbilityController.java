@@ -148,4 +148,60 @@ public class AnalysisAbilityController {
         return serviceImpl.findExercisePercentResultList(studentUniversityCode, studentSchoolID, studentID, technologyID);
     }
 
+    /**
+     * 取得学生已经掌握的知识点列表
+     *
+     * @param studentUniversityCode 学生所在高校编码
+     * @param studentSchoolID       学生所在二级学院编号
+     * @param studentID             学生编号
+     * @param technologyID          技术编号
+     * @return 已经掌握的知识点列表
+     */
+    @RequestMapping(value = "/list/finish_knowledge/{pageNumber}/{pageSize}/{studentUniversityCode}/{studentSchoolID}/{studentID}/{technologyID}", method = RequestMethod.GET)
+    public UnifiedResponse findFinishKnowledgeList(@PathVariable("pageNumber") int pageNumber,
+                                                   @PathVariable("pageSize") int pageSize,
+                                                   @PathVariable("studentUniversityCode") int studentUniversityCode,
+                                                   @PathVariable("studentSchoolID") int studentSchoolID,
+                                                   @PathVariable("studentID") int studentID,
+                                                   @PathVariable("technologyID") int technologyID) {
+        return serviceImpl.findFinishKnowledgeList(pageNumber, pageSize, studentUniversityCode, studentSchoolID, studentID, technologyID);
+    }
+
+    /**
+     * 取得学生较薄弱的知识点列表
+     *
+     * @param studentUniversityCode 学生所在高校编码
+     * @param studentSchoolID       学生所在二级学院编号
+     * @param studentID             学生编号
+     * @param technologyID          技术编号
+     * @return 较薄弱掌握的知识点列表
+     */
+    @RequestMapping(value = "/list/weakness_knowledge/{pageNumber}/{pageSize}/{studentUniversityCode}/{studentSchoolID}/{studentID}/{technologyID}", method = RequestMethod.GET)
+    public UnifiedResponse findWeaknessKnowledgeList(@PathVariable("pageNumber") int pageNumber,
+                                                     @PathVariable("pageSize") int pageSize,
+                                                     @PathVariable("studentUniversityCode") int studentUniversityCode,
+                                                     @PathVariable("studentSchoolID") int studentSchoolID,
+                                                     @PathVariable("studentID") int studentID,
+                                                     @PathVariable("technologyID") int technologyID) {
+        return serviceImpl.findWeaknessKnowledgeList(pageNumber, pageSize, studentUniversityCode, studentSchoolID, studentID, technologyID);
+    }
+
+    /**
+     * 取得学生较薄弱的知识点列表
+     *
+     * @param studentUniversityCode 学生所在高校编码
+     * @param studentSchoolID       学生所在二级学院编号
+     * @param studentID             学生编号
+     * @param technologyID          技术编号
+     * @return 较薄弱掌握的知识点列表
+     */
+    @RequestMapping(value = "/list/noLearning_knowledge/{pageNumber}/{pageSize}/{studentUniversityCode}/{studentSchoolID}/{studentID}/{technologyID}", method = RequestMethod.GET)
+    public UnifiedResponse findNoLearningKnowledgeList(@PathVariable("pageNumber") int pageNumber,
+                                                       @PathVariable("pageSize") int pageSize,
+                                                       @PathVariable("studentUniversityCode") int studentUniversityCode,
+                                                       @PathVariable("studentSchoolID") int studentSchoolID,
+                                                       @PathVariable("studentID") int studentID,
+                                                       @PathVariable("technologyID") int technologyID) {
+        return serviceImpl.findNoLearningKnowledgeList(pageNumber, pageSize, studentUniversityCode, studentSchoolID, studentID, technologyID);
+    }
 }
