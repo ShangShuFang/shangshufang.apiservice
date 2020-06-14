@@ -204,4 +204,23 @@ public class AnalysisAbilityController {
                                                        @PathVariable("technologyID") int technologyID) {
         return serviceImpl.findNoLearningKnowledgeList(pageNumber, pageSize, studentUniversityCode, studentSchoolID, studentID, technologyID);
     }
+
+    /**
+     * 取得学生较薄弱的知识点列表
+     *
+     * @param universityCode        学生所在高校编码
+     * @param schoolID              学生所在二级学院编号
+     * @param studentID             学生编号
+     * @param technologyID          技术编号
+     * @return 较薄弱掌握的知识点列表
+     */
+    @RequestMapping(value = "/list/weak_knowledge/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{studentID}/{technologyID}", method = RequestMethod.GET)
+    public UnifiedResponse findWeakKnowledgeList(@PathVariable("pageNumber") int pageNumber,
+                                                 @PathVariable("pageSize") int pageSize,
+                                                 @PathVariable("universityCode") int universityCode,
+                                                 @PathVariable("schoolID") int schoolID,
+                                                 @PathVariable("studentID") int studentID,
+                                                 @PathVariable("technologyID") int technologyID) {
+        return serviceImpl.findWeakKnowledgeList(pageNumber, pageSize, universityCode, schoolID, studentID, technologyID);
+    }
 }

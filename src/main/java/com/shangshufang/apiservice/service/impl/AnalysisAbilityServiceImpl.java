@@ -403,6 +403,36 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
         }
     }
 
+    @Override
+    public UnifiedResponse findWeakKnowledgeList(int pageNumber,
+                                                 int pageSize,
+                                                 int universityCode,
+                                                 int schoolID,
+                                                 int studentID,
+                                                 int technologyID) {
+        try {
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<WeakKnowledgeVO> modelList = new ArrayList<>();
+            int totalCount = myMapper.searchWeakKnowledgeTotalCount(universityCode, schoolID, studentID, technologyID);
+            if (totalCount == 0) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            List<WeakKnowledgeEntity> entityList = myMapper.searchWeakKnowledgeList(startIndex, pageSize, universityCode, schoolID, studentID, technologyID);
+            if (entityList.isEmpty()) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            for (WeakKnowledgeEntity entity : entityList) {
+                WeakKnowledgeVO model = new WeakKnowledgeVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
     private String getTechnologyLevel(float finishKnowledgeRate, int finishUnionExercisesCount, int joinProjectCount) {
         if (finishKnowledgeRate < 50) {
             return "L1";

@@ -102,6 +102,14 @@
     <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR" />
   </resultMap>
 
+  <resultMap id="WeakKnowledgeMap" type="com.shangshufang.apiservice.entity.WeakKnowledgeEntity" >
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
+    <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER" />
+    <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR" />
+    <result column="review_count" property="reviewCount" jdbcType="VARCHAR" />
+  </resultMap>
+
   <!-- region 学生能力批量分析 -->
   <select id="searchDataSource4Base" resultMap="StudentMainResultMap">
     SELECT a.student_university_code,
@@ -385,6 +393,58 @@
       ) u
     ORDER BY u.knowledge_id
     LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+  </select>
+
+  <select id="searchWeakKnowledgeTotalCount" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM
+    (
+      SELECT a.technology_id, a.knowledge_id, COUNT(1) AS review_count
+      FROM shangshufang_customer.university_student_exercises a
+             INNER JOIN shangshufang_customer.university_student_exercises_review b
+                        ON a.student_exercises_id = b.student_exercises_id
+      WHERE a.student_university_code = #{universityCode,jdbcType=INTEGER}
+        AND a.student_school_id = #{schoolID,jdbcType=INTEGER}
+        AND a.student_id = #{studentID,jdbcType=INTEGER}
+        AND a.technology_id = #{technologyID,jdbcType=INTEGER}
+        AND (a.data_status = 'W' OR a.data_status = 'R')
+      GROUP BY a.technology_id, a.knowledge_id
+      HAVING review_count >= 3
+    ) a
+  </select>
+
+  <select id="searchWeakKnowledgeList" resultMap="WeakKnowledgeMap">
+    SELECT a.technology_id,
+           c.technology_name,
+           a.knowledge_id,
+           b.knowledge_name,
+           a.review_count
+    FROM
+      (
+        SELECT a.technology_id, a.knowledge_id, COUNT(1) AS review_count
+        FROM shangshufang_customer.university_student_exercises a
+               INNER JOIN shangshufang_customer.university_student_exercises_review b
+                          ON a.student_exercises_id = b.student_exercises_id
+        WHERE a.student_university_code = #{universityCode,jdbcType=INTEGER}
+          AND a.student_school_id = #{schoolID,jdbcType=INTEGER}
+          AND a.student_id = #{studentID,jdbcType=INTEGER}
+          AND a.technology_id = #{technologyID,jdbcType=INTEGER}
+          AND (a.data_status = 'W' OR a.data_status = 'R')
+        GROUP BY a.technology_id, a.knowledge_id
+        HAVING review_count >= 3
+      ) a
+        INNER JOIN
+      (
+        SELECT technology_id, knowledge_id, knowledge_name
+        FROM shangshufang_base.technology_knowledge
+        WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+      ) b
+      ON a.technology_id = b.technology_id
+        AND a.knowledge_id = b.knowledge_id
+        INNER JOIN shangshufang_base.technology c
+         ON a.technology_id = c.technology_id
+      ORDER BY a.knowledge_id
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};;
   </select>
 
 

@@ -304,8 +304,8 @@ public interface AnalysisAbilityMapper {
 
     /**
      * 取得学生未掌握的知识点列表
-     * @param startIndex 高校编码
-     * @param pageSize 高校编码
+     * @param startIndex 其实位置
+     * @param pageSize 每页数量
      * @param universityCode 高校编码
      * @param schoolID 二级学院编号
      * @param studentID 学生编号
@@ -318,5 +318,35 @@ public interface AnalysisAbilityMapper {
                                                                    @Param("schoolID") int schoolID,
                                                                    @Param("studentID") int studentID,
                                                                    @Param("technologyID") int technologyID);
+
+    /**
+     * 取得学生掌握薄弱的知识点列表
+     * @param universityCode 高校编码
+     * @param schoolID 二级学院编号
+     * @param studentID 学生编号
+     * @param technologyID 技术编号
+     * @return 掌握薄弱的知识点列表
+     */
+    int searchWeakKnowledgeTotalCount (@Param("universityCode") int universityCode,
+                                       @Param("schoolID") int schoolID,
+                                       @Param("studentID") int studentID,
+                                       @Param("technologyID") int technologyID);
+
+    /**
+     * 取得学生掌握薄弱的知识点列表
+     * @param startIndex 其实位置
+     * @param pageSize 每页数量
+     * @param universityCode 高校编码
+     * @param schoolID 二级学院编号
+     * @param studentID 学生编号
+     * @param technologyID 技术编号
+     * @return 掌握薄弱的知识点列表
+     */
+    List<WeakKnowledgeEntity> searchWeakKnowledgeList (@Param("startIndex") int startIndex,
+                                                       @Param("pageSize") int pageSize,
+                                                       @Param("universityCode") int universityCode,
+                                                       @Param("schoolID") int schoolID,
+                                                       @Param("studentID") int studentID,
+                                                       @Param("technologyID") int technologyID);
 
 }
