@@ -7,7 +7,6 @@
     <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
     <result column="learning_phase_id" property="learningPhaseID" jdbcType="INTEGER" />
     <result column="learning_phase_name" property="learningPhaseName" jdbcType="VARCHAR" />
-    <result column="knowledge_count" property="knowledgeCount" jdbcType="INTEGER" />
     <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER" />
     <result column="knowledge_name" property="knowledgeName" jdbcType="INTEGER" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />

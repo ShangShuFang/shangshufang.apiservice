@@ -18,13 +18,18 @@ public class LearningPhaseController {
     @Autowired
     private LearningPathServiceImpl learningPathService;
 
-    @RequestMapping(value="/list", method = RequestMethod.GET)
-    public UnifiedResponse findList(){
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public UnifiedResponse findList() {
         return serviceImpl.findList();
     }
 
+    @RequestMapping(value = "/list/learningPhase", method = RequestMethod.GET)
+    public UnifiedResponse findAllLearningPhase() {
+        return learningPathService.findAllLearningPhase();
+    }
+
     @RequestMapping(value = "/list/has_knowledge/{technologyID}", method = RequestMethod.GET)
-    public UnifiedResponse findLearningPhase(@PathVariable("technologyID") int technologyID){
+    public UnifiedResponse findLearningPhase(@PathVariable("technologyID") int technologyID) {
         return learningPathService.findLearningPhase(technologyID);
     }
 }

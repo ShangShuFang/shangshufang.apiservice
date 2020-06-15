@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.GrowingMapMapper">
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.GrowingMapEntity">
+    <id column="growing_id" property="growingID" jdbcType="INTEGER"/>
+    <result column="growing_target" property="growingTarget" jdbcType="INTEGER"/>
+    <result column="target_memo" property="targetMemo" jdbcType="VARCHAR"/>
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR"/>
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR"/>
+    <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS total_count
+    FROM shangshufang_base.growing_map;
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT a.growing_id,
+    a.growing_target,
+    a.target_memo,
+    a.data_status,
+     CASE WHEN a.data_status = 'P' THEN '未激活'
+          WHEN a.data_status = 'A' THEN '正常'
+          ELSE '未知数据状态'
+       END AS data_status_text,
+    DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+    d.admin_name AS update_user,
+    DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_base.growing_map a
+    INNER JOIN shangshufang_base.system_admin d
+    ON a.create_user = d.admin_id
+    INNER JOIN shangshufang_base.system_admin e
+    ON a.update_user = e.admin_id
+    ORDER BY a.update_time DESC
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+  </select>
+
+  <select id="search" resultMap="BaseResultMap">
+    SELECT a.growing_id,
+           a.growing_target,
+           a.target_memo,
+           a.data_status,
+           CASE WHEN a.data_status = 'P' THEN '未激活'
+                WHEN a.data_status = 'A' THEN '正常'
+                ELSE '未知数据状态'
+             END AS data_status_text,
+           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+           d.admin_name AS update_user,
+           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_base.growing_map a
+           INNER JOIN shangshufang_base.system_admin d
+                      ON a.create_user = d.admin_id
+           INNER JOIN shangshufang_base.system_admin e
+                      ON a.update_user = e.admin_id
+    WHERE growing_id = #{growingID,jdbcType=INTEGER};
+  </select>
+
+  <select id="checkNameExist" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_base.growing_map
+    WHERE growing_target = #{growingTarget,jdbcType=VARCHAR};
+  </select>
+
+  <insert id="insert" useGeneratedKeys="true" keyProperty="growingID" parameterType="com.shangshufang.apiservice.entity.GrowingMapEntity">
+    INSERT INTO shangshufang_base.growing_map
+        (
+         growing_target,
+         target_memo,
+         create_user,
+         update_user
+         )
+    VALUES
+         (
+          #{growingTarget, jdbcType=VARCHAR},
+          #{targetMemo, jdbcType=VARCHAR},
+          #{createUser, jdbcType=VARCHAR},
+          #{updateUser, jdbcType=VARCHAR}
+          )
+  </insert>
+
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.GrowingMapEntity">
+    UPDATE shangshufang_base.growing_map
+    SET growing_target  = #{growingTarget,jdbcType=VARCHAR},
+        target_memo  = #{targetMemo,jdbcType=VARCHAR},
+        update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE growing_id = #{growingID,jdbcType=INTEGER};
+  </update>
+
+  <delete id="delete" parameterType="java.lang.Integer">
+    DELETE
+    FROM shangshufang_base.growing_map
+    WHERE growing_id = #{growingID,jdbcType=INTEGER};
+  </delete>
+</mapper>

@@ -7,6 +7,7 @@ import com.shangshufang.apiservice.manager.UnifiedResponseManager;
 import com.shangshufang.apiservice.mapper.LearningPathMapper;
 import com.shangshufang.apiservice.service.LearningPathService;
 import com.shangshufang.apiservice.vo.LearningPathVO;
+import com.shangshufang.apiservice.vo.TechnologyLearningPathVO;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,6 +36,39 @@ public class LearningPathServiceImpl implements LearningPathService {
                 ObjectConvertUtils.toBean(entity, model);
                 modelList.add(model);
             }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse findAllLearningPhase() {
+        try {
+            List<TechnologyLearningPathVO> modelList = new ArrayList<>();
+            List<LearningPathEntity> technologyEntityList =  myMapper.searchTechnology();
+            if(technologyEntityList.isEmpty()){
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            for (LearningPathEntity entity : technologyEntityList) {
+                TechnologyLearningPathVO model = new TechnologyLearningPathVO();
+                List<LearningPathVO> learningPhaseList = new ArrayList<>();
+
+                ObjectConvertUtils.toBean(entity, model);
+                List<LearningPathEntity> learningPhaseEntityList =  myMapper.searchLearningPhase(entity.getTechnologyID());
+                if(!learningPhaseEntityList.isEmpty()) {
+                    for (LearningPathEntity learningPathEntity : learningPhaseEntityList) {
+                        LearningPathVO learningPathModel = new LearningPathVO();
+                        ObjectConvertUtils.toBean(learningPathEntity, learningPathModel);
+                        learningPathModel.setTechnologyID(entity.getTechnologyID());
+                        learningPhaseList.add(learningPathModel);
+                    }
+                }
+                model.setLearningPhaseList(learningPhaseList);
+                modelList.add(model);
+            }
+
             return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
         } catch (Exception ex) {
             logger.error(ex.toString());

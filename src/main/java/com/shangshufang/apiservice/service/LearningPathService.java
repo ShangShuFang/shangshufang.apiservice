@@ -6,6 +6,8 @@ public interface LearningPathService{
 
     UnifiedResponse findTechnology();
 
+    UnifiedResponse findAllLearningPhase();
+
     UnifiedResponse findLearningPhase(int technologyID);
 
     UnifiedResponse findKnowledge(int technologyID, int learningPhase);

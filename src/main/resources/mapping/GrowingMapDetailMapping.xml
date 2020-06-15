@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.GrowingMapDetailMapper">
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.GrowingMapDetailEntity">
+    <id column="growing_detail_id" property="growingDetailID" jdbcType="INTEGER"/>
+    <result column="growing_id" property="growingID" jdbcType="INTEGER"/>
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
+    <result column="technology_name" property="technologyName" jdbcType="VARCHAR"/>
+    <result column="learning_phase_id" property="learningPhaseID" jdbcType="INTEGER"/>
+    <result column="learning_phase_name" property="learningPhaseName" jdbcType="VARCHAR"/>
+    <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+
+  <resultMap id="LearningPathMap" type="com.shangshufang.apiservice.entity.LearningPathEntity" >
+    <id column="learning_path_id" property="learningPathID" jdbcType="INTEGER" />
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="learning_phase_id" property="learningPhaseID" jdbcType="INTEGER" />
+  </resultMap>
+
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT a.growing_detail_id,
+           a.growing_id,
+           a.technology_id,
+           b.technology_name,
+           a.learning_phase_id,
+           c.learning_phase_name
+    FROM shangshufang_base.growing_map_detail a
+    INNER JOIN shangshufang_base.technology b
+    ON a.technology_id = b.technology_id
+    INNER JOIN shangshufang_base.learning_phase c
+    ON a.learning_phase_id = c.learning_phase_id
+    WHERE growing_id = #{growingID,jdbcType=INTEGER}
+    ORDER BY technology_id, learning_phase_id;
+  </select>
+
+  <select id="searchList4Technology" resultMap="LearningPathMap">
+    SELECT DISTINCT technology_id
+    FROM shangshufang_base.growing_map_detail
+    WHERE growing_id = #{growingID,jdbcType=INTEGER}
+    ORDER BY technology_id;
+  </select>
+
+  <select id="searchList4LearningPhase" resultMap="LearningPathMap">
+    SELECT technology_id, learning_phase_id
+    FROM shangshufang_base.growing_map_detail
+    WHERE growing_id = #{growingID,jdbcType=INTEGER}
+    AND technology_id = #{technologyID,jdbcType=INTEGER}
+    ORDER BY technology_id, learning_phase_id;
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.GrowingMapDetailEntity">
+    INSERT INTO shangshufang_base.growing_map_detail
+    (growing_id,
+     technology_id,
+     learning_phase_id,
+     create_user,
+     update_user)
+    VALUES (#{growingID, jdbcType=INTEGER},
+            #{technologyID, jdbcType=INTEGER},
+            #{learningPhaseID, jdbcType=INTEGER},
+            #{createUser, jdbcType=VARCHAR},
+            #{updateUser, jdbcType=VARCHAR})
+  </insert>
+
+  <delete id="delete" parameterType="java.lang.Integer">
+    DELETE
+    FROM shangshufang_base.growing_map_detail
+    WHERE growing_id = #{growingID,jdbcType=INTEGER};
+  </delete>
+</mapper>
