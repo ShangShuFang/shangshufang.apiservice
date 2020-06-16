@@ -109,12 +109,16 @@ public class GrowingMapServiceImpl implements GrowingMapService {
             List<GrowingMapDetailVO> growingMapDetailList = new ArrayList<>();
 
             GrowingMapEntity growingMapEntity = growingMapMapper.search(growingID);
+            if (growingMapEntity == null) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
             ObjectConvertUtils.toBean(growingMapEntity, model);
 
             List<GrowingMapDetailEntity> growingMapDetailEntityList = growingMapDetailMapper.searchList(growingID);
             for (GrowingMapDetailEntity growingMapDetailEntity : growingMapDetailEntityList) {
                 GrowingMapDetailVO growingMapDetailModel = new GrowingMapDetailVO();
                 List<LearningPathVO> knowledgeModelList = new ArrayList<>();
+                ObjectConvertUtils.toBean(growingMapDetailEntity, growingMapDetailModel);
                 List<LearningPathEntity> knowledgeEntityList =  learningPathMapper.searchKnowledge(growingMapDetailEntity.getTechnologyID(), growingMapDetailEntity.getLearningPhaseID());
                 for (LearningPathEntity learningPathEntity : knowledgeEntityList) {
                     LearningPathVO knowledgeModel = new LearningPathVO();
@@ -122,6 +126,7 @@ public class GrowingMapServiceImpl implements GrowingMapService {
                     knowledgeModelList.add(knowledgeModel);
                 }
                 growingMapDetailModel.setKnowledgeList(knowledgeModelList);
+                growingMapDetailList.add(growingMapDetailModel);
             }
             model.setGrowingMapDetailList(growingMapDetailList);
             return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.ONE_SEARCH_COUNT, model);
