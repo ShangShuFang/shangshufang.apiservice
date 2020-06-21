@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.StudentCollectionMapper">
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.StudentCollectionEntity">
+    <id column="collection_id" property="collectionID" jdbcType="INTEGER"/>
+    <result column="student_id" property="studentID" jdbcType="INTEGER"/>
+    <result column="company_id" property="companyID" jdbcType="INTEGER"/>
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="company_abbreviation" property="companyAbbreviation" jdbcType="VARCHAR" />
+    <result column="province_code" property="provinceCode" jdbcType="INTEGER" />
+    <result column="province_name" property="provinceName" jdbcType="VARCHAR" />
+    <result column="city_code" property="cityCode" jdbcType="INTEGER" />
+    <result column="city_name" property="cityName" jdbcType="VARCHAR" />
+    <result column="district_code" property="districtCode" jdbcType="INTEGER" />
+    <result column="district_name" property="districtName" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="contacts" property="contacts" jdbcType="VARCHAR" />
+    <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
+    <result column="business_license" property="businessLicense" jdbcType="VARCHAR" />
+    <result column="brand" property="brand" jdbcType="VARCHAR" />
+    <result column="memo" property="memo" jdbcType="VARCHAR" />
+    <result column="using_technology_count" property="usingTechnologyCount" jdbcType="INTEGER" />
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.student_collection
+    WHERE student_id =  #{studentID,jdbcType=INTEGER};
+  </select>
+
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT
+      A.company_id,
+      b.company_name,
+      b.company_abbreviation,
+      b.province_code,
+      c.region_name AS province_name,
+      b.city_code,
+      IFNULL(d.region_name, CONCAT(c.region_name, '市')) AS city_name,
+      b.district_code,
+      e.region_name AS district_name,
+      b.address,
+      b.contacts,
+      b.cellphone,
+      b.business_license,
+      b.brand,
+      b.memo,
+      IFNULL(f.using_technology_count,0) AS using_technology_count
+    FROM shangshufang_customer.student_collection a
+      INNER JOIN shangshufang_customer.company b
+          ON a.company_id = b.company_id
+      INNER JOIN shangshufang_base.china_region c
+          ON b.province_code = c.region_code
+      LEFT JOIN shangshufang_base.china_region d
+          ON b.city_code = d.region_code
+      INNER JOIN shangshufang_base.china_region e
+          ON b.district_code = e.region_code
+      LEFT JOIN
+      (
+        SELECT company_id,
+               COUNT(1) AS using_technology_count
+        FROM shangshufang_customer.technology_using
+        GROUP BY company_id
+      ) f
+        ON a.company_id = f.company_id
+    WHERE a.student_id =  #{studentID,jdbcType=INTEGER}
+    ORDER BY a.update_time DESC
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+  </select>
+
+  <select id="checkCollected" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.student_collection
+    WHERE student_id = #{studentID,jdbcType=INTEGER}
+    AND company_id = #{companyID,jdbcType=INTEGER};
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.StudentCollectionEntity">
+    INSERT INTO shangshufang_customer.student_collection
+      (
+        student_id,
+        company_id,
+        create_user,
+        update_user
+       )
+    VALUES
+      (
+        #{studentID, jdbcType=INTEGER},
+        #{companyID, jdbcType=INTEGER},
+        #{createUser, jdbcType=VARCHAR},
+        #{updateUser, jdbcType=VARCHAR}
+      )
+  </insert>
+
+  <delete id="delete" parameterType="java.lang.Integer">
+    DELETE
+    FROM shangshufang_customer.student_collection
+    WHERE student_id = #{studentID,jdbcType=INTEGER}
+      AND company_id = #{companyID,jdbcType=INTEGER};
+  </delete>
+</mapper>
