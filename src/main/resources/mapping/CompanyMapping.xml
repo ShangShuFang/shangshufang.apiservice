@@ -59,7 +59,6 @@
       A.brand,
       A.memo,
       IFNULL(E.using_technology_count,0) AS using_technology_count,
-      IFNULL(F.using_knowledge_count, 0) AS using_knowledge_count,
       A.data_status,
       CASE WHEN A.data_status = 'P' THEN '未激活'
       WHEN A.data_status = 'A' THEN '正常'
@@ -86,15 +85,6 @@
       GROUP BY company_id
     ) E
     ON A.company_id = E.company_id
-    LEFT JOIN
-    (
-      SELECT
-      company_id,
-      COUNT(1) AS using_knowledge_count
-      FROM shangshufang_customer.technology_knowledge_using
-      GROUP BY company_id
-    ) F
-    ON A.company_id = F.company_id
     INNER JOIN shangshufang_base.system_admin G
     ON A.create_user = G.admin_id
     INNER JOIN shangshufang_base.system_admin H

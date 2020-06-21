@@ -8,33 +8,30 @@
     <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
     <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
     <result column="recruit_level" property="recruitLevel" jdbcType="VARCHAR" />
-    <result column="using_technology" property="usingTechnology" jdbcType="INTEGER" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_user" property="updateUser" jdbcType="INTEGER" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <select id="searchUsingTechnologyList" resultMap="BaseResultMap">
-    SELECT a.technology_id,
-           a.technology_name,
-           !ISNULL(b.technology_id) AS `using_technology`,
-           b.recruit_level
-    FROM shangshufang_base.technology a
-           LEFT JOIN
-         (
-           SELECT technology_id,
-                  recruit_level
-           FROM shangshufang_customer.technology_using
-           WHERE company_id = #{companyID,jdbcType=INTEGER}
-         ) b
-         ON a.technology_id = b.technology_id
-    ORDER BY a.technology_id;
+    SELECT a.company_id,
+           b.company_name,
+           a.technology_id,
+           c.technology_name,
+           a.recruit_level
+    FROM shangshufang_customer.technology_using a
+           INNER JOIN shangshufang_customer.company b
+                      ON a.company_id = b.company_id
+           INNER JOIN shangshufang_base.technology c
+                      ON a.technology_id = c.technology_id
+    WHERE a.company_id = #{companyID,jdbcType=INTEGER}
+    ORDER BY a.recruit_level;
   </select>
 
   <select id="searchLowestRecruitLevel" resultType="java.lang.String">
     SELECT MIN(recruit_level) AS recruit_level
     FROM shangshufang_customer.technology_using
-    WHERE technology_id =  #{technologyID,jdbcType=INTEGER}
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER}
     LIMIT 1;
   </select>
 

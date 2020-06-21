@@ -9,6 +9,5 @@ public class TechnologyUsingVO extends BaseVO {
     private String companyName;
     private int technologyID;
     private String technologyName;
-    private int usingTechnology;
     private String recruitLevel;
 }
