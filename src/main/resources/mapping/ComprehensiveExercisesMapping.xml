@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.ComprehensiveExercisesMapper">
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.ComprehensiveExercisesEntity">
+    <id column="exercises_id" property="exercisesID" jdbcType="INTEGER"/>
+    <result column="exercises_name" property="exercisesName" jdbcType="VARCHAR"/>
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
+    <result column="technology_name" property="technologyName" jdbcType="VARCHAR"/>
+    <result column="document_url" property="documentUrl" jdbcType="VARCHAR"/>
+    <result column="answer_url" property="answerUrl" jdbcType="VARCHAR"/>
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR"/>
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR"/>
+    <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_base.comprehensive_exercises a
+    INNER JOIN shangshufang_base.technology b
+    ON a.technology_id = b.technology_id
+    INNER JOIN shangshufang_base.direction c
+    ON b.direction_id = c.direction_id
+    INNER JOIN shangshufang_base.technology_category d
+    ON b.category_id = d.technology_category_id
+    AND b.direction_id = d.direction_id
+    <where>
+      <if test="directionID != 0">
+        b.direction_id = #{directionID,jdbcType=INTEGER}
+      </if>
+      <if test="categoryID != 0">
+        AND b.category_id = #{categoryID,jdbcType=INTEGER}
+      </if>
+      <if test="technologyID != 0">
+        AND a.technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+      <if test="dataStatus != null">
+        AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT a.exercises_id,
+           a.exercises_name,
+           a.technology_id,
+           b.technology_name,
+           a.document_url,
+           a.answer_url,
+           a.data_status,
+           CASE WHEN a.data_status = 'P' THEN '待审批'
+                WHEN a.data_status = 'A' THEN '启用'
+                WHEN a.data_status = 'D' THEN '禁用'
+                ELSE '未知数据状态'
+           END AS data_status_text,
+           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+           f.admin_name                                    AS update_user,
+           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_base.comprehensive_exercises a
+    INNER JOIN shangshufang_base.technology b
+    ON a.technology_id = b.technology_id
+    INNER JOIN shangshufang_base.direction c
+    ON b.direction_id = c.direction_id
+    INNER JOIN shangshufang_base.technology_category d
+    ON b.category_id = d.technology_category_id
+    AND b.direction_id = d.direction_id
+    INNER JOIN shangshufang_base.system_admin e
+    ON a.create_user = e.admin_id
+    INNER JOIN shangshufang_base.system_admin f
+    ON a.update_user = f.admin_id
+    <where>
+      <if test="directionID != 0">
+        b.direction_id = #{directionID,jdbcType=INTEGER}
+      </if>
+      <if test="categoryID != 0">
+        AND b.category_id = #{categoryID,jdbcType=INTEGER}
+      </if>
+      <if test="technologyID != 0">
+        AND a.technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+      <if test="dataStatus != null">
+        AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
+      </if>
+    </where>
+    ORDER BY a.exercises_id DESC
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.ComprehensiveExercisesEntity">
+    INSERT INTO shangshufang_base.comprehensive_exercises
+    (
+      exercises_name,
+      technology_id,
+      document_url,
+      answer_url,
+      create_user,
+      update_user
+     )
+    VALUES
+     (
+      #{exercisesName, jdbcType=INTEGER},
+      #{technologyID, jdbcType=INTEGER},
+      #{documentUrl, jdbcType=VARCHAR},
+      #{answerUrl, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+      )
+  </insert>
+
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.SchoolEntity" >
+    UPDATE shangshufang_base.comprehensive_exercises
+    SET exercises_name = #{exercisesName,jdbcType=VARCHAR},
+        answer_url = #{answerUrl,jdbcType=VARCHAR},
+        document_url = #{documentUrl,jdbcType=VARCHAR},
+        update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
+  </update>
+
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.ComprehensiveExercisesEntity" >
+    UPDATE shangshufang_base.comprehensive_exercises
+    SET data_status = #{dataStatus,jdbcType=VARCHAR},
+        update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
+  </update>
+
+  <delete id="delete" parameterType="java.lang.Integer">
+    DELETE
+    FROM shangshufang_base.comprehensive_exercises
+    WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
+  </delete>
+</mapper>
