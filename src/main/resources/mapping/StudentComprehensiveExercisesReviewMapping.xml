@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.StudentComprehensiveExercisesReviewMapper">
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.StudentComprehensiveExercisesReviewEntity">
+    <id column="review_id" property="reviewID" jdbcType="INTEGER"/>
+    <result column="company_id" property="companyID" jdbcType="INTEGER"/>
+    <result column="company_name" property="companyName" jdbcType="VARCHAR"/>
+    <result column="student_id" property="studentID" jdbcType="INTEGER"/>
+    <result column="exercises_id" property="exercisesID" jdbcType="INTEGER"/>
+    <result column="exercises_name" property="exercisesName" jdbcType="VARCHAR"/>
+    <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.student_comprehensive_exercises_review
+    WHERE student_id = #{studentID,jdbcType=INTEGER}
+    AND exercises_id = #{exercisesID,jdbcType=INTEGER};
+  </select>
+
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT a.review_id,
+           a.company_id,
+           b.company_name,
+           a.student_id,
+           a.exercises_id,
+           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.student_comprehensive_exercises_review a
+    INNER JOIN shangshufang_customer.company b
+        ON a.company_id = b.company_id
+    WHERE student_id = #{studentID,jdbcType=INTEGER}
+      AND exercises_id = #{exercisesID,jdbcType=INTEGER}
+    ORDER BY a.create_time DESC
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.StudentComprehensiveExercisesReviewEntity">
+    INSERT INTO shangshufang_customer.student_comprehensive_exercises_review
+    (
+      company_id,
+      student_id,
+      exercises_id,
+      create_user,
+      update_user
+     )
+    VALUES
+     (
+      #{companyID, jdbcType=INTEGER},
+      #{studentID, jdbcType=INTEGER},
+      #{exercisesID, jdbcType=INTEGER},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+      )
+  </insert>
+</mapper>

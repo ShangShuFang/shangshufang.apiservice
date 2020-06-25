@@ -1,15 +1,19 @@
-package com.shangshufang.apiservice.entity;
+package com.shangshufang.apiservice.vo;
 
 import lombok.Data;
 
 @Data
-public class ComprehensiveExercisesEntity extends BaseEntity {
+public class StudentComprehensiveExercisesVO extends BaseVO {
+    private int collectionID;
+    private int studentID;
     private int exercisesID;
     private String exercisesName;
     private int technologyID;
     private String technologyName;
     private String technologyThumbnailRectangle;
     private String documentUrl;
-    private String answerUrl;
+    private int reviewCompanyCount;
+    private int reviewTotalCount;
+    private String gitUrl;
     private String memo;
 }

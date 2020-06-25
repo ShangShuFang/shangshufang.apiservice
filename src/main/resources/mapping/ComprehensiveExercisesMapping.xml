@@ -6,8 +6,10 @@
     <result column="exercises_name" property="exercisesName" jdbcType="VARCHAR"/>
     <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
     <result column="technology_name" property="technologyName" jdbcType="VARCHAR"/>
+    <result column="technology_thumbnail_rectangle" property="technologyThumbnailRectangle" jdbcType="VARCHAR"/>
     <result column="document_url" property="documentUrl" jdbcType="VARCHAR"/>
     <result column="answer_url" property="answerUrl" jdbcType="VARCHAR"/>
+    <result column="memo" property="memo" jdbcType="VARCHAR"/>
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR"/>
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR"/>
     <result column="create_user" property="createUser" jdbcType="INTEGER"/>
@@ -47,8 +49,10 @@
            a.exercises_name,
            a.technology_id,
            b.technology_name,
+           b.technology_thumbnail_rectangle,
            a.document_url,
            a.answer_url,
+           a.memo,
            a.data_status,
            CASE WHEN a.data_status = 'P' THEN '待审批'
                 WHEN a.data_status = 'A' THEN '启用'
@@ -95,6 +99,7 @@
       technology_id,
       document_url,
       answer_url,
+      memo,
       create_user,
       update_user
      )
@@ -104,16 +109,18 @@
       #{technologyID, jdbcType=INTEGER},
       #{documentUrl, jdbcType=VARCHAR},
       #{answerUrl, jdbcType=VARCHAR},
+      #{memo, jdbcType=VARCHAR},
       #{createUser, jdbcType=VARCHAR},
       #{updateUser, jdbcType=VARCHAR}
       )
   </insert>
 
-  <update id="update" parameterType="com.shangshufang.apiservice.entity.SchoolEntity" >
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.ComprehensiveExercisesEntity" >
     UPDATE shangshufang_base.comprehensive_exercises
     SET exercises_name = #{exercisesName,jdbcType=VARCHAR},
         answer_url = #{answerUrl,jdbcType=VARCHAR},
         document_url = #{documentUrl,jdbcType=VARCHAR},
+        memo = #{memo,jdbcType=VARCHAR},
         update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
   </update>

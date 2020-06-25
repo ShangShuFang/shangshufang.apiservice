@@ -9,4 +9,5 @@ public class ComprehensiveExercisesDTO extends BaseDTO {
     private int technologyID;
     private String documentUrl;
     private String answerUrl;
+    private String memo;
 }

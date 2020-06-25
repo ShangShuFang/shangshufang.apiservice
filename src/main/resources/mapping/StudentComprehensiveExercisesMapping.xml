@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.StudentComprehensiveExercisesMapper">
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.StudentComprehensiveExercisesEntity">
+    <id column="collection_id" property="collectionID" jdbcType="INTEGER"/>
+    <result column="student_id" property="studentID" jdbcType="INTEGER"/>
+    <result column="exercises_id" property="exercisesID" jdbcType="INTEGER"/>
+    <result column="exercises_name" property="exercisesName" jdbcType="VARCHAR"/>
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
+    <result column="technology_name" property="technologyName" jdbcType="VARCHAR"/>
+    <result column="technology_thumbnail_rectangle" property="technologyThumbnailRectangle" jdbcType="VARCHAR"/>
+    <result column="document_url" property="documentUrl" jdbcType="VARCHAR"/>
+    <result column="git_url" property="gitUrl" jdbcType="VARCHAR"/>
+    <result column="memo" property="memo" jdbcType="VARCHAR"/>
+    <result column="review_company_count" property="reviewCompanyCount" jdbcType="INTEGER"/>
+    <result column="review_total_count" property="reviewTotalCount" jdbcType="INTEGER"/>
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR"/>
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR"/>
+    <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.student_comprehensive_exercises a
+    INNER JOIN shangshufang_base.comprehensive_exercises b
+        ON a.exercises_id = b.exercises_id
+    INNER JOIN shangshufang_base.technology c
+        ON b.technology_id = c.technology_id
+    INNER JOIN shangshufang_base.direction d
+        ON c.direction_id = d.direction_id
+    INNER JOIN shangshufang_base.technology_category e
+        ON c.category_id = e.technology_category_id
+        AND c.direction_id = e.direction_id
+    WHERE a.student_id = #{studentID,jdbcType=INTEGER}
+    <if test="directionID != 0">
+      AND c.direction_id = #{directionID,jdbcType=INTEGER}
+    </if>
+    <if test="categoryID != 0">
+      AND c.category_id = #{categoryID,jdbcType=INTEGER}
+    </if>
+    <if test="technologyID != 0">
+      AND b.technology_id = #{technologyID,jdbcType=INTEGER}
+    </if>
+    <if test="dataStatus != null">
+      AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
+    </if>;
+  </select>
+
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT a.collection_id,
+           a.student_id,
+           a.exercises_id,
+           b.exercises_name,
+           b.memo,
+           b.technology_id,
+           c.technology_name,
+           c.technology_thumbnail_rectangle,
+           b.document_url,
+           a.git_url,
+           a.data_status,
+           CASE WHEN a.data_status = 'P' THEN '未完成'
+                WHEN a.data_status = 'A' THEN '已完成'
+                ELSE '未知数据状态'
+           END AS data_status_text,
+           IFNULL(f.review_company_count, 0) AS review_company_count,
+           IFNULL(g.review_total_count, 0) AS review_total_count,
+           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.student_comprehensive_exercises a
+    INNER JOIN shangshufang_base.comprehensive_exercises b
+        ON a.exercises_id = b.exercises_id
+    INNER JOIN shangshufang_base.technology c
+        ON b.technology_id = c.technology_id
+    INNER JOIN shangshufang_base.direction d
+        ON c.direction_id = d.direction_id
+    INNER JOIN shangshufang_base.technology_category e
+        ON c.category_id = e.technology_category_id
+        AND c.direction_id = e.direction_id
+    LEFT JOIN
+    (
+        SELECT student_id,
+               exercises_id,
+               COUNT(1) AS review_company_count
+        FROM shangshufang_customer.student_comprehensive_exercises_review
+        WHERE student_id = #{studentID,jdbcType=INTEGER}
+        GROUP BY student_id, exercises_id, company_id
+    ) f
+    ON a.student_id = f.student_id
+    AND a.exercises_id = f.exercises_id
+    LEFT JOIN
+    (
+      SELECT student_id,
+      exercises_id,
+      COUNT(1) AS review_total_count
+      FROM shangshufang_customer.student_comprehensive_exercises_review
+      WHERE student_id = #{studentID,jdbcType=INTEGER}
+      GROUP BY student_id, exercises_id
+    ) g
+    ON a.student_id = g.student_id
+    AND a.exercises_id = g.exercises_id
+    WHERE a.student_id = #{studentID,jdbcType=INTEGER}
+    <if test="directionID != 0">
+      AND c.direction_id = #{directionID,jdbcType=INTEGER}
+    </if>
+    <if test="categoryID != 0">
+      AND c.category_id = #{categoryID,jdbcType=INTEGER}
+    </if>
+    <if test="technologyID != 0">
+      AND b.technology_id = #{technologyID,jdbcType=INTEGER}
+    </if>
+    <if test="dataStatus != null">
+      AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
+    </if>
+    ORDER BY a.collection_id DESC
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+  </select>
+
+  <select id="checkCollected" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.student_comprehensive_exercises
+    WHERE student_id = #{studentID,jdbcType=INTEGER}
+      AND exercises_id = #{exercisesID,jdbcType=INTEGER};
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.StudentComprehensiveExercisesEntity">
+    INSERT INTO shangshufang_customer.student_comprehensive_exercises
+    (
+      student_id,
+      exercises_id,
+      create_user,
+      update_user
+     )
+    VALUES
+     (
+      #{studentID, jdbcType=INTEGER},
+      #{exercisesID, jdbcType=INTEGER},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+      )
+  </insert>
+
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.StudentComprehensiveExercisesEntity" >
+    UPDATE shangshufang_customer.student_comprehensive_exercises
+    SET git_url = #{gitUrl,jdbcType=VARCHAR},
+        data_status = 'A',
+        update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE collection_id = #{collectionID,jdbcType=INTEGER};
+  </update>
+
+  <delete id="delete" parameterType="java.lang.Integer">
+    DELETE
+    FROM shangshufang_customer.student_comprehensive_exercises
+    WHERE student_id = #{studentID,jdbcType=INTEGER}
+    AND exercises_id = #{exercisesID,jdbcType=INTEGER};
+  </delete>
+</mapper>

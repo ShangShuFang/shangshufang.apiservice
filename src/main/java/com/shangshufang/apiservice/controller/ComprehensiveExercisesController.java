@@ -41,5 +41,4 @@ public class ComprehensiveExercisesController {
     public UnifiedResponse delete(@PathVariable("exercisesID") int exercisesID){
         return serviceImpl.delete(exercisesID);
     }
-
 }
