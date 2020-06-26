@@ -4,6 +4,13 @@
   <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.CourseQuestionLeaveMessageEntity" >
     <id column="message_id" property="messageID" jdbcType="INTEGER" />
     <result column="question_id" property="questionID" jdbcType="INTEGER" />
+
+    <result column="questioner_id" property="questionerID" jdbcType="INTEGER" />
+    <result column="questioner_name" property="questionerName" jdbcType="VARCHAR" />
+    <result column="course_name" property="courseName" jdbcType="VARCHAR" />
+    <result column="question_content" property="questionContent" jdbcType="VARCHAR" />
+
+
     <result column="commenter_university_code" property="commenterUniversityCode" jdbcType="INTEGER" />
     <result column="commenter_university_name" property="commenterUniversityName" jdbcType="VARCHAR" />
     <result column="commenter_school_id" property="commenterSchoolID" jdbcType="INTEGER" />
@@ -14,6 +21,7 @@
     <result column="commenter_type" property="commenterType" jdbcType="VARCHAR" />
     <result column="commenter_type_text" property="commenterTypeText" jdbcType="VARCHAR" />
     <result column="message_content" property="messageContent" jdbcType="VARCHAR" />
+
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -21,6 +29,14 @@
     <result column="update_user" property="updateUser" jdbcType="INTEGER" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+      COUNT(1) AS total_count
+    FROM shangshufang_customer.course_question_leave_message
+    WHERE question_id = #{questionID,jdbcType=INTEGER}
+      AND data_status = 'A';
+  </select>
+
   <select id="searchList" resultMap="BaseResultMap">
     SELECT
       A.message_id,
@@ -56,8 +72,46 @@
     AND A.commenter_school_id = E.school_id
     AND A.commenter_id = E.student_id
     AND A.commenter_type = 'S'
-    WHERE A.question_id = #{arg0,jdbcType=INTEGER}
+    WHERE A.question_id = #{questionID,jdbcType=INTEGER}
     ORDER BY A.update_time DESC;
+  </select>
+
+  <select id="searchTotalCount4Student" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.course_question_leave_message a
+           INNER JOIN shangshufang_customer.course_question b
+                      ON a.question_id = b.question_id
+           INNER JOIN shangshufang_customer.university_student c
+                      ON b.questioner_id = c.student_id
+           INNER JOIN shangshufang_customer.course d
+                      ON b.course_id = d.course_id
+    WHERE a.commenter_id = #{studentID,jdbcType=INTEGER}
+      AND a.commenter_type = 'S'
+      AND a.data_status='A';
+  </select>
+
+  <select id="searchList4Student" resultMap="BaseResultMap">
+    SELECT
+      b.questioner_id,
+      c.full_name AS questioner_name,
+      d.course_name,
+      a.question_id,
+      b.question_content,
+      a.message_id,
+      a.message_content,
+      DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time
+    FROM shangshufang_customer.course_question_leave_message a
+           INNER JOIN shangshufang_customer.course_question b
+                      ON a.question_id = b.question_id
+           INNER JOIN shangshufang_customer.university_student c
+                      ON b.questioner_id = c.student_id
+           INNER JOIN shangshufang_customer.course d
+                      ON b.course_id = d.course_id
+    WHERE a.commenter_id = #{studentID,jdbcType=INTEGER}
+      AND a.commenter_type = 'S'
+      AND a.data_status='A'
+    ORDER BY a.create_time DESC
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
 
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.CourseQuestionLeaveMessageEntity" >

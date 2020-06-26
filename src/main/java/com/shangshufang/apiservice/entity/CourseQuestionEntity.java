@@ -8,6 +8,7 @@ public class CourseQuestionEntity extends BaseEntity {
     private int courseUniversityCode;
     private int courseSchoolID;
     private int courseID;
+    private String courseName;
     private int questionerUniversityCode;
     private String questionerUniversityName;
     private int questionerSchoolID;

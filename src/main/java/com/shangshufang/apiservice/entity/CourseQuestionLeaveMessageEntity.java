@@ -7,6 +7,11 @@ public class CourseQuestionLeaveMessageEntity extends BaseEntity {
     private int messageID;
     private int questionID;
 
+    private int questionerID;
+    private String questionerName;
+    private String courseName;
+    private String questionContent;
+
     private int commenterUniversityCode;
     private String commenterUniversityName;
     private int commenterSchoolID;

@@ -7,9 +7,12 @@ import java.util.List;
 @Data
 public class CourseQuestionVO extends BaseVO {
     private int questionID;
+
     private int courseUniversityCode;
     private int courseSchoolID;
     private int courseID;
+    private String courseName;
+
     private int questionerUniversityCode;
     private String questionerUniversityName;
     private int questionerSchoolID;
@@ -17,6 +20,8 @@ public class CourseQuestionVO extends BaseVO {
     private int questionerID;
     private String questionerName;
     private String questionerPhoto;
+
     private String questionContent;
+    private int leaveMessageCount;
     private List<CourseQuestionLeaveMessageVO> leaveMessageList;
 }

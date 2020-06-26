@@ -63,6 +63,31 @@ public class CourseQuestionServiceImpl implements CourseQuestionService {
     }
 
     @Override
+    public UnifiedResponse findList4Student(int pageNumber, int pageSize, int studentID) {
+        try {
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<CourseQuestionVO> modelList = new ArrayList<>();
+            int totalCount = courseQuestionMapper.searchTotalCount4Student(studentID);
+            if(totalCount == 0){
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+
+            List<CourseQuestionEntity> entityList = courseQuestionMapper.searchList4Student(startIndex, pageSize, studentID);
+            for (CourseQuestionEntity entity : entityList) {
+                CourseQuestionVO model = new CourseQuestionVO();
+                int answerTotalCount = leaveMessageMapper.searchTotalCount(entity.getQuestionID());
+                ObjectConvertUtils.toBean(entity, model);
+                model.setLeaveMessageCount(answerTotalCount);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse add(CourseQuestionDTO dto) {
         try {
             CourseQuestionEntity entity = new CourseQuestionEntity();

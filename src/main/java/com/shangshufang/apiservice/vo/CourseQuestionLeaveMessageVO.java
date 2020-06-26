@@ -6,6 +6,12 @@ import lombok.Data;
 public class CourseQuestionLeaveMessageVO extends BaseVO {
     private int messageID;
     private int questionID;
+
+    private int questionerID;
+    private String questionerName;
+    private String courseName;
+    private String questionContent;
+
     private int commenterUniversityCode;
     private String commenterUniversityName;
     private int commenterSchoolID;
@@ -15,5 +21,6 @@ public class CourseQuestionLeaveMessageVO extends BaseVO {
     private String commenterPhoto;
     private String commenterType;
     private String commenterTypeText;
+
     private String messageContent;
 }

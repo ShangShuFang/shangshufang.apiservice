@@ -21,6 +21,13 @@ public class CourseQuestionController {
         return serviceImpl.findList(pageNumber, pageSize, courseUniversityCode, courseSchoolID, courseID);
     }
 
+    @RequestMapping(value = "/list/student/{pageNumber}/{pageSize}/{studentID}", method = RequestMethod.GET)
+    public UnifiedResponse findList4Student(@PathVariable("pageNumber") int pageNumber,
+                                    @PathVariable("pageSize") int pageSize,
+                                    @PathVariable("studentID") int studentID) {
+        return serviceImpl.findList4Student(pageNumber, pageSize, studentID);
+    }
+
     @RequestMapping(value="/add", method = RequestMethod.POST)
     public UnifiedResponse add(@RequestBody CourseQuestionDTO dto){
         return serviceImpl.add(dto);

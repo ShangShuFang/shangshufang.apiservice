@@ -6,6 +6,7 @@
     <result column="course_university_code" property="courseUniversityCode" jdbcType="INTEGER" />
     <result column="course_school_id" property="courseSchoolID" jdbcType="INTEGER" />
     <result column="course_id" property="courseID" jdbcType="INTEGER" />
+    <result column="course_name" property="courseName" jdbcType="VARCHAR" />
     <result column="questioner_university_code" property="questionerUniversityCode" jdbcType="INTEGER" />
     <result column="questioner_university_name" property="questionerUniversityName" jdbcType="VARCHAR" />
     <result column="questioner_school_id" property="questionerSchoolID" jdbcType="INTEGER" />
@@ -62,6 +63,36 @@
     AND A.data_status = 'A'
     ORDER BY A.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+  </select>
+
+  <select id="searchTotalCount4Student" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.course_question a
+           INNER JOIN shangshufang_customer.course b
+                      ON a.course_university_code = b.university_code
+                        AND a.course_school_id = b.school_id
+                        AND a.course_id = b.course_id
+    WHERE questioner_id = #{studentID,jdbcType=INTEGER}
+      AND A.data_status = 'A';
+  </select>
+
+  <select id="searchList4Student" resultMap="BaseResultMap">
+    SELECT a.question_id,
+           a.course_university_code,
+           a.course_school_id,
+           a.course_id,
+           b.course_name,
+           a.question_content,
+           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time
+    FROM shangshufang_customer.course_question a
+           INNER JOIN shangshufang_customer.course b
+                      ON a.course_university_code = b.university_code
+                        AND a.course_school_id = b.school_id
+                        AND a.course_id = b.course_id
+    WHERE questioner_id = #{studentID,jdbcType=INTEGER}
+      AND A.data_status = 'A'
+    ORDER BY A.update_time DESC
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
 
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.CourseQuestionEntity" >
