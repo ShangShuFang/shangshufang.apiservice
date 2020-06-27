@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.AbilityLevelMapper">
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.AbilityLevelEntity">
+    <id column="level_id" property="levelID" jdbcType="INTEGER"/>
+    <result column="level_code" property="levelCode" jdbcType="VARCHAR"/>
+    <result column="level_name" property="levelName" jdbcType="VARCHAR"/>
+    <result column="required_knowledge" property="requiredKnowledge" jdbcType="VARCHAR"/>
+    <result column="required_comprehensive_exercises" property="requiredComprehensiveExercises" jdbcType="VARCHAR"/>
+    <result column="required_project_exercises" property="requiredProjectExercises" jdbcType="VARCHAR"/>
+  </resultMap>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT level_id,
+           level_code,
+           level_name,
+           required_knowledge,
+           required_comprehensive_exercises,
+           required_project_exercises
+    FROM shangshufang_base.ability_level
+    ORDER BY level_code;
+  </select>
+
+  <select id="search" resultMap="BaseResultMap">
+    SELECT level_id,
+           level_code,
+           level_name,
+           required_knowledge,
+           required_comprehensive_exercises,
+           required_project_exercises
+    FROM shangshufang_base.ability_level
+    WHERE level_code = #{levelCode,jdbcType=INTEGER};
+  </select>
+
+
+</mapper>

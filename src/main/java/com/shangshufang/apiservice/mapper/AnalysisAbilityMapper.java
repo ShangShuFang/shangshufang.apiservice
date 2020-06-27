@@ -106,6 +106,15 @@ public interface AnalysisAbilityMapper {
     int update(AbilityAnalysisResult4StudentMainInfoEntity entity);
 
     /**
+     * 获取学生某个技术当前的能力该要
+     *
+     * @param studentID      开始下标
+     * @param technologyID   查询数量
+     * @return 学生某个技术当前的能力该要
+     */
+    AbilityAnalysisResult4StudentMainInfoEntity searchStudentAbilityOfTechnology(@Param("studentID") int studentID, @Param("technologyID") int technologyID);
+
+    /**
      * 获取待分析名次的原数据
      *
      * @param startIndex 开始下标

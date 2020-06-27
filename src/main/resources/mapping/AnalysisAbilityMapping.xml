@@ -625,6 +625,26 @@
       AND technology_id = #{technologyID,jdbcType=INTEGER};
   </update>
 
+  <select id="searchStudentAbilityOfTechnology" resultMap="StudentMainResultMap">
+    SELECT analysis_id,
+           student_university_code,
+           student_school_id,
+           student_id,
+           technology_id,
+           knowledge_total_count,
+           finish_knowledge_count,
+           finish_knowledge_percent,
+           finish_exercises_count,
+           once_compilation_success_rate,
+           once_run_success_rate,
+           position_site,
+           standard_score,
+           ability_level
+    FROM shangshufang_customer.university_student_ability_analysis
+    WHERE student_id = #{studentID,jdbcType=INTEGER}
+    AND technology_id = #{technologyID,jdbcType=INTEGER};
+  </select>
+
   <select id="searchDataSource4Analysis" resultMap="StudentMainResultMap">
     SELECT analysis_id,
            student_university_code,

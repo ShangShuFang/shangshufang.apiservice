@@ -3,15 +3,12 @@ package com.shangshufang.apiservice.service.impl;
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
 import com.shangshufang.apiservice.constant.DataStatusConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
-import com.shangshufang.apiservice.dto.StudentCollectionDTO;
-import com.shangshufang.apiservice.entity.AbilityAnalysisResult4StudentMainInfoEntity;
-import com.shangshufang.apiservice.entity.AbilityLevelEntity;
-import com.shangshufang.apiservice.entity.StudentCollectionEntity;
-import com.shangshufang.apiservice.entity.TechnologyUsingEntity;
+import com.shangshufang.apiservice.dto.CompanyCollectionDTO;
+import com.shangshufang.apiservice.entity.*;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
 import com.shangshufang.apiservice.mapper.*;
-import com.shangshufang.apiservice.service.StudentCollectionService;
-import com.shangshufang.apiservice.vo.StudentCollectionVO;
+import com.shangshufang.apiservice.service.CompanyCollectionService;
+import com.shangshufang.apiservice.vo.CompanyCollectionVO;
 import com.shangshufang.apiservice.vo.TechnologyGapAnalysisVO;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
 import org.apache.logging.log4j.LogManager;
@@ -23,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class StudentCollectionServiceImpl implements StudentCollectionService {
+public class CompanyCollectionServiceImpl implements CompanyCollectionService {
     @Autowired
-    private StudentCollectionMapper myMapper;
+    private CompanyCollectionMapper myMapper;
 
     @Autowired
     private TechnologyUsingMapper technologyUsingMapper;
@@ -39,21 +36,21 @@ public class StudentCollectionServiceImpl implements StudentCollectionService {
     @Autowired
     private StudentComprehensiveExercisesMapper studentComprehensiveExercisesMapper;
 
-    private final Logger logger = LogManager.getLogger(StudentCollectionServiceImpl.class);
+    private final Logger logger = LogManager.getLogger(CompanyCollectionServiceImpl.class);
 
     @Override
     public UnifiedResponse findList(int pageNumber, int pageSize, int studentID) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
-            List<StudentCollectionVO> modelList = new ArrayList<>();
-            int totalCount = myMapper.searchTotalCount(studentID);
+            List<CompanyCollectionVO> modelList = new ArrayList<>();
+            int totalCount = myMapper.searchCompanyTotalCount(studentID);
             if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
             //取得学生关注的企业列表
-            List<StudentCollectionEntity> entityList =  myMapper.searchList(startIndex, pageSize, studentID);
-            for (StudentCollectionEntity entity : entityList) {
-                StudentCollectionVO model = new StudentCollectionVO();
+            List<CompanyCollectionEntity> entityList =  myMapper.searchCompanyList(startIndex, pageSize, studentID);
+            for (CompanyCollectionEntity entity : entityList) {
+                CompanyCollectionVO model = new CompanyCollectionVO();
                 List<TechnologyGapAnalysisVO> technologyGapAnalysisList = new ArrayList<>();
                 //取得当前企业被关注的总数
                 int collectTotalCount = myMapper.searchCompanyTotalCount(entity.getCompanyID());
@@ -105,9 +102,9 @@ public class StudentCollectionServiceImpl implements StudentCollectionService {
     }
 
     @Override
-    public UnifiedResponse checkCollected(int studentID, int companyID) {
+    public UnifiedResponse checkCollected(int companyID, int studentID) {
         try {
-            int totalCount = myMapper.checkCollected(studentID, companyID);
+            int totalCount = myMapper.checkCollected(companyID, studentID);
             boolean isCollection = totalCount > 0;
             return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, isCollection);
         } catch (Exception ex) {
@@ -117,9 +114,9 @@ public class StudentCollectionServiceImpl implements StudentCollectionService {
     }
 
     @Override
-    public UnifiedResponse add(StudentCollectionDTO dto) {
+    public UnifiedResponse add(CompanyCollectionDTO dto) {
         try {
-            StudentCollectionEntity entity = new StudentCollectionEntity();
+            CompanyCollectionEntity entity = new CompanyCollectionEntity();
             ObjectConvertUtils.toBean(dto, entity);
             entity.setCreateUser(dto.getLoginUser());
             entity.setUpdateUser(dto.getLoginUser());
@@ -132,9 +129,9 @@ public class StudentCollectionServiceImpl implements StudentCollectionService {
     }
 
     @Override
-    public UnifiedResponse delete(int studentID, int companyID) {
+    public UnifiedResponse delete(int companyID, int studentID) {
         try {
-            int affectRow = myMapper.delete(studentID, companyID);
+            int affectRow = myMapper.delete(companyID, studentID);
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
         } catch (Exception ex) {
             logger.error(ex.toString());

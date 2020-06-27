@@ -1,13 +1,10 @@
-package com.shangshufang.apiservice.vo;
+package com.shangshufang.apiservice.entity;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
-public class StudentCollectionVO extends BaseVO {
+public class CompanyCollectionEntity extends BaseEntity {
     private int collectionID;
-    private int studentID;
     private int companyID;
     private String companyName;
     private String companyAbbreviation;
@@ -24,6 +21,5 @@ public class StudentCollectionVO extends BaseVO {
     private String brand;
     private String memo;
     private int usingTechnologyCount;
-    private int collectTotalCount;
-    private List<TechnologyGapAnalysisVO> technologyGapAnalysisList;
+    private int studentID;
 }

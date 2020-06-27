@@ -5,10 +5,10 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class StudentCollectionVO extends BaseVO {
+public class CompanyCollectionVO extends BaseVO {
     private int collectionID;
-    private int studentID;
     private int companyID;
+    private int studentID;
     private String companyName;
     private String companyAbbreviation;
     private int provinceCode;

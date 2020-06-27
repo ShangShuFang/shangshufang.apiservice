@@ -10,6 +10,8 @@ import java.util.List;
 public interface StudentCollectionMapper {
     int searchTotalCount(@Param("studentID") int studentID);
 
+    int searchCompanyTotalCount(@Param("companyID") int companyID);
+
     List<StudentCollectionEntity> searchList(@Param("startIndex") int startIndex, @Param("pageSize") int pageSize, @Param("studentID") int studentID);
 
     int checkCollected(@Param("studentID") int studentID, @Param("companyID") int companyID);

@@ -27,6 +27,12 @@
     WHERE student_id =  #{studentID,jdbcType=INTEGER};
   </select>
 
+  <select id="searchCompanyTotalCount" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.student_collection
+    WHERE company_id =  #{companyID,jdbcType=INTEGER};
+  </select>
+
   <select id="searchList" resultMap="BaseResultMap">
     SELECT
       A.company_id,

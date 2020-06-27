@@ -7,6 +7,8 @@
     <result column="company_name" property="companyName" jdbcType="VARCHAR" />
     <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
     <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
+    <result column="technology_thumbnail_square" property="technologyThumbnailSquare" jdbcType="VARCHAR" />
+    <result column="technology_thumbnail_rectangle" property="technologyThumbnailRectangle" jdbcType="VARCHAR" />
     <result column="recruit_level" property="recruitLevel" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
@@ -18,6 +20,8 @@
            b.company_name,
            a.technology_id,
            c.technology_name,
+           c.technology_thumbnail_square,
+           c.technology_thumbnail_rectangle,
            a.recruit_level
     FROM shangshufang_customer.technology_using a
            INNER JOIN shangshufang_customer.company b
