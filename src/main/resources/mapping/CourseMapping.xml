@@ -119,7 +119,7 @@
     ON a.university_code = e.university_code
     AND a.school_id = e.school_id
     AND a.teacher_id = e.customer_id
-    INNER JOIN
+    LEFT JOIN
     (
     SELECT technology_id,
     COUNT(DISTINCT company_id) AS course_technology_using_company_count
@@ -127,7 +127,7 @@
     GROUP BY technology_id
     ) f
     ON a.technology_id = f.technology_id
-    INNER JOIN
+    LEFT JOIN
     (
     SELECT university_code,
     school_id,
@@ -141,7 +141,7 @@
     AND a.school_id = g.school_id
     AND a.course_id = g.course_id
     AND a.technology_id = g.technology_id
-    INNER JOIN
+    LEFT JOIN
     (
     SELECT technology_id,
     COUNT(1) AS technology_knowledge_count
@@ -357,7 +357,7 @@
     ON A.university_code = E.university_code
     AND A.school_id = E.school_id
     AND A.teacher_id = E.customer_id
-    INNER JOIN
+    LEFT JOIN
     (
     SELECT
     technology_id,
@@ -366,7 +366,7 @@
     GROUP BY technology_id
     ) F
     ON A.technology_id = F.technology_id
-    INNER JOIN
+    LEFT JOIN
     (
     SELECT
     university_code,
@@ -381,7 +381,7 @@
     AND A.school_id = G.school_id
     AND A.course_id = G.course_id
     AND A.technology_id = G.technology_id
-    INNER JOIN
+    LEFT JOIN
     (
     SELECT
     technology_id,
@@ -393,7 +393,6 @@
     ON A.technology_id = H.technology_id
     LEFT JOIN
     (
-
     SELECT
     A.course_id,
     COUNT(1) AS course_knowledge_exercises_count
@@ -566,54 +565,54 @@
     DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
     FROM
     (
-    SELECT
-    a.course_id,
-    a.university_code,
-    a.school_id,
-    a.technology_id,
-    a.course_name,
-    a.teacher_id,
-    a.course_time_begin,
-    a.course_time_end,
-    a.course_introduction,
-    a.data_status,
-    a.create_time,
-    a.update_time
-    FROM shangshufang_customer.course a
-    INNER JOIN shangshufang_base.technology b
-    ON a.technology_id = b.technology_id
-    WHERE a.data_status != '3'
-    <if test="arg0 != 0">
-      <if test="arg10 == true">
-        AND a.university_code = #{arg0,jdbcType=INTEGER}
+      SELECT
+      a.course_id,
+      a.university_code,
+      a.school_id,
+      a.technology_id,
+      a.course_name,
+      a.teacher_id,
+      a.course_time_begin,
+      a.course_time_end,
+      a.course_introduction,
+      a.data_status,
+      a.create_time,
+      a.update_time
+      FROM shangshufang_customer.course a
+      INNER JOIN shangshufang_base.technology b
+      ON a.technology_id = b.technology_id
+      WHERE a.data_status != '3'
+      <if test="arg0 != 0">
+        <if test="arg10 == true">
+          AND a.university_code = #{arg0,jdbcType=INTEGER}
+        </if>
+        <if test="arg10 != true">
+          AND a.university_code != #{arg0,jdbcType=INTEGER}
+        </if>
       </if>
-      <if test="arg10 != true">
-        AND a.university_code != #{arg0,jdbcType=INTEGER}
+      <if test="arg1 != 0">
+        AND a.school_id = #{arg1,jdbcType=INTEGER}
       </if>
-    </if>
-    <if test="arg1 != 0">
-      AND a.school_id = #{arg1,jdbcType=INTEGER}
-    </if>
-    <if test="arg2 != 0">
-      AND a.teacher_id = #{arg2,jdbcType=INTEGER}
-    </if>
-    <if test="arg3 != 0">
-      AND a.technology_id = #{arg3,jdbcType=INTEGER}
-    </if>
-    <if test="arg4 != null">
-      AND a.course_time_begin &lt;= #{arg4,jdbcType=VARCHAR}
-    </if>
-    <if test="arg5 != null">
-      AND a.data_status = #{arg5,jdbcType=VARCHAR}
-    </if>
-    <if test="arg8 != 0">
-      AND b.direction_id = #{arg8,jdbcType=INTEGER}
-    </if>
-    <if test="arg9 != 0">
-      AND b.category_id = #{arg9,jdbcType=INTEGER}
-    </if>
-    ORDER BY a.data_status, a.update_time DESC
-    LIMIT #{arg6,jdbcType=INTEGER}, #{arg7,jdbcType=INTEGER}
+      <if test="arg2 != 0">
+        AND a.teacher_id = #{arg2,jdbcType=INTEGER}
+      </if>
+      <if test="arg3 != 0">
+        AND a.technology_id = #{arg3,jdbcType=INTEGER}
+      </if>
+      <if test="arg4 != null">
+        AND a.course_time_begin &lt;= #{arg4,jdbcType=VARCHAR}
+      </if>
+      <if test="arg5 != null">
+        AND a.data_status = #{arg5,jdbcType=VARCHAR}
+      </if>
+      <if test="arg8 != 0">
+        AND b.direction_id = #{arg8,jdbcType=INTEGER}
+      </if>
+      <if test="arg9 != 0">
+        AND b.category_id = #{arg9,jdbcType=INTEGER}
+      </if>
+      ORDER BY a.data_status, a.update_time DESC
+      LIMIT #{arg6,jdbcType=INTEGER}, #{arg7,jdbcType=INTEGER}
     ) A
     INNER JOIN shangshufang_customer.university B
     ON A.university_code = B.university_code
@@ -626,131 +625,131 @@
     ON A.university_code = E.university_code
     AND A.school_id = E.school_id
     AND A.teacher_id = E.customer_id
-    INNER JOIN
+    LEFT JOIN
     (
-    SELECT
-    technology_id,
-    COUNT(DISTINCT company_id) AS course_technology_using_company_count
-    FROM shangshufang_customer.technology_using
-    GROUP BY technology_id
+      SELECT
+      technology_id,
+      COUNT(DISTINCT company_id) AS course_technology_using_company_count
+      FROM shangshufang_customer.technology_using
+      GROUP BY technology_id
     ) F
     ON A.technology_id = F.technology_id
-    INNER JOIN
+    LEFT JOIN
     (
-    SELECT
-    university_code,
-    school_id,
-    course_id,
-    technology_id,
-    COUNT(DISTINCT knowledge_id) AS course_knowledge_count
-    FROM shangshufang_customer.course_plan
-    GROUP BY university_code, school_id, course_id, technology_id
+      SELECT
+      university_code,
+      school_id,
+      course_id,
+      technology_id,
+      COUNT(DISTINCT knowledge_id) AS course_knowledge_count
+      FROM shangshufang_customer.course_plan
+      GROUP BY university_code, school_id, course_id, technology_id
     ) G
     ON A.university_code = G.university_code
     AND A.school_id = G.school_id
     AND A.course_id = G.course_id
     AND A.technology_id = G.technology_id
-    INNER JOIN
+    LEFT JOIN
     (
-    SELECT
-    technology_id,
-    COUNT(1) AS technology_knowledge_count
-    FROM shangshufang_base.technology_knowledge
-    WHERE data_status = 'A'
-    GROUP BY technology_id
+      SELECT
+      technology_id,
+      COUNT(1) AS technology_knowledge_count
+      FROM shangshufang_base.technology_knowledge
+      WHERE data_status = 'A'
+      GROUP BY technology_id
     ) H
     ON A.technology_id = H.technology_id
     LEFT JOIN
     (
-    SELECT
-    A.course_id,
-    COUNT(1) AS course_knowledge_exercises_count
-    FROM shangshufang_customer.course A
-    INNER JOIN shangshufang_customer.course_plan B
-    ON A.university_code = B.university_code
-    AND A.school_id = B.school_id
-    AND A.course_id = B.course_id
-    AND A.technology_id = B.technology_id
-    INNER JOIN shangshufang_base.technology_knowledge_exercises C
-    ON B.technology_id = C.technology_id
-    AND B.knowledge_id = C.knowledge_id
-    AND C.data_status = 'A'
-    INNER JOIN shangshufang_base.technology d
-    ON A.technology_id = d.technology_id
-    WHERE A.data_status != '3'
-    <if test="arg10 == true">
-      AND A.university_code = #{arg0,jdbcType=INTEGER}
-    </if>
-    <if test="arg10 != true">
-      AND A.university_code != #{arg0,jdbcType=INTEGER}
-    </if>
-    <if test="arg1 != 0">
-      AND A.school_id = #{arg1,jdbcType=INTEGER}
-    </if>
-    <if test="arg2 != 0">
-      AND A.teacher_id = #{arg2,jdbcType=INTEGER}
-    </if>
-    <if test="arg3 != 0">
-      AND A.technology_id = #{arg3,jdbcType=INTEGER}
-    </if>
-    <if test="arg4 != null">
-      AND A.course_time_begin &lt;= #{arg4,jdbcType=VARCHAR}
-    </if>
-    <if test="arg5 != null">
-      AND A.data_status = #{arg5,jdbcType=VARCHAR}
-    </if>
-    <if test="arg8 != 0">
-      AND d.direction_id = #{arg8,jdbcType=INTEGER}
-    </if>
-    <if test="arg9 != 0">
-      AND d.category_id = #{arg9,jdbcType=INTEGER}
-    </if>
-    GROUP BY A.course_id
+      SELECT
+      A.course_id,
+      COUNT(1) AS course_knowledge_exercises_count
+      FROM shangshufang_customer.course A
+      INNER JOIN shangshufang_customer.course_plan B
+      ON A.university_code = B.university_code
+      AND A.school_id = B.school_id
+      AND A.course_id = B.course_id
+      AND A.technology_id = B.technology_id
+      INNER JOIN shangshufang_base.technology_knowledge_exercises C
+      ON B.technology_id = C.technology_id
+      AND B.knowledge_id = C.knowledge_id
+      AND C.data_status = 'A'
+      INNER JOIN shangshufang_base.technology d
+      ON A.technology_id = d.technology_id
+      WHERE A.data_status != '3'
+      <if test="arg10 == true">
+        AND A.university_code = #{arg0,jdbcType=INTEGER}
+      </if>
+      <if test="arg10 != true">
+        AND A.university_code != #{arg0,jdbcType=INTEGER}
+      </if>
+      <if test="arg1 != 0">
+        AND A.school_id = #{arg1,jdbcType=INTEGER}
+      </if>
+      <if test="arg2 != 0">
+        AND A.teacher_id = #{arg2,jdbcType=INTEGER}
+      </if>
+      <if test="arg3 != 0">
+        AND A.technology_id = #{arg3,jdbcType=INTEGER}
+      </if>
+      <if test="arg4 != null">
+        AND A.course_time_begin &lt;= #{arg4,jdbcType=VARCHAR}
+      </if>
+      <if test="arg5 != null">
+        AND A.data_status = #{arg5,jdbcType=VARCHAR}
+      </if>
+      <if test="arg8 != 0">
+        AND d.direction_id = #{arg8,jdbcType=INTEGER}
+      </if>
+      <if test="arg9 != 0">
+        AND d.category_id = #{arg9,jdbcType=INTEGER}
+      </if>
+      GROUP BY A.course_id
     ) I
     ON A.course_id = I.course_id
     LEFT JOIN
     (
-    SELECT course_id, COUNT(1) AS course_sing_up_count
-    FROM shangshufang_customer.course_sign_up
-    GROUP BY course_id
+      SELECT course_id, COUNT(1) AS course_sing_up_count
+      FROM shangshufang_customer.course_sign_up
+      GROUP BY course_id
     ) J
     ON A.course_id = J.course_id
     LEFT JOIN
     (
-    SELECT
-    A.course_id,
-    COUNT(DISTINCT A.question_id) AS course_question_finish
-    FROM shangshufang_customer.course_question A
-    INNER JOIN shangshufang_customer.course_question_leave_message B
-    ON A.question_id = B.question_id
-    AND B.data_status = 'A'
-    WHERE A.data_status = 'A'
-    GROUP BY A.course_id
+      SELECT
+      A.course_id,
+      COUNT(DISTINCT A.question_id) AS course_question_finish
+      FROM shangshufang_customer.course_question A
+      INNER JOIN shangshufang_customer.course_question_leave_message B
+      ON A.question_id = B.question_id
+      AND B.data_status = 'A'
+      WHERE A.data_status = 'A'
+      GROUP BY A.course_id
     ) K
     ON A.course_id = K.course_id
     LEFT JOIN
     (
-    SELECT
-    course_id,
-    COUNT(1) AS course_question
-    FROM shangshufang_customer.course_question
-    WHERE data_status = 'A'
-    GROUP BY course_id
+      SELECT
+      course_id,
+      COUNT(1) AS course_question
+      FROM shangshufang_customer.course_question
+      WHERE data_status = 'A'
+      GROUP BY course_id
     ) L
     ON A.course_id = L.course_id
     LEFT JOIN
     (
-    SELECT course_id, COUNT(DISTINCT course_class) AS course_class_total_count
-    FROM shangshufang_customer.course_plan
-    GROUP BY course_id
+      SELECT course_id, COUNT(DISTINCT course_class) AS course_class_total_count
+      FROM shangshufang_customer.course_plan
+      GROUP BY course_id
     ) M
     ON A.course_id = M.course_id
     LEFT JOIN
     (
-    SELECT course_id, COUNT(DISTINCT course_class) AS course_class_finish_count
-    FROM shangshufang_customer.course_plan
-    WHERE data_status = 'F'
-    GROUP BY course_id
+      SELECT course_id, COUNT(DISTINCT course_class) AS course_class_finish_count
+      FROM shangshufang_customer.course_plan
+      WHERE data_status = 'F'
+      GROUP BY course_id
     ) N
     ON A.course_id = N.course_id
     ORDER BY a.data_status, a.update_time DESC;

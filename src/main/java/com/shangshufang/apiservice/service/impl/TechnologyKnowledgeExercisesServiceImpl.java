@@ -78,10 +78,12 @@ public class TechnologyKnowledgeExercisesServiceImpl implements TechnologyKnowle
                     ObjectConvertUtils.toBean(knowledgeEntity, knowledgeModel);
 
                     List<TechnologyKnowledgeExercisesEntity> exercisesEntityList = knowledgeExercisesMapper.searchList4Knowledge(knowledgeEntity.getTechnologyID(), knowledgeEntity.getKnowledgeID());
+                    List<TechnologyKnowledgeExercisesVO> knowledgeExercisesModelList = new ArrayList<>();
                     if(exercisesEntityList.isEmpty()){
+                        knowledgeModel.setKnowledgeExercisesList(knowledgeExercisesModelList);
+                        knowledgeModelList.add(knowledgeModel);
                         continue;
                     }
-                    List<TechnologyKnowledgeExercisesVO> knowledgeExercisesModelList = new ArrayList<>();
                     for (TechnologyKnowledgeExercisesEntity exercisesEntity : exercisesEntityList) {
                         TechnologyKnowledgeExercisesVO exercisesModel = new TechnologyKnowledgeExercisesVO();
                         ObjectConvertUtils.toBean(exercisesEntity, exercisesModel);
