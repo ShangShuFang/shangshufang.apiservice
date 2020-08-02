@@ -35,15 +35,15 @@ public class TechnologyKnowledgeExercisesServiceImpl implements TechnologyKnowle
     private Logger logger = LogManager.getLogger(TechnologyKnowledgeExercisesServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, int technologyID, int learningPhaseID, int knowledgeID) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, int technologyID, int knowledgeID) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<TechnologyKnowledgeExercisesVO> modelList = new ArrayList<>();
-            int totalCount = myMapper.searchTotalCount(technologyID, learningPhaseID, knowledgeID);
+            int totalCount = myMapper.searchTotalCount(technologyID, knowledgeID);
             if (totalCount == 0) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<TechnologyKnowledgeExercisesEntity> entityList =  myMapper.searchList(startIndex, pageSize, technologyID, learningPhaseID, knowledgeID);
+            List<TechnologyKnowledgeExercisesEntity> entityList =  myMapper.searchList(startIndex, pageSize, technologyID, knowledgeID);
             for (TechnologyKnowledgeExercisesEntity entity : entityList) {
                 TechnologyKnowledgeExercisesVO model = new TechnologyKnowledgeExercisesVO();
                 ObjectConvertUtils.toBean(entity, model);

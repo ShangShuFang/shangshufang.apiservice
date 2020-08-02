@@ -12,13 +12,12 @@ public class TechnologyKnowledgeExercisesController {
     @Autowired
     private TechnologyKnowledgeExercisesServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{technologyID}/{learningPhaseID}/{knowledgeID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{technologyID}/{knowledgeID}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
                                     @PathVariable("technologyID") int technologyID,
-                                    @PathVariable("learningPhaseID") int learningPhaseID,
                                     @PathVariable("knowledgeID") int knowledgeID){
-        return serviceImpl.findList(pageNumber, pageSize, technologyID, learningPhaseID, knowledgeID);
+        return serviceImpl.findList(pageNumber, pageSize, technologyID, knowledgeID);
     }
 
     @RequestMapping(value = "/list/assigned/{universityCode}/{schoolID}/{courseID}", method = RequestMethod.GET)

@@ -19,9 +19,8 @@
     SELECT
     COUNT(1) AS total_count
     FROM shangshufang_base.technology_knowledge_exercises
-    WHERE technology_id = #{arg0,jdbcType=INTEGER}
-    AND learning_phase_id = #{arg1,jdbcType=VARCHAR}
-    AND knowledge_id = #{arg2,jdbcType=VARCHAR};
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+    AND knowledge_id = #{knowledgeID,jdbcType=VARCHAR};
   </select>
 
   <select id="searchList" resultMap="BaseResultMap">
@@ -47,11 +46,10 @@
     ON A.create_user = B.admin_id
     INNER JOIN shangshufang_base.system_admin C
     ON A.update_user = C.admin_id
-    WHERE technology_id = #{arg2,jdbcType=INTEGER}
-    AND learning_phase_id = #{arg3,jdbcType=VARCHAR}
-    AND knowledge_id = #{arg4,jdbcType=VARCHAR}
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+    AND knowledge_id = #{knowledgeID,jdbcType=VARCHAR}
     ORDER BY A.document_url
-    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
 
   <select id="searchList4Knowledge" resultMap="BaseResultMap">

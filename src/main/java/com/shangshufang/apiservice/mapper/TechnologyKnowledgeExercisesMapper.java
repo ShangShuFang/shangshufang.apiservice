@@ -2,14 +2,18 @@ package com.shangshufang.apiservice.mapper;
 
 import com.shangshufang.apiservice.entity.TechnologyKnowledgeExercisesEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 @Mapper
 public interface TechnologyKnowledgeExercisesMapper extends BaseMapper<TechnologyKnowledgeExercisesEntity> {
-    int searchTotalCount(int technologyID, int learningPhaseID, int knowledgeID);
+    int searchTotalCount(@Param("technologyID") int technologyID, @Param("knowledgeID") int knowledgeID);
 
-    List<TechnologyKnowledgeExercisesEntity> searchList(int startIndex, int pageSize, int technologyID, int learningPhaseID, int knowledgeID);
+    List<TechnologyKnowledgeExercisesEntity> searchList(@Param("startIndex") int startIndex,
+                                                        @Param("pageSize") int pageSize,
+                                                        @Param("technologyID") int technologyID,
+                                                        @Param("knowledgeID") int knowledgeID);
 
     List<TechnologyKnowledgeExercisesEntity> searchList4Knowledge(int technologyID, int knowledgeID);
 
