@@ -34,16 +34,17 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
     private Logger logger = LogManager.getLogger(UniversityStudentExercisesServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, int courseUniversityCode, int courseSchoolID, int courseID, String dataStatus) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, int courseUniversityCode, int courseSchoolID, int courseID, String dataStatus, String studentName) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<UniversityStudentExercisesVO> modelList = new ArrayList<>();
             dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
-            int totalCount = universityStudentExercisesMapper.searchTotalCount(courseUniversityCode, courseSchoolID, courseID, dataStatus);
-            if(totalCount == 0){
+            studentName = studentName.equals(ParameterConstant.NO_PARAMETER) ? null : studentName;
+            int totalCount = universityStudentExercisesMapper.searchTotalCount(courseUniversityCode, courseSchoolID, courseID, dataStatus, studentName);
+            if(totalCount == 0) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<UniversityStudentExercisesEntity> entityList =  universityStudentExercisesMapper.searchList(startIndex, pageSize, courseUniversityCode, courseSchoolID, courseID, dataStatus);
+            List<UniversityStudentExercisesEntity> entityList =  universityStudentExercisesMapper.searchList(startIndex, pageSize, courseUniversityCode, courseSchoolID, courseID, dataStatus, studentName);
             for (UniversityStudentExercisesEntity entity : entityList) {
                 UniversityStudentExercisesVO model = new UniversityStudentExercisesVO();
                 ObjectConvertUtils.toBean(entity, model);

@@ -70,11 +70,16 @@
     ON A.technology_id = F.technology_id
     AND A.knowledge_id = F.knowledge_id
     AND A.exercises_document_id = F.exercises_id
-    WHERE A.course_university_code = #{arg0,jdbcType=INTEGER}
-    AND A.course_school_id = #{arg1,jdbcType=INTEGER}
-    AND A.course_id = #{arg2,jdbcType=INTEGER}
-    <if test="arg3 != null">
-      AND A.data_status = #{arg3,jdbcType=VARCHAR}
+    INNER JOIN shangshufang_customer.university_student g
+    ON a.student_id = g.student_id
+    WHERE A.course_university_code = #{courseUniversityCode,jdbcType=INTEGER}
+    AND A.course_school_id = #{courseSchoolID,jdbcType=INTEGER}
+    AND A.course_id = #{courseID,jdbcType=INTEGER}
+    <if test="dataStatus != null">
+      AND A.data_status = #{dataStatus,jdbcType=VARCHAR}
+    </if>
+    <if test="studentName != null">
+      AND g.full_name = #{studentName,jdbcType=VARCHAR}
     </if>;
   </select>
   <select id="searchList" resultMap="BaseResultMap">
@@ -89,8 +94,8 @@
     F.photo AS student_photo,
     F.cellphone,
     F.enrollment_year,
-    N.ability_level,
-    N.position_site,
+    IFNULL(N.ability_level, 'L0') AS ability_level,
+    IFNULL(N.position_site, 0) AS position_site,
     A.course_university_code,
     D.university_name AS course_university_name,
     A.course_school_id,
@@ -134,9 +139,7 @@
     ON A.course_university_code = E.university_code
     AND A.course_school_id = E.school_id
     INNER JOIN shangshufang_customer.university_student F
-    ON A.student_university_code = F.university_code
-    AND A.student_school_id = F.school_id
-    AND A.student_id = F.student_id
+    ON A.student_id = F.student_id
     INNER JOIN shangshufang_customer.course G
     ON A.course_university_code = G.university_code
     AND A.course_school_id = G.school_id
@@ -156,60 +159,63 @@
     AND K.data_status = 'A'
     LEFT JOIN
     (
-    SELECT
-    C.student_exercises_id,
-    C.reviewer_id,
-    C.reviewer_type,
-    D.full_name AS reviewer_name_teacher,
-    E.full_name AS reviewer_name_student,
-    C.update_time
-    FROM
-    (
-    SELECT
-    A.review_id,
-    A.student_exercises_id,
-    A.update_time,
-    B.reviewer_id,
-    B.reviewer_university_code,
-    B.reviewer_school_id,
-    B.reviewer_type
-    FROM
-    (
-    SELECT
-    student_exercises_id,
-    MAX(review_id) AS review_id,
-    MAX(update_time) AS update_time
-    FROM shangshufang_customer.university_student_exercises_review
-    GROUP BY student_exercises_id
-    ) A
-    INNER JOIN shangshufang_customer.university_student_exercises_review B
-    ON A.review_id = B.review_id
-    AND A.student_exercises_id = B.student_exercises_id
-    ) C
-    LEFT JOIN shangshufang_customer.university_customer D
-    ON C.reviewer_university_code = D.university_code
-    AND C.reviewer_school_id = D.school_id
-    AND C.reviewer_id = D.customer_id
-    AND C.reviewer_type = 'T'
-    LEFT JOIN shangshufang_customer.university_student E
-    ON C.reviewer_university_code = E.university_code
-    AND C.reviewer_school_id = E.school_id
-    AND C.reviewer_id = E.student_id
-    AND C.reviewer_type = 'S'
+      SELECT
+      C.student_exercises_id,
+      C.reviewer_id,
+      C.reviewer_type,
+      D.full_name AS reviewer_name_teacher,
+      E.full_name AS reviewer_name_student,
+      C.update_time
+      FROM
+      (
+        SELECT
+        A.review_id,
+        A.student_exercises_id,
+        A.update_time,
+        B.reviewer_id,
+        B.reviewer_university_code,
+        B.reviewer_school_id,
+        B.reviewer_type
+        FROM
+        (
+          SELECT
+          student_exercises_id,
+          MAX(review_id) AS review_id,
+          MAX(update_time) AS update_time
+          FROM shangshufang_customer.university_student_exercises_review
+          GROUP BY student_exercises_id
+        ) A
+        INNER JOIN shangshufang_customer.university_student_exercises_review B
+        ON A.review_id = B.review_id
+        AND A.student_exercises_id = B.student_exercises_id
+      ) C
+      LEFT JOIN shangshufang_customer.university_customer D
+      ON C.reviewer_university_code = D.university_code
+      AND C.reviewer_school_id = D.school_id
+      AND C.reviewer_id = D.customer_id
+      AND C.reviewer_type = 'T'
+      LEFT JOIN shangshufang_customer.university_student E
+      ON C.reviewer_university_code = E.university_code
+      AND C.reviewer_school_id = E.school_id
+      AND C.reviewer_id = E.student_id
+      AND C.reviewer_type = 'S'
     ) M
     ON A.student_exercises_id = M.student_exercises_id
-    INNER JOIN shangshufang_customer.university_student_ability_analysis N
+    LEFT JOIN shangshufang_customer.university_student_ability_analysis N
     ON A.student_university_code = N.student_university_code
     AND A.student_school_id = N.student_school_id
     AND A.student_id = N.student_id
-    WHERE A.course_university_code = #{arg2,jdbcType=INTEGER}
-    AND A.course_school_id = #{arg3,jdbcType=INTEGER}
-    AND A.course_id = #{arg4,jdbcType=INTEGER}
-    <if test="arg5 != null">
-      AND A.data_status = #{arg5,jdbcType=VARCHAR}
+    WHERE A.course_university_code = #{courseUniversityCode,jdbcType=INTEGER}
+    AND A.course_school_id = #{courseSchoolID,jdbcType=INTEGER}
+    AND A.course_id = #{courseID,jdbcType=INTEGER}
+    <if test="dataStatus != null">
+      AND A.data_status = #{dataStatus,jdbcType=VARCHAR}
+    </if>
+    <if test="studentName != null">
+      AND F.full_name = #{studentName,jdbcType=VARCHAR}
     </if>
     ORDER BY A.course_class, A.student_id, A.knowledge_id, A.exercises_document_id, A.update_time DESC
-    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
   <select id="searchTotalCount4Student" resultType="java.lang.Integer">
     SELECT COUNT(1) AS total_count
@@ -242,8 +248,8 @@
     F.photo AS student_photo,
     F.cellphone,
     F.enrollment_year,
-    N.ability_level,
-    N.position_site,
+    IFNULL(N.ability_level, 'L0') AS ability_level,
+    IFNULL(N.position_site, 0) AS position_site,
     A.course_university_code,
     D.university_name AS course_university_name,
     A.course_school_id,
@@ -307,49 +313,49 @@
     AND K.data_status = 'A'
     LEFT JOIN
     (
-    SELECT
-    C.student_exercises_id,
-    C.reviewer_id,
-    C.reviewer_type,
-    D.full_name AS reviewer_name_teacher,
-    E.full_name AS reviewer_name_student,
-    C.update_time
-    FROM
-    (
-    SELECT
-    A.review_id,
-    A.student_exercises_id,
-    A.update_time,
-    B.reviewer_id,
-    B.reviewer_university_code,
-    B.reviewer_school_id,
-    B.reviewer_type
-    FROM
-    (
-    SELECT
-    student_exercises_id,
-    MAX(review_id) AS review_id,
-    MAX(update_time) AS update_time
-    FROM shangshufang_customer.university_student_exercises_review
-    GROUP BY student_exercises_id
-    ) A
-    INNER JOIN shangshufang_customer.university_student_exercises_review B
-    ON A.review_id = B.review_id
-    AND A.student_exercises_id = B.student_exercises_id
-    ) C
-    LEFT JOIN shangshufang_customer.university_customer D
-    ON C.reviewer_university_code = D.university_code
-    AND C.reviewer_school_id = D.school_id
-    AND C.reviewer_id = D.customer_id
-    AND C.reviewer_type = 'T'
-    LEFT JOIN shangshufang_customer.university_student E
-    ON C.reviewer_university_code = E.university_code
-    AND C.reviewer_school_id = E.school_id
-    AND C.reviewer_id = E.student_id
-    AND C.reviewer_type = 'S'
+      SELECT
+      C.student_exercises_id,
+      C.reviewer_id,
+      C.reviewer_type,
+      D.full_name AS reviewer_name_teacher,
+      E.full_name AS reviewer_name_student,
+      C.update_time
+      FROM
+      (
+        SELECT
+        A.review_id,
+        A.student_exercises_id,
+        A.update_time,
+        B.reviewer_id,
+        B.reviewer_university_code,
+        B.reviewer_school_id,
+        B.reviewer_type
+        FROM
+        (
+          SELECT
+          student_exercises_id,
+          MAX(review_id) AS review_id,
+          MAX(update_time) AS update_time
+          FROM shangshufang_customer.university_student_exercises_review
+          GROUP BY student_exercises_id
+        ) A
+        INNER JOIN shangshufang_customer.university_student_exercises_review B
+        ON A.review_id = B.review_id
+        AND A.student_exercises_id = B.student_exercises_id
+      ) C
+      LEFT JOIN shangshufang_customer.university_customer D
+      ON C.reviewer_university_code = D.university_code
+      AND C.reviewer_school_id = D.school_id
+      AND C.reviewer_id = D.customer_id
+      AND C.reviewer_type = 'T'
+      LEFT JOIN shangshufang_customer.university_student E
+      ON C.reviewer_university_code = E.university_code
+      AND C.reviewer_school_id = E.school_id
+      AND C.reviewer_id = E.student_id
+      AND C.reviewer_type = 'S'
     ) M
     ON A.student_exercises_id = M.student_exercises_id
-    INNER JOIN shangshufang_customer.university_student_ability_analysis N
+    LEFT JOIN shangshufang_customer.university_student_ability_analysis N
     ON A.student_university_code = N.student_university_code
     AND A.student_school_id = N.student_school_id
     AND A.student_id = N.student_id

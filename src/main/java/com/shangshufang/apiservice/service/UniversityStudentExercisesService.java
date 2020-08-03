@@ -5,7 +5,7 @@ import com.shangshufang.apiservice.vo.UnifiedResponse;
 import org.apache.ibatis.annotations.Param;
 
 public interface UniversityStudentExercisesService extends BaseService<UniversityStudentExercisesDTO> {
-    UnifiedResponse findList(int pageNumber, int pageSize, int courseUniversityCode, int courseSchoolID, int courseID, String dataStatus);
+    UnifiedResponse findList(int pageNumber, int pageSize, int courseUniversityCode, int courseSchoolID, int courseID, String dataStatus, String studentName);
 
     UnifiedResponse findList4Student(int pageNumber, int pageSize, int studentID, int courseID, String dataStatus, String studentName, boolean isSelf);
 

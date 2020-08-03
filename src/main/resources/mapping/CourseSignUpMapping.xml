@@ -46,8 +46,8 @@
            f.photo                                         AS student_photo,
            f.cellphone,
            LEFT(f.enrollment_year, 4)                      AS enrollment_year,
-           h.ability_level,
-           h.position_site,
+           IFNULL(h.ability_level, 'L0') AS ability_level,
+           IFNULL(h.position_site, 0) AS position_site,
            a.is_assistant,
            a.course_university_code,
            d.university_name                               AS course_university_name,
@@ -82,7 +82,7 @@
                       ON a.course_university_code = g.university_code
                         AND a.course_school_id = g.school_id
                         AND a.course_id = g.course_id
-           INNER JOIN shangshufang_customer.university_student_ability_analysis h
+           LEFT JOIN shangshufang_customer.university_student_ability_analysis h
                       ON a.student_university_code = h.student_university_code
                         AND a.student_school_id = h.student_school_id
                         AND a.student_id = h.student_id

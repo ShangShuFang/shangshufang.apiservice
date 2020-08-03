@@ -8,9 +8,19 @@ import java.util.List;
 
 @Mapper
 public interface UniversityStudentExercisesMapper extends BaseMapper<UniversityStudentExercisesEntity> {
-    int searchTotalCount(int courseUniversityCode, int courseSchoolID, int courseID, String dataStatus);
+    int searchTotalCount(@Param("courseUniversityCode") int courseUniversityCode,
+                         @Param("courseSchoolID") int courseSchoolID,
+                         @Param("courseID") int courseID,
+                         @Param("dataStatus") String dataStatus,
+                         @Param("studentName") String studentName);
 
-    List<UniversityStudentExercisesEntity> searchList(int startIndex, int pageSize, int courseUniversityCode, int courseSchoolID, int courseID, String dataStatus);
+    List<UniversityStudentExercisesEntity> searchList(@Param("startIndex") int startIndex,
+                                                      @Param("pageSize") int pageSize,
+                                                      @Param("courseUniversityCode") int courseUniversityCode,
+                                                      @Param("courseSchoolID") int courseSchoolID,
+                                                      @Param("courseID") int courseID,
+                                                      @Param("dataStatus") String dataStatus,
+                                                      @Param("studentName") String studentName);
 
     int searchTotalCount4Student(@Param("studentID") int studentID,
                                  @Param("courseID") int courseID,
