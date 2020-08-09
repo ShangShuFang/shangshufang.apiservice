@@ -214,7 +214,7 @@
     (
     SELECT course_id, COUNT(DISTINCT course_class) AS course_class_finish_count
     FROM shangshufang_customer.course_plan
-    WHERE data_status = 'F'
+    WHERE data_status = '2'
     GROUP BY course_id
     ) n
     ON a.course_id = n.course_id
@@ -480,7 +480,7 @@
     (
     SELECT course_id, COUNT(DISTINCT course_class) AS course_class_finish_count
     FROM shangshufang_customer.course_plan
-    WHERE data_status = 'F'
+    WHERE data_status = '2'
     GROUP BY course_id
     ) N
     ON A.course_id = N.course_id
@@ -748,7 +748,7 @@
     (
       SELECT course_id, COUNT(DISTINCT course_class) AS course_class_finish_count
       FROM shangshufang_customer.course_plan
-      WHERE data_status = 'F'
+      WHERE data_status = '2'
       GROUP BY course_id
     ) N
     ON A.course_id = N.course_id
@@ -1005,7 +1005,7 @@
     (
     SELECT course_id, COUNT(DISTINCT course_class) AS course_class_finish_count
     FROM shangshufang_customer.course_plan
-    WHERE data_status = 'F'
+    WHERE data_status = '2'
     GROUP BY course_id
     ) N
     ON A.course_id = N.course_id

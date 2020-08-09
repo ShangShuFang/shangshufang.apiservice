@@ -130,7 +130,7 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                     //取得当前课程当前节次每个知识点的习题列表
                     List<TechnologyKnowledgeExercisesEntity> knowledgeExercisesEntityList = knowledgeExercisesMapper.searchList4CourseKnowledge(dto.getCourseUniversityCode(), dto.getCourseSchoolID(), dto.getCourseID(), dto.getCourseClass(), coursePlanEntity.getKnowledgeID());
                     if(knowledgeExercisesEntityList.isEmpty()) {
-                        return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+                        continue;
                     }
 
                     //随机取得指定数量的练习题
@@ -156,7 +156,7 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                 }
             }
 
-            //更新当前课程对应的节次状态为"F"
+            //更新当前课程对应的节次状态为"2"
             CoursePlanEntity coursePlanEntity = new CoursePlanEntity();
             coursePlanEntity.setUniversityCode(dto.getCourseUniversityCode());
             coursePlanEntity.setSchoolID(dto.getCourseSchoolID());
