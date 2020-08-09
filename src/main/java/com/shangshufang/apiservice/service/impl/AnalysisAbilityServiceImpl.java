@@ -13,9 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.rmi.server.ExportException;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,6 +107,7 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
                     } else {
                         affectCount += myMapper.insert(entity);
                     }
+
                     //endregion
                 } catch (Exception ex) {
                     logger.error(ex.toString());
@@ -117,13 +116,13 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
             pageNumber++;
         }
         //endregion
-
         if (affectCount == 0) {
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectCount);
         }
 
         //region 依次计算每个学生每个技术的综合能力分值及计算名次，并再次更新到数据库中
         pageNumber = 1;
+        logger.info("......");
         while (true) {
             List<AbilityAnalysisResult4StudentMainInfoEntity> entityList;
             int startIndex = (pageNumber - 1) * PAGE_SIZE;
@@ -147,6 +146,7 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
                         technologyID = entity.getTechnologyID();
                         studentTotalCount = myMapper.searchStudentTotalCountWithTechnology(technologyID);
                     }
+
                     int lowerTotalCount = myMapper.searchStudentPositionNumberWithTechnology(technologyID, entity.getStandardScore());
                     DecimalFormat df = new DecimalFormat("0.00");
                     float positionSite = Float.parseFloat(df.format((float) lowerTotalCount / studentTotalCount));
@@ -154,6 +154,13 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
 
                     //region step2: 将计算后的名次站位更新回数据库
                     entity.setPositionSite(positionSite * 100);
+
+                    logger.info(String.format("student: %s      technologyID: %s      StandardScore: %s      lowerTotalCount: %s      positionSite: %s",
+                            entity.getStudentID(),
+                            technologyID,
+                            entity.getStandardScore(),
+                            lowerTotalCount,
+                            entity.getPositionSite()));
                     affectCount += myMapper.updatePositionSite(entity);
                     //endregion
                 } catch (Exception ex) {

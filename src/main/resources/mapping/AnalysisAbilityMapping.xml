@@ -471,6 +471,7 @@
              AND student_school_id = #{arg1,jdbcType=INTEGER}
              AND student_id = #{arg2,jdbcType=INTEGER}
              AND technology_id = #{arg3,jdbcType=INTEGER}
+             AND data_status != 'P'
            GROUP BY student_university_code, student_school_id, student_id, technology_id
          ) A
            LEFT JOIN
@@ -526,6 +527,7 @@
              AND student_school_id = #{arg1,jdbcType=INTEGER}
              AND student_id = #{arg2,jdbcType=INTEGER}
              AND technology_id = #{arg3,jdbcType=INTEGER}
+             AND data_status != 'P'
            GROUP BY student_university_code, student_school_id, student_id, technology_id
          ) A
            LEFT JOIN
@@ -618,6 +620,7 @@
         finish_exercises_count = #{finishExercisesCount,jdbcType=INTEGER},
         once_compilation_success_rate = #{onceCompilationSuccessRate,jdbcType=FLOAT},
         once_run_success_rate = #{onceRunSuccessRate,jdbcType=FLOAT},
+        standard_score = #{standardScore,jdbcType=FLOAT},
         ability_level = #{abilityLevel,jdbcType=VARCHAR}
     WHERE student_university_code = #{universityCode,jdbcType=INTEGER}
       AND student_school_id = #{schoolID,jdbcType=INTEGER}
@@ -1102,9 +1105,9 @@
            A.student_id,
            A.technology_id,
            A.months,
-           FORMAT(IFNULL(B.total_count, 0) / A.total_count * 100, 2) AS finish_percent,
-           FORMAT(IFNULL(C.total_count, 0) / A.total_count * 100, 2) AS once_compilation_success_percent,
-           FORMAT(IFNULL(D.total_count, 0) / A.total_count * 100, 2) AS once_run_correct_percent
+           FORMAT(IFNULL(C.total_count, 0) / A.total_count * 100, 2) AS finish_percent,
+           FORMAT(IFNULL(D.total_count, 0) / B.total_count * 100, 2) AS once_compilation_success_percent,
+           FORMAT(IFNULL(E.total_count, 0) / B.total_count * 100, 2) AS once_run_correct_percent
     FROM
       (
         SELECT student_university_code,
@@ -1122,6 +1125,23 @@
       ) A
         LEFT JOIN
       (
+        SELECT student_university_code,
+               student_school_id,
+               student_id,
+               technology_id,
+               DATE_FORMAT(update_time,'%Y-%m') months,
+               COUNT(1) total_count
+        FROM shangshufang_customer.university_student_exercises
+        WHERE student_university_code = #{arg0,jdbcType=INTEGER}
+          AND student_school_id = #{arg1,jdbcType=INTEGER}
+          AND student_id = #{arg2,jdbcType=INTEGER}
+          AND technology_id = #{arg3,jdbcType=INTEGER}
+          AND data_status != 'P'
+        GROUP BY months
+      ) B
+      ON A.months = B.months
+        LEFT JOIN
+      (
         SELECT DATE_FORMAT(update_time,'%Y-%m') months,
                COUNT(1) total_count
         FROM shangshufang_customer.university_student_exercises
@@ -1130,28 +1150,6 @@
           AND student_id = #{arg2,jdbcType=INTEGER}
           AND technology_id = #{arg3,jdbcType=INTEGER}
           AND data_status = 'S'
-        GROUP BY months
-      ) B
-      ON A.months = B.months
-        LEFT JOIN
-      (
-        SELECT DATE_FORMAT(U.update_time,'%Y-%m') months,
-               COUNT(U.student_exercises_id) total_count
-        FROM
-          (
-            SELECT A.update_time,
-                   A.student_exercises_id
-            FROM shangshufang_customer.university_student_exercises A
-                   LEFT JOIN shangshufang_customer.university_student_exercises_review B
-                             ON A.student_exercises_id = B.student_exercises_id
-            WHERE A.student_university_code = #{arg0,jdbcType=INTEGER}
-              AND A.student_school_id = #{arg1,jdbcType=INTEGER}
-              AND A.student_id = #{arg2,jdbcType=INTEGER}
-              AND A.technology_id = #{arg3,jdbcType=INTEGER}
-              AND A.data_status != 'P'
-            GROUP BY A.student_exercises_id
-            HAVING MIN(B.compilation_result) = 'S'
-          ) U
         GROUP BY months
       ) C
       ON A.months = C.months
@@ -1172,11 +1170,33 @@
               AND A.technology_id = #{arg3,jdbcType=INTEGER}
               AND A.data_status != 'P'
             GROUP BY A.student_exercises_id
-            HAVING MIN(B.run_result) = 'S'
+            HAVING MIN(B.compilation_result) = 'S'
           ) U
         GROUP BY months
       ) D
-      ON A.months = D.months;
+      ON A.months = D.months
+        LEFT JOIN
+      (
+        SELECT DATE_FORMAT(U.update_time,'%Y-%m') months,
+               COUNT(U.student_exercises_id) total_count
+        FROM
+          (
+            SELECT A.update_time,
+                   A.student_exercises_id
+            FROM shangshufang_customer.university_student_exercises A
+                   LEFT JOIN shangshufang_customer.university_student_exercises_review B
+                             ON A.student_exercises_id = B.student_exercises_id
+            WHERE A.student_university_code = #{arg0,jdbcType=INTEGER}
+              AND A.student_school_id = #{arg1,jdbcType=INTEGER}
+              AND A.student_id = #{arg2,jdbcType=INTEGER}
+              AND A.technology_id = #{arg3,jdbcType=INTEGER}
+              AND A.data_status != 'P'
+            GROUP BY A.student_exercises_id
+            HAVING MIN(B.run_result) = 'S'
+          ) U
+        GROUP BY months
+      ) E
+      ON A.months = E.months;
   </select>
   <!--endregion-->
 
