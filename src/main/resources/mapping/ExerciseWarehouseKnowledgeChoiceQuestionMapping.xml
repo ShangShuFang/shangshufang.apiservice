@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.ExerciseWarehouseKnowledgeChoiceQuestionMapper">
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.ExerciseWarehouseKnowledgeChoiceQuestionEntity">
+    <id column="exercises_id" property="exercisesID" jdbcType="INTEGER"/>
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
+    <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER"/>
+    <result column="exercises_title" property="exercisesTitle" jdbcType="VARCHAR"/>
+    <result column="exercises_source" property="exercisesSource" jdbcType="VARCHAR"/>
+    <result column="exercises_type" property="exercisesType" jdbcType="VARCHAR"/>
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_base.exercise_warehouse_knowledge_choice_question
+    <where>
+      <if test="technologyID != 0">
+        technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+      <if test="knowledgeID != 0">
+        AND knowledge_id = #{knowledgeID,jdbcType=INTEGER}
+      </if>
+      <if test="dataStatus != null">
+        AND data_status = #{dataStatus,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT a.exercises_id,
+    a.technology_id,
+    a.knowledge_id,
+    a.exercises_title,
+    a.exercises_source,
+    a.exercises_type,
+    a.data_status,
+    CASE WHEN a.data_status = 'P' THEN '待审批'
+    WHEN a.data_status = 'A' THEN '审批通过'
+    WHEN a.data_status = 'D' THEN '审批未通过'
+    ELSE '未知数据状态'
+    END AS data_status_text,
+    b.admin_name                                    AS create_user,
+    DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+    c.admin_name                                    AS update_user,
+    DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_base.exercise_warehouse_knowledge_choice_question a
+    INNER JOIN shangshufang_base.system_admin b
+    ON a.create_user = b.admin_id
+    INNER JOIN shangshufang_base.system_admin c
+    ON a.update_user = c.admin_id
+    <where>
+      <if test="technologyID != 0">
+        technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+      <if test="knowledgeID != 0">
+        AND knowledge_id = #{knowledgeID,jdbcType=INTEGER}
+      </if>
+      <if test="dataStatus != null">
+        AND data_status = #{dataStatus,jdbcType=VARCHAR}
+      </if>
+    </where>
+    ORDER BY a.exercises_id
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+  </select>
+
+  <insert id="insert" useGeneratedKeys="true" keyProperty="exercisesID" parameterType="com.shangshufang.apiservice.entity.ExerciseWarehouseKnowledgeChoiceQuestionEntity">
+    INSERT INTO shangshufang_base.exercise_warehouse_knowledge_choice_question
+    (
+      technology_id,
+      knowledge_id,
+      exercises_title,
+      exercises_source,
+      exercises_type,
+      create_user,
+      update_user
+     )
+    VALUES
+     (
+      #{technologyID, jdbcType=INTEGER},
+      #{knowledgeID, jdbcType=INTEGER},
+      #{exercisesTitle, jdbcType=VARCHAR},
+      #{exercisesSource, jdbcType=VARCHAR},
+      #{exercisesType, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.ExerciseWarehouseKnowledgeChoiceQuestionEntity">
+    UPDATE shangshufang_base.exercise_warehouse_knowledge_choice_question
+    SET exercises_title = #{exercisesTitle,jdbcType=VARCHAR},
+        exercises_source = #{exercisesSource,jdbcType=VARCHAR},
+        exercises_type = #{exercisesType,jdbcType=VARCHAR},
+        update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+      AND knowledge_id = #{knowledgeID,jdbcType=INTEGER}
+      AND exercises_id = #{exercisesID,jdbcType=INTEGER};
+  </update>
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.ExerciseWarehouseKnowledgeChoiceQuestionEntity" >
+    UPDATE shangshufang_base.exercise_warehouse_knowledge_choice_question
+    SET data_status = #{dataStatus,jdbcType=VARCHAR},
+        update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+      AND knowledge_id = #{knowledgeID,jdbcType=INTEGER}
+      AND exercises_id = #{exercisesID,jdbcType=INTEGER};
+  </update>
+  <delete id="delete" parameterType="java.lang.Integer">
+    DELETE
+    FROM shangshufang_base.exercise_warehouse_knowledge_choice_question
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+      AND knowledge_id = #{knowledgeID,jdbcType=INTEGER}
+      AND exercises_id = #{exercisesID,jdbcType=INTEGER};
+  </delete>
+</mapper>
