@@ -11,5 +11,7 @@ public class TechnologyKnowledgeVO extends BaseVO {
     private String learningPhaseName;
     private String knowledgeName;
     private int usingCompanyCount;
-    private int knowledgeExercisesCount;
+    private int choiceExercisesCount;
+    private int blankExercisesCount;
+    private int programExercisesCount;
 }

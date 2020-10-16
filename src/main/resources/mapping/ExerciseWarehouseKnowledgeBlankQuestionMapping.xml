@@ -39,13 +39,14 @@
     a.right_answers,
     a.data_status,
     CASE WHEN a.data_status = 'P' THEN '待审批'
-    WHEN a.data_status = 'A' THEN '启用'
-    WHEN a.data_status = 'D' THEN '禁用'
+    WHEN a.data_status = 'A' THEN '审批通过'
+    WHEN a.data_status = 'D' THEN '审批未通过'
     ELSE '未知数据状态'
     END AS data_status_text,
+    b.admin_name AS create_user,
     DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-    b.admin_name                                    AS update_user,
-    DATE_FORMAT(c.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    c.admin_name                                    AS update_user,
+    DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
     FROM shangshufang_base.exercise_warehouse_knowledge_blank_question a
     INNER JOIN shangshufang_base.system_admin b
     ON a.create_user = b.admin_id
@@ -62,11 +63,11 @@
         AND data_status = #{dataStatus,jdbcType=VARCHAR}
       </if>
     </where>
-    ORDER BY a.update_time DESC
+    ORDER BY a.create_time
     LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
 
-  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.ExerciseWarehouseKnowledgeBlankQuestionEntity">
+  <insert id="insert" useGeneratedKeys="true" keyProperty="exercisesID"  parameterType="com.shangshufang.apiservice.entity.ExerciseWarehouseKnowledgeBlankQuestionEntity">
     INSERT INTO shangshufang_base.exercise_warehouse_knowledge_blank_question
     (
       technology_id,
@@ -90,21 +91,21 @@
   </insert>
   <update id="update" parameterType="com.shangshufang.apiservice.entity.ExerciseWarehouseKnowledgeBlankQuestionEntity">
     UPDATE shangshufang_base.exercise_warehouse_knowledge_blank_question
-    SET exercises_title = #{majorName,jdbcType=VARCHAR},
-        exercises_source = #{majorName,jdbcType=VARCHAR},
-        right_answers = #{majorName,jdbcType=VARCHAR},
+    SET exercises_title = #{exercisesTitle,jdbcType=VARCHAR},
+        exercises_source = #{exercisesSource,jdbcType=VARCHAR},
+        right_answers = #{rightAnswer,jdbcType=VARCHAR},
         update_user = #{updateUser,jdbcType=VARCHAR}
-    WHERE technology_id = #{universityCode,jdbcType=INTEGER}
-      AND knowledge_id = #{schoolID,jdbcType=INTEGER}
-      AND exercises_id = #{majorID,jdbcType=INTEGER};
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+      AND knowledge_id = #{knowledgeID,jdbcType=INTEGER}
+      AND exercises_id = #{exercisesID,jdbcType=INTEGER};
   </update>
   <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.ExerciseWarehouseKnowledgeBlankQuestionEntity" >
     UPDATE shangshufang_base.exercise_warehouse_knowledge_blank_question
     SET data_status = #{dataStatus,jdbcType=VARCHAR},
         update_user = #{updateUser,jdbcType=VARCHAR}
-    WHERE technology_id = #{universityCode,jdbcType=INTEGER}
-      AND knowledge_id = #{schoolID,jdbcType=INTEGER}
-      AND exercises_id = #{majorID,jdbcType=INTEGER};
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+      AND knowledge_id = #{knowledgeID,jdbcType=INTEGER}
+      AND exercises_id = #{exercisesID,jdbcType=INTEGER};
   </update>
   <delete id="delete" parameterType="java.lang.Integer">
     DELETE FROM shangshufang_base.exercise_warehouse_knowledge_blank_question

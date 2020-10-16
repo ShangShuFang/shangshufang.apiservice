@@ -9,7 +9,9 @@
     <result column="learning_phase_name" property="learningPhaseName" jdbcType="VARCHAR" />
     <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR" />
     <result column="using_company_count" property="usingCompanyCount" jdbcType="INTEGER" />
-    <result column="knowledge_exercises_count" property="knowledgeExercisesCount" jdbcType="INTEGER" />
+    <result column="choice_exercises_count" property="choiceExercisesCount" jdbcType="INTEGER" />
+    <result column="blank_exercises_count" property="blankExercisesCount" jdbcType="INTEGER" />
+    <result column="program_exercises_count" property="programExercisesCount" jdbcType="INTEGER" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -47,10 +49,12 @@
       ELSE '未知数据状态'
       END AS data_status_text,
       IFNULL(D.using_company_count, 0) AS using_company_count,
-      IFNULL(E.knowledge_exercises_count, 0) AS knowledge_exercises_count,
-      F.admin_name AS create_user,
+      IFNULL(E.program_exercises_count, 0) AS program_exercises_count,
+      IFNULL(f.choice_exercises_count, 0) AS choice_exercises_count,
+      IFNULL(g.blank_exercises_count, 0) AS blank_exercises_count,
+      h.admin_name AS create_user,
       DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-      G.admin_name AS update_user,
+      i.admin_name AS update_user,
       DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
     FROM shangshufang_base.technology_knowledge A
     INNER JOIN shangshufang_base.technology B
@@ -81,7 +85,7 @@
     (
       SELECT technology_id,
       knowledge_id,
-      COUNT(1) AS knowledge_exercises_count
+      COUNT(1) AS program_exercises_count
       FROM shangshufang_base.technology_knowledge_exercises
       WHERE 1 = 1
       <if test="arg2 != 0">
@@ -94,10 +98,39 @@
     ) E
     ON A.technology_id = E.technology_id
     AND A.knowledge_id = E.knowledge_id
-    INNER JOIN shangshufang_base.system_admin F
-    ON A.create_user = F.admin_id
-    INNER JOIN shangshufang_base.system_admin G
-    ON A.update_user = G.admin_id
+    LEFT JOIN
+    (
+      SELECT technology_id,
+      knowledge_id,
+      COUNT(1) AS choice_exercises_count
+      FROM shangshufang_base.exercise_warehouse_knowledge_choice_question
+      WHERE 1 = 1
+      <if test="arg2 != 0">
+        AND technology_id = #{arg2,jdbcType=INTEGER}
+      </if>
+      GROUP BY technology_id, knowledge_id
+    ) f
+    ON A.technology_id = f.technology_id
+    AND A.knowledge_id = f.knowledge_id
+    LEFT JOIN
+    (
+      SELECT technology_id,
+             knowledge_id,
+      COUNT(1) AS blank_exercises_count
+      FROM shangshufang_base.exercise_warehouse_knowledge_blank_question
+      WHERE 1 = 1
+      <if test="arg2 != 0">
+        AND technology_id = #{arg2,jdbcType=INTEGER}
+      </if>
+      GROUP BY technology_id, knowledge_id
+    ) g
+    ON A.technology_id = f.technology_id
+    AND A.knowledge_id = f.knowledge_id
+    INNER JOIN shangshufang_base.system_admin h
+    ON A.create_user = h.admin_id
+    INNER JOIN shangshufang_base.system_admin i
+    ON A.update_user = i.admin_id
+
     WHERE 1=1
     <if test="arg2 != 0">
       AND A.technology_id = #{arg2,jdbcType=INTEGER}
