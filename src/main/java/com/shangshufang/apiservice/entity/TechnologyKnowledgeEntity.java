@@ -14,5 +14,4 @@ public class TechnologyKnowledgeEntity extends BaseEntity {
     private int choiceExercisesCount;
     private int blankExercisesCount;
     private int programExercisesCount;
-//    private int knowledgeExercisesCount;
 }

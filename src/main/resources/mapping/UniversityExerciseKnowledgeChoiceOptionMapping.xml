@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.UniversityExerciseKnowledgeChoiceOptionMapper">
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.UniversityExerciseKnowledgeChoiceOptionEntity">
+    <id column="option_id" property="optionID" jdbcType="INTEGER"/>
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
+    <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER"/>
+    <result column="exercises_id" property="exercisesID" jdbcType="INTEGER"/>
+    <result column="option_text" property="optionText" jdbcType="VARCHAR"/>
+    <result column="is_answer" property="rightAnswer" jdbcType="INTEGER"/>
+    <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT option_id,
+    exercises_id,
+    option_text,
+    is_answer
+    FROM shangshufang_customer.university_exercise_knowledge_choice_option
+    <where>
+      <if test="technologyID != 0">
+        technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+      <if test="knowledgeID != 0">
+        AND knowledge_id = #{knowledgeID,jdbcType=INTEGER}
+      </if>
+      <if test="exercisesID != 0">
+        AND exercises_id = #{exercisesID,jdbcType=VARCHAR}
+      </if>
+    </where>
+    ORDER BY option_id;
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.UniversityExerciseKnowledgeChoiceOptionEntity">
+    INSERT INTO shangshufang_customer.university_exercise_knowledge_choice_option
+    (
+      technology_id,
+      knowledge_id,
+      exercises_id,
+      option_text,
+      is_answer,
+      create_user,
+      update_user
+     )
+    VALUES
+     (
+      #{technologyID, jdbcType=INTEGER},
+      #{knowledgeID, jdbcType=INTEGER},
+      #{exercisesID, jdbcType=INTEGER},
+      #{optionText, jdbcType=INTEGER},
+      #{rightAnswer, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+      )
+  </insert>
+  <delete id="delete" parameterType="java.lang.Integer">
+    DELETE
+    FROM shangshufang_customer.university_exercise_knowledge_choice_option
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+      AND knowledge_id = #{knowledgeID,jdbcType=INTEGER}
+      AND exercises_id = #{exercisesID,jdbcType=INTEGER};
+  </delete>
+</mapper>

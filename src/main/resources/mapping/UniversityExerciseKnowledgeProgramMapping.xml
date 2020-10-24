@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.UniversityExerciseKnowledgeProgramMapper">
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.UniversityExerciseKnowledgeProgramEntity">
+    <id column="exercises_id" property="exercisesID" jdbcType="INTEGER"/>
+    <result column="university_code" property="universityCode" jdbcType="INTEGER"/>
+    <result column="university_name" property="universityName" jdbcType="VARCHAR"/>
+    <result column="school_id" property="schoolID" jdbcType="INTEGER"/>
+    <result column="school_name" property="schoolName" jdbcType="VARCHAR"/>
+    <result column="teacher_id" property="teacherID" jdbcType="INTEGER"/>
+    <result column="teacher_name" property="teacherName" jdbcType="INTEGER"/>
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
+    <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER"/>
+    <result column="exercises_title" property="exercisesTitle" jdbcType="VARCHAR"/>
+    <result column="right_answers" property="rightAnswer" jdbcType="VARCHAR"/>
+    <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.university_exercise_knowledge_program
+    <where>
+      <if test="technologyID != 0">
+        technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+      <if test="knowledgeID != 0">
+        AND knowledge_id = #{knowledgeID,jdbcType=INTEGER}
+      </if>
+      <if test="teacherID != 0">
+        AND teacher_id = #{teacherID,jdbcType=INTEGER}
+      </if>
+    </where>
+  </select>
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT a.exercises_id,
+           a.university_code,
+           b.university_name,
+           a.school_id,
+           c.school_name,
+           a.teacher_id,
+           d.full_name AS teacher_name,
+           a.technology_id,
+           a.knowledge_id,
+           a.exercises_title,
+           a.right_answers,
+           d.full_name AS create_user,
+           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+           d.full_name AS update_user,
+           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.university_exercise_knowledge_program a
+    LEFT JOIN shangshufang_customer.university b
+        ON a.university_code = b.university_code
+    LEFT JOIN shangshufang_customer.school c
+        ON a.university_code = c.university_code
+        AND a.school_id = c.school_id
+    LEFT JOIN shangshufang_customer.university_customer d
+        ON a.university_code = d.university_code
+        AND a.school_id = d.school_id
+        AND a.teacher_id = d.customer_id
+    <where>
+      <if test="technologyID != 0">
+        a.technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+      <if test="knowledgeID != 0">
+        AND a.knowledge_id = #{knowledgeID,jdbcType=INTEGER}
+      </if>
+      <if test="teacherID != 0">
+        AND a.teacher_id = #{teacherID,jdbcType=INTEGER}
+      </if>
+    </where>
+    ORDER BY a.create_time
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+  </select>
+
+  <insert id="insert" useGeneratedKeys="true" keyProperty="exercisesID"
+          parameterType="com.shangshufang.apiservice.entity.UniversityExerciseKnowledgeProgramEntity">
+    INSERT INTO shangshufang_customer.university_exercise_knowledge_program
+    (
+      university_code,
+      school_id,
+      teacher_id,
+      technology_id,
+      knowledge_id,
+      exercises_title,
+      right_answers,
+      create_user,
+      update_user
+     )
+    VALUES
+     (
+        #{universityCode, jdbcType=INTEGER},
+        #{schoolID, jdbcType=INTEGER},
+        #{teacherID, jdbcType=INTEGER},
+        #{technologyID, jdbcType=INTEGER},
+        #{knowledgeID, jdbcType=INTEGER},
+        #{exercisesTitle, jdbcType=VARCHAR},
+        #{rightAnswer, jdbcType=VARCHAR},
+        #{createUser, jdbcType=VARCHAR},
+        #{updateUser, jdbcType=VARCHAR}
+     )
+  </insert>
+  <update id="update" parameterType="com.shangshufang.apiservice.entity.UniversityExerciseKnowledgeProgramEntity">
+    UPDATE shangshufang_customer.university_exercise_knowledge_program
+    SET exercises_title  = #{exercisesTitle,jdbcType=VARCHAR},
+        right_answers    = #{rightAnswer,jdbcType=VARCHAR},
+        update_user      = #{updateUser,jdbcType=VARCHAR}
+    WHERE teacher_id = #{teacherID,jdbcType=INTEGER}
+      AND technology_id = #{technologyID,jdbcType=INTEGER}
+      AND knowledge_id = #{knowledgeID,jdbcType=INTEGER}
+      AND exercises_id = #{exercisesID,jdbcType=INTEGER};
+  </update>
+
+  <delete id="delete" parameterType="java.lang.Integer">
+    DELETE
+    FROM shangshufang_customer.university_exercise_knowledge_program
+    WHERE teacher_id = #{teacherID,jdbcType=INTEGER}
+      AND technology_id = #{technologyID,jdbcType=INTEGER}
+      AND knowledge_id = #{knowledgeID,jdbcType=INTEGER}
+      AND exercises_id = #{exercisesID,jdbcType=INTEGER};
+  </delete>
+</mapper>
