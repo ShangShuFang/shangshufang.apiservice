@@ -72,7 +72,7 @@
         AND a.teacher_id = #{teacherID,jdbcType=INTEGER}
       </if>
     </where>
-    ORDER BY a.create_time
+    ORDER BY a.update_time DESC
     LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
 
