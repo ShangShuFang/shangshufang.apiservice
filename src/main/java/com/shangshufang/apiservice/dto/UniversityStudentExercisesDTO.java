@@ -9,6 +9,15 @@ public class UniversityStudentExercisesDTO extends BaseDTO {
     private int courseSchoolID;
     private int courseID;
     private int courseClass;
-    private int assignCount;
+
+    private int teacherID;
+    private boolean containCompanyExercises;
+    private boolean containSelfExercises;
+    private boolean containOtherExercises;
+    private int maxChoiceCount;
+    private int maxBlankCount;
+    private int maxProgramCount;
+
+//    private int assignCount;
     private String sourceCodeGitUrl;
 }

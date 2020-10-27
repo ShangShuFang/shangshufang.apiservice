@@ -8,6 +8,8 @@ public interface TechnologyKnowledgeService extends BaseService<TechnologyKnowle
 
     UnifiedResponse findList(int technologyID);
 
+    UnifiedResponse find(int technologyID, int knowledgeID);
+
     UnifiedResponse checkKnowledgeNameExist(int technologyID, String knowledgeName);
 
     UnifiedResponse delete(int technologyID, int learningPhaseID, int knowledgeID);

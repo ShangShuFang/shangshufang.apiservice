@@ -19,6 +19,12 @@ public interface UniversityExerciseKnowledgeBlankMapper extends BaseMapper<Unive
                                                             @Param("startIndex") int startIndex,
                                                             @Param("pageSize") int pageSize);
 
+    List<UniversityExerciseKnowledgeBlankEntity> searchOtherList(@Param("technologyID") int technologyID,
+                                                                 @Param("knowledgeID") int knowledgeID,
+                                                                 @Param("teacherID") int teacherID,
+                                                                 @Param("startIndex") int startIndex,
+                                                                 @Param("pageSize") int pageSize);
+
     int delete(@Param("technologyID") int technologyID,
                @Param("knowledgeID") int knowledgeID,
                @Param("exercisesID") int exercisesID,

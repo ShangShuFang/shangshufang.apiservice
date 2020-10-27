@@ -14,10 +14,16 @@ public interface UniversityExerciseKnowledgeProgramMapper extends BaseMapper<Uni
                          @Param("teacherID") int teacherID);
 
     List<UniversityExerciseKnowledgeProgramEntity> searchList(@Param("technologyID") int technologyID,
-                                                            @Param("knowledgeID") int knowledgeID,
-                                                            @Param("teacherID") int teacherID,
-                                                            @Param("startIndex") int startIndex,
-                                                            @Param("pageSize") int pageSize);
+                                                              @Param("knowledgeID") int knowledgeID,
+                                                              @Param("teacherID") int teacherID,
+                                                              @Param("startIndex") int startIndex,
+                                                              @Param("pageSize") int pageSize);
+
+    List<UniversityExerciseKnowledgeProgramEntity> searchOtherList(@Param("technologyID") int technologyID,
+                                                                   @Param("knowledgeID") int knowledgeID,
+                                                                   @Param("teacherID") int teacherID,
+                                                                   @Param("startIndex") int startIndex,
+                                                                   @Param("pageSize") int pageSize);
 
     int delete(@Param("technologyID") int technologyID,
                @Param("knowledgeID") int knowledgeID,

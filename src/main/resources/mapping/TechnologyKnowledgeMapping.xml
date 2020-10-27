@@ -144,6 +144,23 @@
     ORDER BY A.knowledge_id, A.learning_phase_id
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
+
+  <select id="search" resultMap="BaseResultMap">
+    SELECT a.technology_id,
+           b.technology_name,
+           a.knowledge_id,
+           a.knowledge_name,
+           a.learning_phase_id,
+           c.learning_phase_name
+    FROM shangshufang_base.technology_knowledge a
+    LEFT JOIN shangshufang_base.technology b
+    ON a.technology_id = b.technology_id
+    LEFT JOIN shangshufang_base.learning_phase c
+    ON a.learning_phase_id = c.learning_phase_id
+    WHERE a.technology_id = #{technologyID,jdbcType=INTEGER}
+      AND a.knowledge_id = #{knowledgeID,jdbcType=INTEGER}
+  </select>
+
   <select id="searchSimpleList" resultMap="BaseResultMap">
     SELECT
     A.knowledge_id,

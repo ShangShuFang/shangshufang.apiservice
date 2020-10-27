@@ -67,6 +67,22 @@ public class TechnologyKnowledgeServiceImpl implements TechnologyKnowledgeServic
     }
 
     @Override
+    public UnifiedResponse find(int technologyID, int knowledgeID) {
+        try {
+            TechnologyKnowledgeVO model = new TechnologyKnowledgeVO();
+            TechnologyKnowledgeEntity entity = myMapper.search(technologyID, knowledgeID);
+            if (entity == null) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            ObjectConvertUtils.toBean(entity, model);
+            return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.ONE_SEARCH_COUNT, model);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse checkKnowledgeNameExist(int technologyID, String knowledgeName) {
         try {
             int count =  myMapper.checkKnowledgeNameExist(technologyID, knowledgeName);

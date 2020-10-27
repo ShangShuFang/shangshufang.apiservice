@@ -48,7 +48,7 @@
     ON A.update_user = C.admin_id
     WHERE technology_id = #{technologyID,jdbcType=INTEGER}
     AND knowledge_id = #{knowledgeID,jdbcType=VARCHAR}
-    ORDER BY A.document_url
+    ORDER BY A.update_time DESC
     LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
 

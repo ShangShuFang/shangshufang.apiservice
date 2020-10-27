@@ -74,6 +74,47 @@
     LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
 
+  <select id="searchOtherList" resultMap="BaseResultMap">
+    SELECT a.exercises_id,
+    a.university_code,
+    b.university_name,
+    a.school_id,
+    c.school_name,
+    a.teacher_id,
+    d.full_name AS teacher_name,
+    a.technology_id,
+    a.knowledge_id,
+    a.exercises_title,
+    a.exercises_type,
+    d.full_name AS create_user,
+    DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+    d.full_name AS update_user,
+    DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.university_exercise_knowledge_choice a
+    LEFT JOIN shangshufang_customer.university b
+    ON a.university_code = b.university_code
+    LEFT JOIN shangshufang_customer.school c
+    ON a.university_code = c.university_code
+    AND a.school_id = c.school_id
+    LEFT JOIN shangshufang_customer.university_customer d
+    ON a.university_code = d.university_code
+    AND a.school_id = d.school_id
+    AND a.teacher_id = d.customer_id
+    <where>
+      <if test="technologyID != 0">
+        a.technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+      <if test="knowledgeID != 0">
+        AND a.knowledge_id = #{knowledgeID,jdbcType=INTEGER}
+      </if>
+      <if test="teacherID != 0">
+        AND a.teacher_id != #{teacherID,jdbcType=INTEGER}
+      </if>
+    </where>
+    ORDER BY a.update_time DESC
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+  </select>
+
   <insert id="insert" useGeneratedKeys="true" keyProperty="exercisesID"
           parameterType="com.shangshufang.apiservice.entity.UniversityExerciseKnowledgeChoiceEntity">
     INSERT INTO shangshufang_customer.university_exercise_knowledge_choice
