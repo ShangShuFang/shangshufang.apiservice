@@ -6,34 +6,72 @@
     <result column="course_id" property="courseID" jdbcType="INTEGER" />
     <result column="course_class" property="courseClass" jdbcType="INTEGER" />
     <result column="student_id" property="studentID" jdbcType="INTEGER" />
-    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
-    <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER" />
-    <result column="exercises_id" property="exercisesID" jdbcType="INTEGER" />
-    <result column="exercises_type" property="exercisesType" jdbcType="INTEGER" />
-    <result column="exercises_source" property="exercisesSource" jdbcType="INTEGER" />
-    <result column="correct_result" property="correctResult" jdbcType="VARCHAR" />
-    <result column="corrector" property="corrector" jdbcType="VARCHAR" />
+    <result column="student_name" property="studentName" jdbcType="VARCHAR" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_user" property="updateUser" jdbcType="INTEGER" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
 
-  <select id="searchListOfCourseClass" resultMap="BaseResultMap">
+  <select id="searchTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS TotalCount
+    FROM shangshufang_customer.student_course_exercises a
+    LEFT JOIN shangshufang_customer.university_student b
+    ON a.student_id = b.student_id
+    <where>
+      <if test="courseID != 0">
+        a.course_id = #{courseID,jdbcType=INTEGER}
+      </if>
+      <if test="dataStatus != null">
+        AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
+      </if>
+      <if test="studentName != null">
+        AND b.full_name = #{studentName,jdbcType=VARCHAR}
+      </if>
+    </where>;
+  </select>
 
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT a.course_id,
+           a.course_class,
+           a.student_id,
+           b.full_name AS student_name,
+           a.data_status,
+          CASE WHEN A.data_status = 'P' THEN '待提交'
+                WHEN A.data_status = 'C' THEN '批改中'
+                WHEN A.data_status = 'R' THEN '修改中'
+                WHEN A.data_status = 'S' THEN '已完成'
+          ELSE '未知数据状态'
+          END AS data_status_text,
+          DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+          DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.student_course_exercises a
+    LEFT JOIN shangshufang_customer.university_student b
+    ON a.student_id = b.student_id
+    <where>
+      <if test="courseID != 0">
+        a.course_id = #{courseID,jdbcType=INTEGER}
+      </if>
+      <if test="dataStatus != null">
+        AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
+      </if>
+      <if test="studentName != null">
+        AND b.full_name = #{studentName,jdbcType=VARCHAR}
+      </if>
+    </where>
+    ORDER BY a.course_class
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
 
 
-  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.StudentCourseExercisesEntity" >
+  <insert id="insert" useGeneratedKeys="true" keyProperty="courseExercisesID" parameterType="com.shangshufang.apiservice.entity.StudentCourseExercisesEntity" >
     INSERT INTO shangshufang_customer.student_course_exercises (
       course_id,
       course_class,
       student_id,
-      technology_id,
-      knowledge_id,
-      exercises_id,
-      exercises_type,
-      exercises_source,
       create_user,
       update_user
     )
@@ -41,11 +79,6 @@
       #{courseID, jdbcType=INTEGER},
       #{courseClass, jdbcType=INTEGER},
       #{studentID, jdbcType=INTEGER},
-      #{technologyID, jdbcType=INTEGER},
-      #{knowledgeID, jdbcType=INTEGER},
-      #{exercisesID, jdbcType=INTEGER},
-      #{exercisesType, jdbcType=INTEGER},
-      #{exercisesSource, jdbcType=INTEGER},
       #{createUser, jdbcType=VARCHAR},
       #{updateUser, jdbcType=VARCHAR}
     )

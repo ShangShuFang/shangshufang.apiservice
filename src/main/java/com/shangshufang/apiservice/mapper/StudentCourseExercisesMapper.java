@@ -8,7 +8,13 @@ import java.util.List;
 
 @Mapper
 public interface StudentCourseExercisesMapper extends BaseMapper<StudentCourseExercisesEntity> {
-    List<StudentCourseExercisesEntity> searchListOfCourseClass(@Param("courseID") int courseID,
-                                                               @Param("courseClassID") int courseClassID,
-                                                               @Param("studentID") int studentID);
+    int searchTotalCount(@Param("courseID") int courseID,
+                         @Param("dataStatus") String dataStatus,
+                         @Param("studentName") String studentName);
+
+    List<StudentCourseExercisesEntity> searchList(@Param("startIndex") int startIndex,
+                                                  @Param("pageSize") int pageSize,
+                                                  @Param("courseID") int courseID,
+                                                  @Param("dataStatus") String dataStatus,
+                                                  @Param("studentName") String studentName);
 }
