@@ -122,7 +122,7 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
     }
 
     @Override
-    public UnifiedResponse findCourseExercisesDetail(int technologyID, int knowledgeID, int courseExercisesID) {
+    public UnifiedResponse findCourseExercisesDetail(int courseExercisesID) {
         try {
             StudentCourseExercisesVO model = new StudentCourseExercisesVO();
 
@@ -143,12 +143,12 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                 for (StudentCourseExercisesDetailEntity choiceEntity : choiceEntityList) {
                     if (choiceEntity.getExercisesSourceType() == ExercisesSourceTypeConstant.COMPANY) {
                         List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> companyChoiceOptionEntityList =
-                                companyChoiceExercisesOptionMapper.searchList(technologyID, knowledgeID, courseExercisesID);
+                                companyChoiceExercisesOptionMapper.searchList(courseExercisesID);
                         choiceEntity.setChoiceOptionEntityList(companyChoiceOptionEntityList);
                     }
                     if (choiceEntity.getExercisesSourceType() == ExercisesSourceTypeConstant.SELF) {
                         List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> customChoiceOptionEntityList =
-                                customChoiceExercisesOptionMapper.searchList(technologyID, knowledgeID, courseExercisesID);
+                                customChoiceExercisesOptionMapper.searchList(courseExercisesID);
                         choiceEntity.setChoiceOptionEntityList(customChoiceOptionEntityList);
                     }
                 }

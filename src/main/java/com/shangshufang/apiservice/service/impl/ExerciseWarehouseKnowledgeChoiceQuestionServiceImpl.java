@@ -44,7 +44,7 @@ public class ExerciseWarehouseKnowledgeChoiceQuestionServiceImpl implements Exer
             for (ExerciseWarehouseKnowledgeChoiceQuestionEntity entity : entityList) {
                 List<ExerciseWarehouseKnowledgeChoiceQuestionOptionVO> optionList = new ArrayList<>();
 
-                List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> optionEntityList = optionMapper.searchList(technologyID, knowledgeID, entity.getExercisesID());
+                List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> optionEntityList = optionMapper.searchList(entity.getExercisesID());
                 if (!optionEntityList.isEmpty()) {
                     for (ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity optionEntity : optionEntityList) {
                         ExerciseWarehouseKnowledgeChoiceQuestionOptionVO optionVO = new ExerciseWarehouseKnowledgeChoiceQuestionOptionVO();
@@ -69,7 +69,7 @@ public class ExerciseWarehouseKnowledgeChoiceQuestionServiceImpl implements Exer
         try {
             int affectRow = 0;
             affectRow += myMapper.delete(technologyID, knowledgeID, exercisesID);
-            affectRow += optionMapper.delete(technologyID, knowledgeID, exercisesID);
+            affectRow += optionMapper.delete(exercisesID);
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
         } catch (Exception ex) {
             logger.error(ex.toString());
@@ -88,10 +88,8 @@ public class ExerciseWarehouseKnowledgeChoiceQuestionServiceImpl implements Exer
             entity.setUpdateUser(dto.getLoginUser());
             affectRow += myMapper.insert(entity);
             if (optionEntityList != null) {
-                affectRow += optionMapper.delete(dto.getTechnologyID(), dto.getKnowledgeID(), entity.getExercisesID());
+                affectRow += optionMapper.delete(entity.getExercisesID());
                 for (ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity optionEntity : optionEntityList) {
-                    optionEntity.setTechnologyID(dto.getTechnologyID());
-                    optionEntity.setKnowledgeID(dto.getKnowledgeID());
                     optionEntity.setExercisesID(entity.getExercisesID());
                     optionEntity.setCreateUser(dto.getLoginUser());
                     optionEntity.setUpdateUser(dto.getLoginUser());
@@ -117,10 +115,8 @@ public class ExerciseWarehouseKnowledgeChoiceQuestionServiceImpl implements Exer
             affectRow += myMapper.update(entity);
 
             if (optionEntityList != null) {
-                affectRow += optionMapper.delete(dto.getTechnologyID(), dto.getKnowledgeID(), entity.getExercisesID());
+                affectRow += optionMapper.delete(entity.getExercisesID());
                 for (ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity optionEntity : optionEntityList) {
-                    optionEntity.setTechnologyID(dto.getTechnologyID());
-                    optionEntity.setKnowledgeID(dto.getKnowledgeID());
                     optionEntity.setExercisesID(dto.getExercisesID());
                     optionEntity.setCreateUser(dto.getLoginUser());
                     optionEntity.setUpdateUser(dto.getLoginUser());

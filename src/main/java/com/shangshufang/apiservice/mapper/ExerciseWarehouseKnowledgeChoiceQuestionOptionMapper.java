@@ -8,11 +8,7 @@ import java.util.List;
 
 @Mapper
 public interface ExerciseWarehouseKnowledgeChoiceQuestionOptionMapper extends BaseMapper<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> {
-    List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> searchList(@Param("technologyID") int technologyID,
-                                                                          @Param("knowledgeID") int knowledgeID,
-                                                                          @Param("exercisesID") int exercisesID);
+    List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> searchList(@Param("exercisesID") int exercisesID);
 
-    int delete(@Param("technologyID") int technologyID,
-               @Param("knowledgeID") int knowledgeID,
-               @Param("exercisesID") int exercisesID);
+    int delete(@Param("exercisesID") int exercisesID);
 }

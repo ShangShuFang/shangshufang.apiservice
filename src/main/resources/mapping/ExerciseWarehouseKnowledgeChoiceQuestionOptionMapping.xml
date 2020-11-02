@@ -3,8 +3,6 @@
 <mapper namespace="com.shangshufang.apiservice.mapper.ExerciseWarehouseKnowledgeChoiceQuestionOptionMapper">
   <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity">
     <id column="option_id" property="optionID" jdbcType="INTEGER"/>
-    <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
-    <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER"/>
     <result column="exercises_id" property="exercisesID" jdbcType="INTEGER"/>
     <result column="option_text" property="optionText" jdbcType="VARCHAR"/>
     <result column="is_answer" property="rightAnswer" jdbcType="INTEGER"/>
@@ -20,25 +18,13 @@
     option_text,
     is_answer
     FROM shangshufang_base.exercise_warehouse_knowledge_choice_option_question
-    <where>
-      <if test="technologyID != 0">
-        technology_id = #{technologyID,jdbcType=INTEGER}
-      </if>
-      <if test="knowledgeID != 0">
-        AND knowledge_id = #{knowledgeID,jdbcType=INTEGER}
-      </if>
-      <if test="exercisesID != 0">
-        AND exercises_id = #{exercisesID,jdbcType=VARCHAR}
-      </if>
-    </where>
+    WHERE exercises_id = #{exercisesID,jdbcType=INTEGER}
     ORDER BY option_id;
   </select>
 
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity">
     INSERT INTO shangshufang_base.exercise_warehouse_knowledge_choice_option_question
     (
-      technology_id,
-      knowledge_id,
       exercises_id,
       option_text,
       is_answer,
@@ -47,8 +33,6 @@
      )
     VALUES
      (
-      #{technologyID, jdbcType=INTEGER},
-      #{knowledgeID, jdbcType=INTEGER},
       #{exercisesID, jdbcType=INTEGER},
       #{optionText, jdbcType=INTEGER},
       #{rightAnswer, jdbcType=VARCHAR},
@@ -59,8 +43,6 @@
   <delete id="delete" parameterType="java.lang.Integer">
     DELETE
     FROM shangshufang_base.exercise_warehouse_knowledge_choice_option_question
-    WHERE technology_id = #{technologyID,jdbcType=INTEGER}
-      AND knowledge_id = #{knowledgeID,jdbcType=INTEGER}
-      AND exercises_id = #{exercisesID,jdbcType=INTEGER};
+    WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
   </delete>
 </mapper>
