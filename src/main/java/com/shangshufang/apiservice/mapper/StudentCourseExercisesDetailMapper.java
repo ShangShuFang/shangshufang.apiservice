@@ -8,5 +8,9 @@ import java.util.List;
 
 @Mapper
 public interface StudentCourseExercisesDetailMapper extends BaseMapper<StudentCourseExercisesDetailEntity> {
-    List<StudentCourseExercisesDetailEntity> searchList(@Param("courseExercisesID") int courseExercisesID);
+    List<StudentCourseExercisesDetailEntity> searchChoiceList(@Param("courseExercisesID") int courseExercisesID);
+
+    List<StudentCourseExercisesDetailEntity> searchBlankList(@Param("courseExercisesID") int courseExercisesID);
+
+    List<StudentCourseExercisesDetailEntity> searchProgramList(@Param("courseExercisesID") int courseExercisesID);
 }

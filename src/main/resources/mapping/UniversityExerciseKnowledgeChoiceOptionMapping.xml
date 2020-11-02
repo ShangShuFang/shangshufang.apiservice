@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.shangshufang.apiservice.mapper.UniversityExerciseKnowledgeChoiceOptionMapper">
-  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.UniversityExerciseKnowledgeChoiceOptionEntity">
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity">
     <id column="option_id" property="optionID" jdbcType="INTEGER"/>
     <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
     <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER"/>
@@ -34,7 +34,7 @@
     ORDER BY option_id;
   </select>
 
-  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.UniversityExerciseKnowledgeChoiceOptionEntity">
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity">
     INSERT INTO shangshufang_customer.university_exercise_knowledge_choice_option
     (
       technology_id,

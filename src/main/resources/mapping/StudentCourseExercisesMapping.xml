@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.shangshufang.apiservice.mapper.StudentCourseExercisesMapper" >
-  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.StudentCourseExercisesEntity" >
-    <id column="course_exercises_id" property="courseExercisesID" jdbcType="INTEGER" />
-    <result column="course_id" property="courseID" jdbcType="INTEGER" />
-    <result column="course_class" property="courseClass" jdbcType="INTEGER" />
-    <result column="student_id" property="studentID" jdbcType="INTEGER" />
-    <result column="student_name" property="studentName" jdbcType="VARCHAR" />
-    <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
-    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
-    <result column="create_user" property="createUser" jdbcType="INTEGER" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
-    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+<mapper namespace="com.shangshufang.apiservice.mapper.StudentCourseExercisesMapper">
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.StudentCourseExercisesEntity">
+    <id column="course_exercises_id" property="courseExercisesID" jdbcType="INTEGER"/>
+    <result column="course_id" property="courseID" jdbcType="INTEGER"/>
+    <result column="course_name" property="courseName" jdbcType="VARCHAR"/>
+    <result column="course_class" property="courseClass" jdbcType="INTEGER"/>
+    <result column="student_id" property="studentID" jdbcType="INTEGER"/>
+    <result column="student_name" property="studentName" jdbcType="VARCHAR"/>
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR"/>
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR"/>
+    <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
   </resultMap>
 
   <select id="searchTotalCount" resultType="java.lang.Integer">
@@ -34,20 +35,45 @@
     </where>;
   </select>
 
-  <select id="searchList" resultMap="BaseResultMap">
-    SELECT a.course_id,
+  <select id="search" resultMap="BaseResultMap">
+    SELECT a.course_exercises_id,
+           a.course_id,
+           c.course_name,
            a.course_class,
            a.student_id,
            b.full_name AS student_name,
            a.data_status,
-          CASE WHEN A.data_status = 'P' THEN '待提交'
-                WHEN A.data_status = 'C' THEN '批改中'
-                WHEN A.data_status = 'R' THEN '修改中'
-                WHEN A.data_status = 'S' THEN '已完成'
-          ELSE '未知数据状态'
-          END AS data_status_text,
-          DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-          DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    CASE WHEN A.data_status = 'P' THEN '待提交'
+    WHEN A.data_status = 'C' THEN '批改中'
+    WHEN A.data_status = 'R' THEN '修改中'
+    WHEN A.data_status = 'S' THEN '已完成'
+    ELSE '未知数据状态'
+    END AS data_status_text,
+    DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+    DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.student_course_exercises a
+    LEFT JOIN shangshufang_customer.university_student b
+    ON a.student_id = b.student_id
+    LEFT JOIN shangshufang_customer.course c
+    ON a.course_id = c.course_id
+    WHERE course_exercises_id = #{courseExercisesID,jdbcType=INTEGER}
+  </select>
+
+  <select id="searchList" resultMap="BaseResultMap">
+    SELECT a.course_exercises_id,
+    a.course_id,
+    a.course_class,
+    a.student_id,
+    b.full_name AS student_name,
+    a.data_status,
+    CASE WHEN A.data_status = 'P' THEN '待提交'
+    WHEN A.data_status = 'C' THEN '批改中'
+    WHEN A.data_status = 'R' THEN '修改中'
+    WHEN A.data_status = 'S' THEN '已完成'
+    ELSE '未知数据状态'
+    END AS data_status_text,
+    DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+    DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
     FROM shangshufang_customer.student_course_exercises a
     LEFT JOIN shangshufang_customer.university_student b
     ON a.student_id = b.student_id
@@ -67,21 +93,18 @@
   </select>
 
 
-  <insert id="insert" useGeneratedKeys="true" keyProperty="courseExercisesID" parameterType="com.shangshufang.apiservice.entity.StudentCourseExercisesEntity" >
-    INSERT INTO shangshufang_customer.student_course_exercises (
-      course_id,
-      course_class,
-      student_id,
-      create_user,
-      update_user
-    )
-    VALUES (
-      #{courseID, jdbcType=INTEGER},
-      #{courseClass, jdbcType=INTEGER},
-      #{studentID, jdbcType=INTEGER},
-      #{createUser, jdbcType=VARCHAR},
-      #{updateUser, jdbcType=VARCHAR}
-    )
+  <insert id="insert" useGeneratedKeys="true" keyProperty="courseExercisesID"
+          parameterType="com.shangshufang.apiservice.entity.StudentCourseExercisesEntity">
+    INSERT INTO shangshufang_customer.student_course_exercises (course_id,
+                                                                course_class,
+                                                                student_id,
+                                                                create_user,
+                                                                update_user)
+    VALUES (#{courseID, jdbcType=INTEGER},
+            #{courseClass, jdbcType=INTEGER},
+            #{studentID, jdbcType=INTEGER},
+            #{createUser, jdbcType=VARCHAR},
+            #{updateUser, jdbcType=VARCHAR})
   </insert>
 
 </mapper>

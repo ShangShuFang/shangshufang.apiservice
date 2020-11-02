@@ -5,10 +5,16 @@
     <id column="course_exercises_detail_id" property="courseExercisesDetailID" jdbcType="INTEGER" />
     <result column="course_exercises_id" property="courseExercisesID" jdbcType="INTEGER" />
     <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
+    <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
     <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER" />
+    <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR" />
     <result column="exercises_id" property="exercisesID" jdbcType="INTEGER" />
+
+    <result column="exercises_title" property="exercisesTitle" jdbcType="VARCHAR" />
+
     <result column="exercises_type" property="exercisesType" jdbcType="INTEGER" />
-    <result column="exercises_source" property="exercisesSource" jdbcType="INTEGER" />
+    <result column="exercises_source_type" property="exercisesSourceType" jdbcType="INTEGER" />
+    <result column="exercises_source" property="exercisesSource" jdbcType="VARCHAR" />
     <result column="program_exercises_code_uri" property="programExercisesCodeUri" jdbcType="VARCHAR" />
     <result column="correct_result" property="correctResult" jdbcType="VARCHAR" />
     <result column="corrector" property="corrector" jdbcType="VARCHAR" />
@@ -18,8 +24,229 @@
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
 
-  <select id="searchList" resultMap="BaseResultMap">
+  <select id="searchChoiceList" resultMap="BaseResultMap">
+    -- 取得企业题库中的选择题
+    SELECT a.course_exercises_detail_id,
+           a.course_exercises_id,
+           a.technology_id,
+           c.technology_name,
+           a.knowledge_id,
+           d.knowledge_name,
+           a.exercises_id,
+           b.exercises_title,
+           a.exercises_type,
+           a.exercises_source_type,
+           b.exercises_source,
+           a.correct_result,
+           a.corrector,
+           a.create_user,
+           a.create_time,
+           a.update_user,
+           a.update_time
+    FROM shangshufang_customer.student_course_exercises_detail a
+           LEFT JOIN shangshufang_base.exercise_warehouse_knowledge_choice_question b
+                     ON a.exercises_id = b.exercises_id
+                       AND a.technology_id = b.technology_id
+                       AND a.knowledge_id = b.knowledge_id
+           LEFT JOIN shangshufang_base.technology c
+                     ON a.technology_id = c.technology_id
+           LEFT JOIN shangshufang_base.technology_knowledge d
+                     ON a.technology_id = d.technology_id
+                       AND a.knowledge_id = d.knowledge_id
+    WHERE a.exercises_source_type = 0 -- 企业题库
+      AND a.exercises_type IN (0, 1) -- 选择题
+      AND a.course_exercises_id = #{courseExercisesID, jdbcType=INTEGER}
+    UNION
+    -- 取得自定义题库中的选择题
+    SELECT a.course_exercises_detail_id,
+           a.course_exercises_id,
+           a.technology_id,
+           c.technology_name,
+           a.knowledge_id,
+           d.knowledge_name,
+           a.exercises_id,
+           b.exercises_title,
+           a.exercises_type,
+           a.exercises_source_type,
+           concat(e.university_name, f.school_name, g.full_name) AS exercises_source,
+           a.correct_result,
+           a.corrector,
+           a.create_user,
+           a.create_time,
+           a.update_user,
+           a.update_time
+    FROM shangshufang_customer.student_course_exercises_detail a
+           LEFT JOIN shangshufang_customer.university_exercise_knowledge_choice b
+                     ON a.technology_id = b.technology_id
+                       AND a.knowledge_id = b.knowledge_id
+                       AND a.exercises_id = b.exercises_id
+           LEFT JOIN shangshufang_base.technology c
+                     ON a.technology_id = c.technology_id
+           LEFT JOIN shangshufang_base.technology_knowledge d
+                     ON a.technology_id = d.technology_id
+                       AND a.knowledge_id = d.knowledge_id
+           LEFT JOIN shangshufang_customer.university e
+                     ON b.university_code = e.university_code
+           LEFT JOIN shangshufang_customer.school f
+                     ON b.university_code = f.university_code
+                       AND b.school_id = f.school_id
+           LEFT JOIN shangshufang_customer.university_customer g
+                     ON b.university_code = e.university_code
+                       AND b.school_id = g.school_id
+                       AND b.teacher_id = g.customer_id
+    WHERE a.exercises_source_type = 1 -- 自定义题库
+      AND a.exercises_type IN (0, 1) -- 选择题
+      AND a.course_exercises_id = #{courseExercisesID, jdbcType=INTEGER};
+  </select>
 
+  <select id="searchBlankList" resultMap="BaseResultMap">
+    -- 取得企业题库中的填空题
+    SELECT a.course_exercises_detail_id,
+           a.course_exercises_id,
+           a.technology_id,
+           c.technology_name,
+           a.knowledge_id,
+           d.knowledge_name,
+           a.exercises_id,
+           b.exercises_title,
+           a.exercises_type,
+           a.exercises_source_type,
+           b.exercises_source,
+           a.correct_result,
+           a.corrector,
+           a.create_user,
+           a.create_time,
+           a.update_user,
+           a.update_time
+    FROM shangshufang_customer.student_course_exercises_detail a
+           LEFT JOIN shangshufang_base.exercise_warehouse_knowledge_blank_question b
+                     ON a.exercises_id = b.exercises_id
+                       AND a.technology_id = b.technology_id
+                       AND a.knowledge_id = b.knowledge_id
+           LEFT JOIN shangshufang_base.technology c
+                     ON a.technology_id = c.technology_id
+           LEFT JOIN shangshufang_base.technology_knowledge d
+                     ON a.technology_id = d.technology_id
+                       AND a.knowledge_id = d.knowledge_id
+    WHERE a.exercises_source_type = 0 -- 企业题库
+      AND a.exercises_type = 2 -- 填空题
+      AND a.course_exercises_id = #{courseExercisesID, jdbcType=INTEGER}
+    UNION
+    -- 取得自定义题库中的填空题
+    SELECT a.course_exercises_detail_id,
+           a.course_exercises_id,
+           a.technology_id,
+           c.technology_name,
+           a.knowledge_id,
+           d.knowledge_name,
+           a.exercises_id,
+           b.exercises_title,
+           a.exercises_type,
+           a.exercises_source_type,
+           concat(e.university_name, f.school_name, g.full_name) AS exercises_source,
+           a.correct_result,
+           a.corrector,
+           a.create_user,
+           a.create_time,
+           a.update_user,
+           a.update_time
+    FROM shangshufang_customer.student_course_exercises_detail a
+           LEFT JOIN shangshufang_customer.university_exercise_knowledge_blank b
+                     ON a.technology_id = b.technology_id
+                       AND a.knowledge_id = b.knowledge_id
+                       AND a.exercises_id = b.exercises_id
+           LEFT JOIN shangshufang_base.technology c
+                     ON a.technology_id = c.technology_id
+           LEFT JOIN shangshufang_base.technology_knowledge d
+                     ON a.technology_id = d.technology_id
+                       AND a.knowledge_id = d.knowledge_id
+           LEFT JOIN shangshufang_customer.university e
+                     ON b.university_code = e.university_code
+           LEFT JOIN shangshufang_customer.school f
+                     ON b.university_code = f.university_code
+                       AND b.school_id = f.school_id
+           LEFT JOIN shangshufang_customer.university_customer g
+                     ON b.university_code = e.university_code
+                       AND b.school_id = g.school_id
+                       AND b.teacher_id = g.customer_id
+    WHERE a.exercises_source_type = 1 -- 自定义题库
+      AND a.exercises_type = 2 -- 填空题
+      AND a.course_exercises_id = #{courseExercisesID, jdbcType=INTEGER};
+  </select>
+
+  <select id="searchProgramList" resultMap="BaseResultMap">
+    -- 取得企业题库的编程题
+    SELECT a.course_exercises_detail_id,
+           a.course_exercises_id,
+           a.technology_id,
+           c.technology_name,
+           a.knowledge_id,
+           d.knowledge_name,
+           a.exercises_id,
+           b.document_url AS exercises_title,
+           a.exercises_type,
+           a.exercises_source_type,
+           '' AS exercises_source,
+           a.correct_result,
+           a.corrector,
+           a.create_user,
+           a.create_time,
+           a.update_user,
+           a.update_time
+    FROM shangshufang_customer.student_course_exercises_detail a
+           LEFT JOIN shangshufang_base.technology_knowledge_exercises b
+                     ON a.exercises_id = b.exercises_id
+                       AND a.technology_id = b.technology_id
+                       AND a.knowledge_id = b.knowledge_id
+           LEFT JOIN shangshufang_base.technology c
+                     ON a.technology_id = c.technology_id
+           LEFT JOIN shangshufang_base.technology_knowledge d
+                     ON a.technology_id = d.technology_id
+                       AND a.knowledge_id = d.knowledge_id
+    WHERE a.exercises_source_type = 0 -- 企业题库
+      AND a.exercises_type = 3 -- 编程题
+      AND a.course_exercises_id = #{courseExercisesID, jdbcType=INTEGER}
+    UNION
+    -- 取得自定义编程题
+    SELECT a.course_exercises_detail_id,
+           a.course_exercises_id,
+           a.technology_id,
+           c.technology_name,
+           a.knowledge_id,
+           d.knowledge_name,
+           a.exercises_id,
+           b.exercises_title,
+           a.exercises_type,
+           a.exercises_source_type,
+           concat(e.university_name, f.school_name, g.full_name) AS exercises_source,
+           a.correct_result,
+           a.corrector,
+           a.create_user,
+           a.create_time,
+           a.update_user,
+           a.update_time
+    FROM shangshufang_customer.student_course_exercises_detail a
+           LEFT JOIN shangshufang_customer.university_exercise_knowledge_program b
+                     ON a.technology_id = b.technology_id
+                       AND a.knowledge_id = b.knowledge_id
+                       AND a.exercises_id = b.exercises_id
+           LEFT JOIN shangshufang_base.technology c
+                     ON a.technology_id = c.technology_id
+           LEFT JOIN shangshufang_base.technology_knowledge d
+                     ON a.technology_id = d.technology_id
+                       AND a.knowledge_id = d.knowledge_id
+           LEFT JOIN shangshufang_customer.university e
+                     ON b.university_code = e.university_code
+           LEFT JOIN shangshufang_customer.school f
+                     ON b.university_code = f.university_code
+                       AND b.school_id = f.school_id
+           LEFT JOIN shangshufang_customer.university_customer g
+                     ON b.university_code = e.university_code
+                       AND b.school_id = g.school_id
+                       AND b.teacher_id = g.customer_id
+    WHERE a.exercises_source_type = 1 -- 自定义题库
+      AND a.exercises_type = 3 -- 编程题
+      AND a.course_exercises_id = #{courseExercisesID, jdbcType=INTEGER};
   </select>
 
 
@@ -30,7 +257,7 @@
       knowledge_id,
       exercises_id,
       exercises_type,
-      exercises_source,
+      exercises_source_type,
       create_user,
       update_user
     )
@@ -40,7 +267,7 @@
       #{knowledgeID, jdbcType=INTEGER},
       #{exercisesID, jdbcType=INTEGER},
       #{exercisesType, jdbcType=INTEGER},
-      #{exercisesSource, jdbcType=INTEGER},
+      #{exercisesSourceType, jdbcType=INTEGER},
       #{createUser, jdbcType=VARCHAR},
       #{updateUser, jdbcType=VARCHAR}
     )

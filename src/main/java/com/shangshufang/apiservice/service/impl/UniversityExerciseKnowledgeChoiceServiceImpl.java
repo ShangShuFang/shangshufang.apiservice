@@ -4,6 +4,7 @@ import com.shangshufang.apiservice.common.JsonUtils;
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.UniversityExerciseKnowledgeChoiceDTO;
+import com.shangshufang.apiservice.entity.ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity;
 import com.shangshufang.apiservice.entity.UniversityExerciseKnowledgeChoiceEntity;
 import com.shangshufang.apiservice.entity.UniversityExerciseKnowledgeChoiceOptionEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
@@ -42,9 +43,9 @@ public class UniversityExerciseKnowledgeChoiceServiceImpl implements UniversityE
             for (UniversityExerciseKnowledgeChoiceEntity entity : entityList) {
                 List<UniversityExerciseKnowledgeChoiceOptionVO> optionList = new ArrayList<>();
 
-                List<UniversityExerciseKnowledgeChoiceOptionEntity> optionEntityList = optionMapper.searchList(technologyID, knowledgeID, entity.getExercisesID());
+                List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> optionEntityList = optionMapper.searchList(technologyID, knowledgeID, entity.getExercisesID());
                 if (!optionEntityList.isEmpty()) {
-                    for (UniversityExerciseKnowledgeChoiceOptionEntity optionEntity : optionEntityList) {
+                    for (ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity optionEntity : optionEntityList) {
                         UniversityExerciseKnowledgeChoiceOptionVO optionVO = new UniversityExerciseKnowledgeChoiceOptionVO();
                         ObjectConvertUtils.toBean(optionEntity, optionVO);
                         optionList.add(optionVO);
@@ -79,7 +80,8 @@ public class UniversityExerciseKnowledgeChoiceServiceImpl implements UniversityE
     public UnifiedResponse add(UniversityExerciseKnowledgeChoiceDTO dto) {
         try {
             int affectRow = 0;
-            List<UniversityExerciseKnowledgeChoiceOptionEntity> optionEntityList = JsonUtils.deserializationToObject(dto.getChoiceOptionsJson(), UniversityExerciseKnowledgeChoiceOptionEntity.class);
+
+            List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> optionEntityList = JsonUtils.deserializationToObject(dto.getChoiceOptionsJson(), UniversityExerciseKnowledgeChoiceOptionEntity.class);
             UniversityExerciseKnowledgeChoiceEntity entity = new UniversityExerciseKnowledgeChoiceEntity();
             ObjectConvertUtils.toBean(dto, entity);
             entity.setCreateUser(dto.getLoginUser());
@@ -87,7 +89,7 @@ public class UniversityExerciseKnowledgeChoiceServiceImpl implements UniversityE
             affectRow += myMapper.insert(entity);
             if (optionEntityList != null) {
                 affectRow += optionMapper.delete(dto.getTechnologyID(), dto.getKnowledgeID(), entity.getExercisesID());
-                for (UniversityExerciseKnowledgeChoiceOptionEntity optionEntity : optionEntityList) {
+                for (ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity optionEntity : optionEntityList) {
                     optionEntity.setTechnologyID(dto.getTechnologyID());
                     optionEntity.setKnowledgeID(dto.getKnowledgeID());
                     optionEntity.setExercisesID(entity.getExercisesID());
@@ -107,7 +109,7 @@ public class UniversityExerciseKnowledgeChoiceServiceImpl implements UniversityE
     public UnifiedResponse change(UniversityExerciseKnowledgeChoiceDTO dto) {
         try {
             int affectRow = 0;
-            List<UniversityExerciseKnowledgeChoiceOptionEntity> optionEntityList = JsonUtils.deserializationToObject(dto.getChoiceOptionsJson(), UniversityExerciseKnowledgeChoiceOptionEntity.class);
+            List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> optionEntityList = JsonUtils.deserializationToObject(dto.getChoiceOptionsJson(), ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity.class);
             UniversityExerciseKnowledgeChoiceEntity entity = new UniversityExerciseKnowledgeChoiceEntity();
 
             ObjectConvertUtils.toBean(dto, entity);
@@ -116,7 +118,7 @@ public class UniversityExerciseKnowledgeChoiceServiceImpl implements UniversityE
 
             if (optionEntityList != null) {
                 affectRow += optionMapper.delete(dto.getTechnologyID(), dto.getKnowledgeID(), entity.getExercisesID());
-                for (UniversityExerciseKnowledgeChoiceOptionEntity optionEntity : optionEntityList) {
+                for (ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity optionEntity : optionEntityList) {
                     optionEntity.setTechnologyID(dto.getTechnologyID());
                     optionEntity.setKnowledgeID(dto.getKnowledgeID());
                     optionEntity.setExercisesID(dto.getExercisesID());

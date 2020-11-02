@@ -1,11 +1,11 @@
-package com.shangshufang.apiservice.entity;
+package com.shangshufang.apiservice.vo;
 
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class StudentCourseExercisesDetailEntity extends BaseEntity {
+public class StudentCourseExercisesDetailVO extends BaseVO {
     private int courseExercisesDetailID;
     private int courseExercisesID;
     private int technologyID;
@@ -20,5 +20,5 @@ public class StudentCourseExercisesDetailEntity extends BaseEntity {
     private String programExercisesCodeUri;
     private String correctResult;
     private String corrector;
-    List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> choiceOptionEntityList;
+    private List<ExerciseWarehouseKnowledgeChoiceQuestionOptionVO> optionList;
 }

@@ -17,5 +17,7 @@ public interface UniversityStudentExercisesService extends BaseService<Universit
                                         int technologyID,
                                         String dataStatus);
 
+    UnifiedResponse findCourseExercisesDetail(int technologyID, int knowledgeID, int courseExercisesID);
+
     UnifiedResponse assign(UniversityStudentExercisesDTO dto);
 }

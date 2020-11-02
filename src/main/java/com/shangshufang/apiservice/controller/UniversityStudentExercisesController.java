@@ -43,6 +43,13 @@ public class UniversityStudentExercisesController {
         return serviceImpl.findList4Technology(pageNumber, pageSize, universityCode, schoolID, studentID, technologyID, dataStatus);
     }
 
+    @RequestMapping(value = "/any/{technologyID}/{knowledgeID}/{courseExercisesID}", method = RequestMethod.GET)
+    public UnifiedResponse findList(@PathVariable("technologyID") int technologyID,
+                                    @PathVariable("knowledgeID") int knowledgeID,
+                                    @PathVariable("courseExercisesID") int courseExercisesID) {
+        return serviceImpl.findCourseExercisesDetail(technologyID, knowledgeID, courseExercisesID);
+    }
+
     @RequestMapping(value = "/assign", method = RequestMethod.POST)
     public UnifiedResponse assign(@RequestBody UniversityStudentExercisesDTO dto) {
         return serviceImpl.assign(dto);

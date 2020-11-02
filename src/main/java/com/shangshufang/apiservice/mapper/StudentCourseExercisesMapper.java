@@ -12,6 +12,8 @@ public interface StudentCourseExercisesMapper extends BaseMapper<StudentCourseEx
                          @Param("dataStatus") String dataStatus,
                          @Param("studentName") String studentName);
 
+    StudentCourseExercisesEntity search(@Param("courseExercisesID") int courseExercisesID);
+
     List<StudentCourseExercisesEntity> searchList(@Param("startIndex") int startIndex,
                                                   @Param("pageSize") int pageSize,
                                                   @Param("courseID") int courseID,

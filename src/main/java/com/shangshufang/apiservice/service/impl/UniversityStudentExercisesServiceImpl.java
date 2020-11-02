@@ -7,9 +7,7 @@ import com.shangshufang.apiservice.entity.*;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
 import com.shangshufang.apiservice.mapper.*;
 import com.shangshufang.apiservice.service.UniversityStudentExercisesService;
-import com.shangshufang.apiservice.vo.StudentCourseExercisesVO;
-import com.shangshufang.apiservice.vo.UnifiedResponse;
-import com.shangshufang.apiservice.vo.UniversityStudentExercisesVO;
+import com.shangshufang.apiservice.vo.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +30,15 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
     @Autowired
     private ExerciseWarehouseKnowledgeChoiceQuestionMapper companyChoiceExercisesMapper;
     @Autowired
+    private ExerciseWarehouseKnowledgeChoiceQuestionOptionMapper companyChoiceExercisesOptionMapper;
+    @Autowired
     private ExerciseWarehouseKnowledgeBlankQuestionMapper companyBlankExercisesMapper;
     @Autowired
     private TechnologyKnowledgeExercisesMapper companyProgramExercisesMapper;
     @Autowired
     private UniversityExerciseKnowledgeChoiceMapper customChoiceExercisesMapper;
+    @Autowired
+    private UniversityExerciseKnowledgeChoiceOptionMapper customChoiceExercisesOptionMapper;
     @Autowired
     private UniversityExerciseKnowledgeBlankMapper customBlankExercisesMapper;
     @Autowired
@@ -113,6 +115,93 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                 modelList.add(model);
             }
             return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse findCourseExercisesDetail(int technologyID, int knowledgeID, int courseExercisesID) {
+        try {
+            StudentCourseExercisesVO model = new StudentCourseExercisesVO();
+
+            //region 取得练习的基本信息
+            StudentCourseExercisesEntity courseExercisesEntity =
+                    studentCourseExercisesMapper.search(courseExercisesID);
+            if (courseExercisesEntity == null) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            ObjectConvertUtils.toBean(courseExercisesEntity, model);
+            //endregion
+
+            //region 取得选择题（企业题库+自定义题库）
+            List<StudentCourseExercisesDetailVO> choiceExercisesList = new ArrayList<>();
+            List<StudentCourseExercisesDetailEntity> choiceEntityList =
+                    studentCourseExercisesDetailMapper.searchChoiceList(courseExercisesID);
+            if (!choiceEntityList.isEmpty()) {
+                for (StudentCourseExercisesDetailEntity choiceEntity : choiceEntityList) {
+                    if (choiceEntity.getExercisesSourceType() == ExercisesSourceTypeConstant.COMPANY) {
+                        List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> companyChoiceOptionEntityList =
+                                companyChoiceExercisesOptionMapper.searchList(technologyID, knowledgeID, courseExercisesID);
+                        choiceEntity.setChoiceOptionEntityList(companyChoiceOptionEntityList);
+                    }
+                    if (choiceEntity.getExercisesSourceType() == ExercisesSourceTypeConstant.SELF) {
+                        List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> customChoiceOptionEntityList =
+                                customChoiceExercisesOptionMapper.searchList(technologyID, knowledgeID, courseExercisesID);
+                        choiceEntity.setChoiceOptionEntityList(customChoiceOptionEntityList);
+                    }
+                }
+
+                for (StudentCourseExercisesDetailEntity choiceEntity : choiceEntityList) {
+                    StudentCourseExercisesDetailVO choiceExercisesModel = new StudentCourseExercisesDetailVO();
+                    ObjectConvertUtils.toBean(choiceEntity, choiceExercisesModel);
+
+                    List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> optionEntityList = choiceEntity.getChoiceOptionEntityList();
+                    List<ExerciseWarehouseKnowledgeChoiceQuestionOptionVO> optionModelList = new ArrayList<>();
+                    for (ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity optionEntity : optionEntityList) {
+                        optionEntity.setRightAnswer(false);
+                        ExerciseWarehouseKnowledgeChoiceQuestionOptionVO optionModel = new ExerciseWarehouseKnowledgeChoiceQuestionOptionVO();
+                        ObjectConvertUtils.toBean(optionEntity, optionModel);
+                        optionModelList.add(optionModel);
+                    }
+                    choiceExercisesModel.setOptionList(optionModelList);
+                    choiceExercisesList.add(choiceExercisesModel);
+                }
+
+                model.setChoiceExercisesList(choiceExercisesList);
+            }
+            //endregion
+
+            //region 取得填空题（企业题库+自定义题库）
+            List<StudentCourseExercisesDetailVO> blankExercisesList = new ArrayList<>();
+            List<StudentCourseExercisesDetailEntity> blankEntityList =
+                    studentCourseExercisesDetailMapper.searchBlankList(courseExercisesID);
+            if (!blankEntityList.isEmpty()) {
+                for (StudentCourseExercisesDetailEntity blankExercisesEntity : blankEntityList) {
+                    StudentCourseExercisesDetailVO blankExercisesModel = new StudentCourseExercisesDetailVO();
+                    ObjectConvertUtils.toBean(blankExercisesEntity, blankExercisesModel);
+                    blankExercisesList.add(blankExercisesModel);
+                }
+                model.setBlankExercisesList(blankExercisesList);
+            }
+            //endregion
+
+            //region 取得编程题（企业题库+自定义题库）
+            List<StudentCourseExercisesDetailVO> programExercisesList = new ArrayList<>();
+            List<StudentCourseExercisesDetailEntity> programEntityList =
+                    studentCourseExercisesDetailMapper.searchProgramList(courseExercisesID);
+            if (!programEntityList.isEmpty()) {
+                for (StudentCourseExercisesDetailEntity programExercisesEntity : programEntityList) {
+                    StudentCourseExercisesDetailVO programExercisesModel = new StudentCourseExercisesDetailVO();
+                    ObjectConvertUtils.toBean(programExercisesEntity, programExercisesModel);
+                    programExercisesList.add(programExercisesModel);
+                }
+                model.setProgramExercisesList(programExercisesList);
+            }
+            //endregion
+
+            return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.ONE_SEARCH_COUNT, model);
         } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();
@@ -239,7 +328,7 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                         entity.setExercisesType(1);
                         break;
                 }
-                entity.setExercisesSource(0);
+                entity.setExercisesSourceType(0);
                 entityList.add(entity);
             }
         }
@@ -259,7 +348,7 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                         entity.setExercisesType(1);
                         break;
                 }
-                entity.setExercisesSource(1);
+                entity.setExercisesSourceType(1);
                 entityList.add(entity);
             }
         }
@@ -279,7 +368,7 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                         entity.setExercisesType(1);
                         break;
                 }
-                entity.setExercisesSource(1);
+                entity.setExercisesSourceType(1);
                 entityList.add(entity);
             }
         }
@@ -300,7 +389,7 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                 entity.setKnowledgeID(companyBlank.getKnowledgeID());
                 entity.setExercisesID(companyBlank.getExercisesID());
                 entity.setExercisesType(2);
-                entity.setExercisesSource(0);
+                entity.setExercisesSourceType(0);
                 entityList.add(entity);
             }
         }
@@ -312,7 +401,7 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                 entity.setKnowledgeID(selfBlank.getKnowledgeID());
                 entity.setExercisesID(selfBlank.getExercisesID());
                 entity.setExercisesType(2);
-                entity.setExercisesSource(1);
+                entity.setExercisesSourceType(1);
                 entityList.add(entity);
             }
         }
@@ -324,7 +413,7 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                 entity.setKnowledgeID(otherBlank.getKnowledgeID());
                 entity.setExercisesID(otherBlank.getExercisesID());
                 entity.setExercisesType(2);
-                entity.setExercisesSource(1);
+                entity.setExercisesSourceType(1);
                 entityList.add(entity);
             }
         }
@@ -344,7 +433,7 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                 entity.setKnowledgeID(companyProgram.getKnowledgeID());
                 entity.setExercisesID(companyProgram.getExercisesID());
                 entity.setExercisesType(3);
-                entity.setExercisesSource(0);
+                entity.setExercisesSourceType(0);
                 entityList.add(entity);
             }
         }
@@ -356,7 +445,7 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                 entity.setKnowledgeID(selfProgram.getKnowledgeID());
                 entity.setExercisesID(selfProgram.getExercisesID());
                 entity.setExercisesType(3);
-                entity.setExercisesSource(1);
+                entity.setExercisesSourceType(1);
                 entityList.add(entity);
             }
         }
@@ -368,7 +457,7 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                 entity.setKnowledgeID(otherProgram.getKnowledgeID());
                 entity.setExercisesID(otherProgram.getExercisesID());
                 entity.setExercisesType(3);
-                entity.setExercisesSource(1);
+                entity.setExercisesSourceType(1);
                 entityList.add(entity);
             }
         }
