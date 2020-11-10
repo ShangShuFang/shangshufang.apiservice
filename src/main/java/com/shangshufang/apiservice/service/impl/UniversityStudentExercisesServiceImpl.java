@@ -1,7 +1,9 @@
 package com.shangshufang.apiservice.service.impl;
 
+import com.shangshufang.apiservice.common.JsonUtils;
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
 import com.shangshufang.apiservice.constant.*;
+import com.shangshufang.apiservice.dto.CourseExercisesPaperDTO;
 import com.shangshufang.apiservice.dto.UniversityStudentExercisesDTO;
 import com.shangshufang.apiservice.entity.*;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
@@ -14,13 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
 @Service
 public class UniversityStudentExercisesServiceImpl implements UniversityStudentExercisesService {
-    @Autowired
-    private TechnologyKnowledgeExercisesMapper knowledgeExercisesMapper;
     @Autowired
     private CoursePlanMapper coursePlanMapper;
     @Autowired
@@ -47,8 +48,18 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
     private StudentCourseExercisesMapper studentCourseExercisesMapper;
     @Autowired
     private StudentCourseExercisesDetailMapper studentCourseExercisesDetailMapper;
+    @Autowired
+    private StudentCourseExercisesChoiceAnswerMapper choiceAnswerMapper;
+    @Autowired
+    private StudentCourseExercisesBlankAnswerMapper blankAnswerMapper;
+    @Autowired
+    private StudentCourseExercisesProgramAnswerMapper programAnswerMapper;
+    @Autowired
+    private StudentCourseExercisesReviewMapper exercisesReviewMapper;
 
     private final Logger logger = LogManager.getLogger(UniversityStudentExercisesServiceImpl.class);
+
+    private final String SYS_ADMIN_ID = "0";
 
     @Override
     public UnifiedResponse findList(int pageNumber, int pageSize, int courseID, String dataStatus, String studentName) {
@@ -75,19 +86,23 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
     }
 
     @Override
-    public UnifiedResponse findList4Student(int pageNumber, int pageSize, int studentID, int courseID, String dataStatus, String studentName, boolean isSelf) {
+    public UnifiedResponse findList4Student(int pageNumber,
+                                            int pageSize,
+                                            int courseID,
+                                            int studentID,
+                                            String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
-            List<UniversityStudentExercisesVO> modelList = new ArrayList<>();
+            List<StudentCourseExercisesVO> modelList = new ArrayList<>();
             dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
-            studentName = studentName.equals(ParameterConstant.NO_PARAMETER) ? null : studentName;
-            int totalCount = universityStudentExercisesMapper.searchTotalCount4Student(studentID, courseID, dataStatus, studentName, isSelf);
+            int totalCount = studentCourseExercisesMapper.searchTotalCount4Student(courseID, studentID, dataStatus);
             if (totalCount == 0) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<UniversityStudentExercisesEntity> entityList = universityStudentExercisesMapper.searchList4Student(startIndex, pageSize, studentID, courseID, dataStatus, studentName, isSelf);
-            for (UniversityStudentExercisesEntity entity : entityList) {
-                UniversityStudentExercisesVO model = new UniversityStudentExercisesVO();
+            List<StudentCourseExercisesEntity> entityList =
+                    studentCourseExercisesMapper.searchList4Student(startIndex, pageSize, courseID, studentID, dataStatus);
+            for (StudentCourseExercisesEntity entity : entityList) {
+                StudentCourseExercisesVO model = new StudentCourseExercisesVO();
                 ObjectConvertUtils.toBean(entity, model);
                 modelList.add(model);
             }
@@ -124,88 +139,179 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
     @Override
     public UnifiedResponse findCourseExercisesDetail(int courseExercisesID) {
         try {
-            StudentCourseExercisesVO model = new StudentCourseExercisesVO();
-
-            //region 取得练习的基本信息
-            StudentCourseExercisesEntity courseExercisesEntity =
-                    studentCourseExercisesMapper.search(courseExercisesID);
-            if (courseExercisesEntity == null) {
+            StudentCourseExercisesVO model = getCourseExercisesModel(courseExercisesID);
+            if (model == null) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            ObjectConvertUtils.toBean(courseExercisesEntity, model);
-            //endregion
-
-            //region 取得选择题（企业题库+自定义题库）
-            List<StudentCourseExercisesDetailVO> choiceExercisesList = new ArrayList<>();
-            List<StudentCourseExercisesDetailEntity> choiceEntityList =
-                    studentCourseExercisesDetailMapper.searchChoiceList(courseExercisesID);
-            if (!choiceEntityList.isEmpty()) {
-                for (StudentCourseExercisesDetailEntity choiceEntity : choiceEntityList) {
-                    if (choiceEntity.getExercisesSourceType() == ExercisesSourceTypeConstant.COMPANY) {
-                        List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> companyChoiceOptionEntityList =
-                                companyChoiceExercisesOptionMapper.searchList(courseExercisesID);
-                        choiceEntity.setChoiceOptionEntityList(companyChoiceOptionEntityList);
-                    }
-                    if (choiceEntity.getExercisesSourceType() == ExercisesSourceTypeConstant.SELF) {
-                        List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> customChoiceOptionEntityList =
-                                customChoiceExercisesOptionMapper.searchList(courseExercisesID);
-                        choiceEntity.setChoiceOptionEntityList(customChoiceOptionEntityList);
-                    }
-                }
-
-                for (StudentCourseExercisesDetailEntity choiceEntity : choiceEntityList) {
-                    StudentCourseExercisesDetailVO choiceExercisesModel = new StudentCourseExercisesDetailVO();
-                    ObjectConvertUtils.toBean(choiceEntity, choiceExercisesModel);
-
-                    List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> optionEntityList = choiceEntity.getChoiceOptionEntityList();
-                    List<ExerciseWarehouseKnowledgeChoiceQuestionOptionVO> optionModelList = new ArrayList<>();
-                    for (ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity optionEntity : optionEntityList) {
-                        optionEntity.setRightAnswer(false);
-                        ExerciseWarehouseKnowledgeChoiceQuestionOptionVO optionModel = new ExerciseWarehouseKnowledgeChoiceQuestionOptionVO();
-                        ObjectConvertUtils.toBean(optionEntity, optionModel);
-                        optionModelList.add(optionModel);
-                    }
-                    choiceExercisesModel.setOptionList(optionModelList);
-                    choiceExercisesList.add(choiceExercisesModel);
-                }
-
-                model.setChoiceExercisesList(choiceExercisesList);
-            }
-            //endregion
-
-            //region 取得填空题（企业题库+自定义题库）
-            List<StudentCourseExercisesDetailVO> blankExercisesList = new ArrayList<>();
-            List<StudentCourseExercisesDetailEntity> blankEntityList =
-                    studentCourseExercisesDetailMapper.searchBlankList(courseExercisesID);
-            if (!blankEntityList.isEmpty()) {
-                for (StudentCourseExercisesDetailEntity blankExercisesEntity : blankEntityList) {
-                    StudentCourseExercisesDetailVO blankExercisesModel = new StudentCourseExercisesDetailVO();
-                    ObjectConvertUtils.toBean(blankExercisesEntity, blankExercisesModel);
-                    blankExercisesList.add(blankExercisesModel);
-                }
-                model.setBlankExercisesList(blankExercisesList);
-            }
-            //endregion
-
-            //region 取得编程题（企业题库+自定义题库）
-            List<StudentCourseExercisesDetailVO> programExercisesList = new ArrayList<>();
-            List<StudentCourseExercisesDetailEntity> programEntityList =
-                    studentCourseExercisesDetailMapper.searchProgramList(courseExercisesID);
-            if (!programEntityList.isEmpty()) {
-                for (StudentCourseExercisesDetailEntity programExercisesEntity : programEntityList) {
-                    StudentCourseExercisesDetailVO programExercisesModel = new StudentCourseExercisesDetailVO();
-                    ObjectConvertUtils.toBean(programExercisesEntity, programExercisesModel);
-                    programExercisesList.add(programExercisesModel);
-                }
-                model.setProgramExercisesList(programExercisesList);
-            }
-            //endregion
-
             return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.ONE_SEARCH_COUNT, model);
         } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();
         }
+    }
+
+    private StudentCourseExercisesVO getCourseExercisesModel (int courseExercisesID) throws Exception {
+        StudentCourseExercisesVO model = new StudentCourseExercisesVO();
+
+        //region 取得练习的基本信息
+        StudentCourseExercisesEntity courseExercisesEntity =
+                studentCourseExercisesMapper.search(courseExercisesID);
+        if (courseExercisesEntity == null) {
+            return null;
+        }
+        ObjectConvertUtils.toBean(courseExercisesEntity, model);
+        //endregion
+
+        //region 取得选择题（企业题库+自定义题库）
+        List<StudentCourseExercises4SingleChoiceDetailVO> singleChoiceList = new ArrayList<>();
+        List<StudentCourseExercises4MultipleChoiceDetailVO> multipleChoiceList = new ArrayList<>();
+
+        //从数据库中取得选择题，包括企业题库和自定义题库
+        List<StudentCourseExercisesDetailEntity> choiceEntityList =
+                studentCourseExercisesDetailMapper.searchChoiceList(courseExercisesID);
+        if (!choiceEntityList.isEmpty()) {
+            //region 根据题目来源，分别取出每个选择题的选项列表
+            for (StudentCourseExercisesDetailEntity choiceEntity : choiceEntityList) {
+                if (choiceEntity.getExercisesSourceType() == ExercisesSourceTypeConstant.COMPANY) {
+                    List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> companyChoiceOptionEntityList =
+                            companyChoiceExercisesOptionMapper.searchList(choiceEntity.getExercisesID());
+                    choiceEntity.setChoiceOptionEntityList(companyChoiceOptionEntityList);
+                }
+                if (choiceEntity.getExercisesSourceType() == ExercisesSourceTypeConstant.SELF) {
+                    List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> customChoiceOptionEntityList =
+                            customChoiceExercisesOptionMapper.searchList(choiceEntity.getExercisesID());
+                    choiceEntity.setChoiceOptionEntityList(customChoiceOptionEntityList);
+                }
+            }
+            //endregion
+
+            //region 根据从数据库取得选择题，按照单选、多选分类，分别设置单选和多选的返回对象
+            for (StudentCourseExercisesDetailEntity choiceEntity : choiceEntityList) {
+                List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> optionEntityList = choiceEntity.getChoiceOptionEntityList();
+                List<ExerciseWarehouseKnowledgeChoiceQuestionOptionVO> optionModelList = new ArrayList<>();
+                for (ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity optionEntity : optionEntityList) {
+                    ExerciseWarehouseKnowledgeChoiceQuestionOptionVO optionModel = new ExerciseWarehouseKnowledgeChoiceQuestionOptionVO();
+                    ObjectConvertUtils.toBean(optionEntity, optionModel);
+                    optionModelList.add(optionModel);
+                }
+
+                if (choiceEntity.getExercisesType() == ExercisesTypeConstant.SingleChoice) {
+                    StudentCourseExercises4SingleChoiceDetailVO singleChoice = new StudentCourseExercises4SingleChoiceDetailVO();
+                    ObjectConvertUtils.toBean(choiceEntity, singleChoice);
+                    singleChoice.setOptionList(optionModelList);
+
+                    if (!choiceEntity.getCorrectResult().equals(ExercisesStatusConstant.Pending)) {
+                        StudentCourseExercisesChoiceAnswerEntity answerEntity =
+                                choiceAnswerMapper.searchLatestAnswer(courseExercisesID, choiceEntity.getCourseExercisesDetailID());
+                        if(answerEntity == null) {
+                            String errorMessage = String.format("Can't find single choice answer, courseExercisesID: %s, courseExercisesDetailID: %s",
+                                    courseExercisesID, choiceEntity.getCourseExercisesDetailID());
+                            throw new Exception(errorMessage);
+                        }
+                        singleChoice.setSelectedOptionID(Integer.parseInt(answerEntity.getSelectedOption()));
+                    }
+                    singleChoiceList.add(singleChoice);
+                }
+                if (choiceEntity.getExercisesType() == ExercisesTypeConstant.MultipleChoice) {
+                    StudentCourseExercises4MultipleChoiceDetailVO multipleChoice = new StudentCourseExercises4MultipleChoiceDetailVO();
+                    ObjectConvertUtils.toBean(choiceEntity, multipleChoice);
+                    multipleChoice.setOptionList(optionModelList);
+                    if (!choiceEntity.getCorrectResult().equals(ExercisesStatusConstant.Pending)) {
+                        StudentCourseExercisesChoiceAnswerEntity answerEntity =
+                                choiceAnswerMapper.searchLatestAnswer(courseExercisesID, choiceEntity.getCourseExercisesDetailID());
+                        if(answerEntity == null) {
+                            String errorMessage = String.format("Can't find multiple choice answer, courseExercisesID: %s, courseExercisesDetailID: %s",
+                                    courseExercisesID, choiceEntity.getCourseExercisesDetailID());
+                            throw new Exception(errorMessage);
+                        }
+                        multipleChoice.setSelectedOption(answerEntity.getSelectedOption());
+                    }
+                    multipleChoiceList.add(multipleChoice);
+                }
+            }
+            //endregion
+
+            model.setSingleChoiceExercisesList(singleChoiceList);
+            model.setMultipleChoiceExercisesList(multipleChoiceList);
+        }
+        //endregion
+
+        //region 取得填空题（企业题库+自定义题库）
+        List<StudentCourseExercises4BlankDetailVO> blankExercisesList = new ArrayList<>();
+        List<StudentCourseExercisesDetailEntity> blankEntityList =
+                studentCourseExercisesDetailMapper.searchBlankList(courseExercisesID);
+        if (!blankEntityList.isEmpty()) {
+            for (StudentCourseExercisesDetailEntity blankExercisesEntity : blankEntityList) {
+                StudentCourseExercises4BlankDetailVO blankExercisesModel = new StudentCourseExercises4BlankDetailVO();
+                ObjectConvertUtils.toBean(blankExercisesEntity, blankExercisesModel);
+                //查询当前填空题的正确答案
+                if (blankExercisesEntity.getExercisesSourceType() == ExercisesSourceTypeConstant.COMPANY) {
+                    //从企业题库取得当前选择题的正确答案
+                    ExerciseWarehouseKnowledgeBlankQuestionEntity companyBlankExercisesEntity =
+                            companyBlankExercisesMapper.search(blankExercisesEntity.getExercisesID());
+                    if (companyBlankExercisesEntity == null) {
+                        throw new Exception(String.format("Can't find company blank exercises by exercisesID: %s", blankExercisesEntity.getExercisesID()));
+                    }
+                    blankExercisesModel.setRightAnswer(companyBlankExercisesEntity.getRightAnswer());
+                } else {
+                    //从自定义题库取得当前选择题的正确答案
+                    UniversityExerciseKnowledgeBlankEntity customBlankExercisesEntity =
+                            customBlankExercisesMapper.search(blankExercisesEntity.getExercisesID());
+                    if (customBlankExercisesEntity == null) {
+                        throw new Exception(String.format("Can't find custom blank exercises by exercisesID: %s", blankExercisesEntity.getExercisesID()));
+                    }
+                    blankExercisesModel.setRightAnswer(customBlankExercisesEntity.getRightAnswer());
+                }
+                if (!blankExercisesModel.getCorrectResult().equals(ExercisesStatusConstant.Pending)) {
+                    StudentCourseExercisesBlankAnswerEntity answerEntity =
+                            blankAnswerMapper.searchLatestAnswer(courseExercisesID, blankExercisesEntity.getCourseExercisesDetailID());
+                    if(answerEntity == null) {
+                        throw new Exception(String.format("Can't find fill blank answer, courseExercisesID: %s, courseExercisesDetailID: %s",
+                                courseExercisesID, blankExercisesEntity.getCourseExercisesDetailID()));
+                    }
+                    blankExercisesModel.setFillInContent(answerEntity.getFillInContent());
+                }
+                blankExercisesList.add(blankExercisesModel);
+            }
+            model.setBlankExercisesList(blankExercisesList);
+        }
+        //endregion
+
+        //region 取得编程题（企业题库+自定义题库）
+        List<StudentCourseExercises4ProgramDetailVO> programExercisesList = new ArrayList<>();
+        List<StudentCourseExercisesDetailEntity> programEntityList =
+                studentCourseExercisesDetailMapper.searchProgramList(courseExercisesID);
+        if (!programEntityList.isEmpty()) {
+            for (StudentCourseExercisesDetailEntity programExercisesEntity : programEntityList) {
+                StudentCourseExercises4ProgramDetailVO programExercisesModel = new StudentCourseExercises4ProgramDetailVO();
+                ObjectConvertUtils.toBean(programExercisesEntity, programExercisesModel);
+                //region todo 取得参考代码的地址（企业题库）或答案（自定义题库）
+//                if (programExercisesEntity.getExercisesSourceType() == ExercisesSourceTypeConstant.COMPANY) {
+//                    //从企业题库从取得题目参考代码的地址
+//                } else {
+//                    //从自定义题库中取得题库的参考答案
+//                }
+                //endregion
+
+                //region 取得学生提交的代码地址
+                if (!courseExercisesEntity.getDataStatus().equals(ExercisesStatusConstant.Pending)) {
+                    StudentCourseExercisesProgramAnswerEntity answerEntity =
+                            programAnswerMapper.searchLatestAnswer(courseExercisesID, programExercisesEntity.getCourseExercisesDetailID());
+                    if(answerEntity == null) {
+                        throw new Exception(String.format("Can't find program answer, courseExercisesID: %s, courseExercisesDetailID: %s",
+                                courseExercisesID, programExercisesEntity.getCourseExercisesDetailID()));
+                    }
+                    programExercisesModel.setSubmitSourceCodeUrl(answerEntity.getSourceCodeUrl());
+                }
+                //endregion
+
+                programExercisesList.add(programExercisesModel);
+            }
+            model.setProgramExercisesList(programExercisesList);
+        }
+        //endregion
+
+        return model;
     }
 
     private List<ExerciseWarehouseKnowledgeChoiceQuestionEntity> findCompanyChoiceExercises(int technologyID, int knowledgeID) {
@@ -686,6 +792,381 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();
         }
+    }
+
+    @Override
+    public UnifiedResponse markCourseExercises(CourseExercisesPaperDTO dto) {
+        try {
+            int affectRow = 0;
+            //region 1.先取得当前试卷的详细习题以及每个习题的正确答案
+            StudentCourseExercisesVO courseExercisesVO = getCourseExercisesModel(dto.getCourseExercisesID());
+            if (courseExercisesVO == null) {
+                throw new Exception(String.format("Can't find course exercises by CourseExercisesID: %s", dto.getCourseExercisesID()));
+            }
+            //endregion
+
+            //region 2.取得学生对当前试卷答题的内容
+            List<StudentCourseExercisesChoiceAnswerEntity> singleChoiceAnswerEntityList = getCourseSingleChoiceExercisesAnswerList(dto);
+            List<StudentCourseExercisesChoiceAnswerEntity> multipleChoiceAnswerEntityList = getCourseMultipleChoiceExercisesAnswerList(dto);
+            List<StudentCourseExercisesBlankAnswerEntity> blankAnswerEntityList = getCourseBlankExercisesAnswerList(dto);
+            List<StudentCourseExercisesProgramAnswerEntity> programAnswerEntityList = getCourseProgramExercisesAnswerList(dto);
+            //endregion
+
+            //region 3.将学生测试卷的答题信息保存到数据库
+            affectRow += saveChoiceAnswer(singleChoiceAnswerEntityList);
+            affectRow += saveChoiceAnswer(multipleChoiceAnswerEntityList);
+            affectRow += saveBlankAnswer(blankAnswerEntityList);
+            affectRow += saveProgramAnswer(programAnswerEntityList);
+            //endregion
+
+            //region 4.对学生测试卷的答题信息与正确答案进行比较批改，之后将更新习题的批改结果并将批改记录保存到数据库（单选、多选、填空）
+            affectRow += correctSingleChoiceAnswer(courseExercisesVO, singleChoiceAnswerEntityList);
+            affectRow += correctMultipleChoiceAnswer(courseExercisesVO, multipleChoiceAnswerEntityList);
+            affectRow += correctBlankAnswer(courseExercisesVO, blankAnswerEntityList);
+            //endregion
+
+            //region 5.对学生测试卷的批改结果进行更新(批改中)
+            if (affectRow > 0) {
+                affectRow += changeCourseExercisesStatus(dto, ExercisesStatusConstant.Correcting);
+            }
+            //endregion
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    private int changeCourseExercisesStatus(CourseExercisesPaperDTO dto, String dataStatus) {
+        StudentCourseExercisesEntity entity = new StudentCourseExercisesEntity();
+        entity.setCourseID(dto.getCourseID());
+        entity.setCourseClass(dto.getCourseClass());
+        entity.setStudentID(dto.getStudentID());
+        entity.setDataStatus(dataStatus);
+        entity.setCreateUser(SYS_ADMIN_ID);
+        entity.setUpdateUser(SYS_ADMIN_ID);
+        return studentCourseExercisesMapper.updateDataStatus(entity);
+    }
+
+    private int changeCourseExercisesDetailStatus(int courseExercisesDetailID, boolean isRight) {
+        String dataStatus = isRight ? ExercisesStatusConstant.Yes : ExercisesStatusConstant.No;
+        StudentCourseExercisesDetailEntity exercisesDetailEntity = new StudentCourseExercisesDetailEntity();
+        exercisesDetailEntity.setCourseExercisesDetailID(courseExercisesDetailID);
+        exercisesDetailEntity.setCorrectResult(dataStatus);
+        exercisesDetailEntity.setUpdateUser(SYS_ADMIN_ID);
+        return studentCourseExercisesDetailMapper.updateDataStatus(exercisesDetailEntity);
+    }
+
+    private int saveCourseExercisesReview(int studentID,
+                                          int courseID,
+                                          int courseClass,
+                                          int courseExercisesID,
+                                          int courseExercisesDetailID,
+                                          boolean isRight) {
+        String dataStatus = isRight ? ExercisesStatusConstant.Yes : ExercisesStatusConstant.No;
+        StudentCourseExercisesReviewEntity exercisesReviewEntity = new StudentCourseExercisesReviewEntity();
+        exercisesReviewEntity.setStudentID(studentID);
+        exercisesReviewEntity.setCourseID(courseID);
+        exercisesReviewEntity.setCourseClass(courseClass);
+        exercisesReviewEntity.setCourseExercisesID(courseExercisesID);
+        exercisesReviewEntity.setCourseExercisesDetailID(courseExercisesDetailID);
+        exercisesReviewEntity.setCorrectResult(dataStatus);
+        exercisesReviewEntity.setCreateUser(SYS_ADMIN_ID);
+        exercisesReviewEntity.setUpdateUser(SYS_ADMIN_ID);
+        return exercisesReviewMapper.insert(exercisesReviewEntity);
+    }
+
+    private int correctSingleChoiceAnswer(StudentCourseExercisesVO courseExercisesVO, List<StudentCourseExercisesChoiceAnswerEntity> answerEntityList) {
+        int affectRow = 0;
+        List<StudentCourseExercises4SingleChoiceDetailVO> modelList = courseExercisesVO.getSingleChoiceExercisesList();
+        //1.单选题批改
+        if (answerEntityList.isEmpty() || modelList.isEmpty()) {
+            return 0;
+        }
+        //遍历学生提交的单选题
+        for (StudentCourseExercisesChoiceAnswerEntity entity : answerEntityList) {
+            if (entity.getCorrectResult().equals(ExercisesStatusConstant.Yes)) {
+                continue;
+            }
+            //取得当前习题的正确答案
+            int rightOptionID = 0;
+            //遍历试卷中的选择题
+            for (StudentCourseExercises4SingleChoiceDetailVO model : modelList) {
+                if (entity.getCourseExercisesDetailID() == model.getCourseExercisesDetailID()) {
+                    List<ExerciseWarehouseKnowledgeChoiceQuestionOptionVO> optionList = model.getOptionList();
+                    //遍历练习题选项
+                    for (ExerciseWarehouseKnowledgeChoiceQuestionOptionVO option : optionList) {
+                        if(option.getRightAnswer()){
+                            rightOptionID = option.getOptionID();
+                            break;
+                        }
+                    }
+                    boolean isRight = false;
+                    //判断习题提交的选项与标准答案的选项是否一致
+                    if (Integer.parseInt(entity.getSelectedOption()) == rightOptionID) {
+                        isRight = true;
+                    }
+
+                    //2.批改结果更新
+                    affectRow += changeCourseExercisesDetailStatus(entity.getCourseExercisesDetailID(), isRight);
+
+                    //3.保存批改记录
+                    affectRow += saveCourseExercisesReview(
+                            entity.getStudentID(),
+                            entity.getCourseID(),
+                            entity.getCourseClass(),
+                            entity.getCourseExercisesID(),
+                            entity.getCourseExercisesDetailID(),
+                            isRight);
+                    break;
+                }
+            }
+        }
+        return affectRow;
+    }
+
+    private int correctMultipleChoiceAnswer(StudentCourseExercisesVO courseExercisesVO, List<StudentCourseExercisesChoiceAnswerEntity> answerEntityList) {
+        int affectRow = 0;
+        List<StudentCourseExercises4MultipleChoiceDetailVO> modelList = courseExercisesVO.getMultipleChoiceExercisesList();
+        //1.多选题批改
+        if (answerEntityList.isEmpty() || modelList.isEmpty()) {
+            return 0;
+        }
+        //遍历学生提交的多选题
+        for (StudentCourseExercisesChoiceAnswerEntity entity : answerEntityList) {
+            //如果当前习题之前已经批改且正确，则不再需要批改
+            if (entity.getCorrectResult().equals(ExercisesStatusConstant.Yes)) {
+                continue;
+            }
+            String[] answerOptionTempList = entity.getSelectedOption().split(",");
+            List<Integer> answerOptionList = new ArrayList<>();
+            for (String option : answerOptionTempList) {
+                answerOptionList.add(Integer.parseInt(option));
+            }
+            answerOptionList.sort(Comparator.naturalOrder()); //将学生提交的多选题选项进行排序
+
+            //取得当前习题的正确答案
+            List<Integer> rightOptionList = new ArrayList<>();
+            //遍历试卷中的多择题
+            for (StudentCourseExercises4MultipleChoiceDetailVO model : modelList) {
+                if (entity.getCourseExercisesDetailID() == model.getCourseExercisesDetailID()) {
+                    List<ExerciseWarehouseKnowledgeChoiceQuestionOptionVO> optionList = model.getOptionList();
+                    //遍历练习题选项
+                    for (ExerciseWarehouseKnowledgeChoiceQuestionOptionVO option : optionList) {
+                        if(option.getRightAnswer()) {
+                            rightOptionList.add(option.getOptionID());
+                        }
+                    }
+                    rightOptionList.sort(Comparator.naturalOrder()); //将正确的选项进行排序
+                    boolean isRight = false;
+                    String answerOptionListStr = answerOptionList.toString();
+                    String rightOptionListStr = rightOptionList.toString();
+                    //判断习题提交的选项与标准答案的选项是否一致
+                    if (answerOptionListStr.equals(rightOptionListStr)) {
+                        isRight = true;
+                    }
+
+                    //2.批改结果更新
+                    affectRow += changeCourseExercisesDetailStatus(entity.getCourseExercisesDetailID(), isRight);
+
+                    //3.保存批改记录
+                    affectRow += saveCourseExercisesReview(
+                            entity.getStudentID(),
+                            entity.getCourseID(),
+                            entity.getCourseClass(),
+                            entity.getCourseExercisesID(),
+                            entity.getCourseExercisesDetailID(),
+                            isRight);
+                }
+            }
+        }
+
+        return affectRow;
+    }
+
+    private int correctBlankAnswer(StudentCourseExercisesVO courseExercisesVO, List<StudentCourseExercisesBlankAnswerEntity> answerEntityList) {
+        int affectRow = 0;
+        List<StudentCourseExercises4BlankDetailVO> modelList = courseExercisesVO.getBlankExercisesList();
+        //1.填空题批改
+        if (answerEntityList.isEmpty() || modelList.isEmpty()) {
+            return 0;
+        }
+        //遍历学生提交的单选题
+        for (StudentCourseExercisesBlankAnswerEntity entity : answerEntityList) {
+            if (entity.getCorrectResult().equals(ExercisesStatusConstant.Yes)) {
+                continue;
+            }
+            //取得当前习题的正确答案
+            String rightAnswer = "";
+            //遍历试卷中的填空题
+            for (StudentCourseExercises4BlankDetailVO model : modelList) {
+                if (entity.getCourseExercisesDetailID() == model.getCourseExercisesDetailID()) {
+                    rightAnswer = model.getRightAnswer();
+                    boolean isRight = false;
+                    //判断习题提交的选项与标准答案的选项是否一致
+                    if (entity.getFillInContent().equals(rightAnswer)) {
+                        isRight = true;
+                    }
+
+                    //2.批改结果更新
+                    affectRow += changeCourseExercisesDetailStatus(entity.getCourseExercisesDetailID(), isRight);
+
+                    //3.保存批改记录
+                    affectRow += saveCourseExercisesReview(
+                            entity.getStudentID(),
+                            entity.getCourseID(),
+                            entity.getCourseClass(),
+                            entity.getCourseExercisesID(),
+                            entity.getCourseExercisesDetailID(),
+                            isRight);
+
+                    break;
+                }
+            }
+        }
+
+        return affectRow;
+    }
+
+    private int correctProgramAnswer(StudentCourseExercisesVO courseExercisesVO, List<StudentCourseExercisesProgramAnswerEntity> programAnswerEntityList) {
+        return 0;
+    }
+    private List<StudentCourseExercisesChoiceAnswerEntity> getCourseSingleChoiceExercisesAnswerList(CourseExercisesPaperDTO dto) {
+        List<StudentCourseExercisesChoiceAnswerEntity> singleChoiceAnswerEntityList =
+                JsonUtils.deserializationToObject(dto.getSingleChoiceListJson(), StudentCourseExercisesChoiceAnswerEntity.class);
+        if (singleChoiceAnswerEntityList == null) {
+            return null;
+        }
+        for (StudentCourseExercisesChoiceAnswerEntity entity : singleChoiceAnswerEntityList) {
+            entity.setStudentID(dto.getStudentID());
+            entity.setCourseID(dto.getCourseID());
+            entity.setCourseClass(dto.getCourseClass());
+            entity.setCourseExercisesID(dto.getCourseExercisesID());
+            entity.setCreateUser(SYS_ADMIN_ID);
+            entity.setUpdateUser(SYS_ADMIN_ID);
+        }
+        return singleChoiceAnswerEntityList;
+    }
+
+    private List<StudentCourseExercisesChoiceAnswerEntity> getCourseMultipleChoiceExercisesAnswerList(CourseExercisesPaperDTO dto) {
+        List<StudentCourseExercisesChoiceAnswerEntity> multipleChoiceAnswerEntityList =
+                JsonUtils.deserializationToObject(dto.getMultipleChoiceListJson(), StudentCourseExercisesChoiceAnswerEntity.class);
+        if (multipleChoiceAnswerEntityList == null) {
+            return null;
+        }
+        for (StudentCourseExercisesChoiceAnswerEntity entity : multipleChoiceAnswerEntityList) {
+            entity.setStudentID(dto.getStudentID());
+            entity.setCourseID(dto.getCourseID());
+            entity.setCourseClass(dto.getCourseClass());
+            entity.setCourseExercisesID(dto.getCourseExercisesID());
+            entity.setCreateUser(SYS_ADMIN_ID);
+            entity.setUpdateUser(SYS_ADMIN_ID);
+        }
+        return multipleChoiceAnswerEntityList;
+    }
+
+    private List<StudentCourseExercisesBlankAnswerEntity> getCourseBlankExercisesAnswerList(CourseExercisesPaperDTO dto) {
+        List<StudentCourseExercisesBlankAnswerEntity> blankAnswerEntityList =
+                JsonUtils.deserializationToObject(dto.getBlankChoiceListJson(), StudentCourseExercisesBlankAnswerEntity.class);
+        if (blankAnswerEntityList == null) {
+            return null;
+        }
+        for (StudentCourseExercisesBlankAnswerEntity entity : blankAnswerEntityList) {
+            entity.setStudentID(dto.getStudentID());
+            entity.setCourseID(dto.getCourseID());
+            entity.setCourseClass(dto.getCourseClass());
+            entity.setCourseExercisesID(dto.getCourseExercisesID());
+            entity.setCreateUser(SYS_ADMIN_ID);
+            entity.setUpdateUser(SYS_ADMIN_ID);
+        }
+        return blankAnswerEntityList;
+    }
+
+    private List<StudentCourseExercisesProgramAnswerEntity> getCourseProgramExercisesAnswerList(CourseExercisesPaperDTO dto) {
+        List<StudentCourseExercisesProgramAnswerEntity> programAnswerEntityList =
+                JsonUtils.deserializationToObject(dto.getProgramChoiceListJson(), StudentCourseExercisesProgramAnswerEntity.class);
+        if (programAnswerEntityList == null) {
+            return null;
+        }
+        for (StudentCourseExercisesProgramAnswerEntity entity : programAnswerEntityList) {
+            entity.setStudentID(dto.getStudentID());
+            entity.setCourseID(dto.getCourseID());
+            entity.setCourseClass(dto.getCourseClass());
+            entity.setCourseExercisesID(dto.getCourseExercisesID());
+            entity.setCreateUser(SYS_ADMIN_ID);
+            entity.setUpdateUser(SYS_ADMIN_ID);
+        }
+        return programAnswerEntityList;
+    }
+
+//    private int saveSingleChoiceAnswer(List<StudentCourseExercisesChoiceAnswerEntity> entityList) {
+//        int affectRow = 0;
+//        if (entityList == null) {
+//            return affectRow;
+//        }
+//        for (StudentCourseExercisesChoiceAnswerEntity entity : entityList) {
+//            if (entity.getCorrectResult().equals(ExercisesStatusConstant.Yes)) {
+//                continue;
+//            }
+//            affectRow += choiceAnswerMapper.insert(entity);
+//        }
+//        return affectRow;
+//    }
+
+//    private int saveMultipleChoiceAnswer(List<StudentCourseExercisesChoiceAnswerEntity> entityList) {
+//        int affectRow = 0;
+//        if (entityList == null) {
+//            return affectRow;
+//        }
+//        for (StudentCourseExercisesChoiceAnswerEntity entity : entityList) {
+//            if (entity.getCorrectResult().equals(ExercisesStatusConstant.Yes)) {
+//                continue;
+//            }
+//            affectRow += choiceAnswerMapper.insert(entity);
+//        }
+//        return affectRow;
+//    }
+
+    private int saveChoiceAnswer(List<StudentCourseExercisesChoiceAnswerEntity> entityList) {
+        int affectRow = 0;
+        if (entityList == null) {
+            return affectRow;
+        }
+        for (StudentCourseExercisesChoiceAnswerEntity entity : entityList) {
+            if (entity.getCorrectResult().equals(ExercisesStatusConstant.Yes)) {
+                continue;
+            }
+            affectRow += choiceAnswerMapper.insert(entity);
+        }
+        return affectRow;
+    }
+
+    private int saveBlankAnswer(List<StudentCourseExercisesBlankAnswerEntity> entityList) {
+        int affectRow = 0;
+        if (entityList == null) {
+            return affectRow;
+        }
+        for (StudentCourseExercisesBlankAnswerEntity entity : entityList) {
+            if (entity.getCorrectResult().equals(ExercisesStatusConstant.Yes)) {
+                continue;
+            }
+            affectRow += blankAnswerMapper.insert(entity);
+        }
+        return affectRow;
+    }
+
+    private int saveProgramAnswer(List<StudentCourseExercisesProgramAnswerEntity> entityList) {
+        int affectRow = 0;
+        if (entityList == null) {
+            return affectRow;
+        }
+        for (StudentCourseExercisesProgramAnswerEntity entity : entityList) {
+            if (entity.getCorrectResult().equals(ExercisesStatusConstant.Yes)) {
+                continue;
+            }
+            affectRow += programAnswerMapper.insert(entity);
+        }
+        return affectRow;
     }
 
     @Override

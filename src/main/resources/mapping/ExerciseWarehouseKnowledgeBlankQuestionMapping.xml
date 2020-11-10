@@ -30,6 +30,32 @@
       </if>
     </where>
   </select>
+
+  <select id="search" resultMap="BaseResultMap">
+    SELECT a.exercises_id,
+    a.technology_id,
+    a.knowledge_id,
+    a.exercises_title,
+    a.exercises_source,
+    a.right_answers,
+    a.data_status,
+    CASE WHEN a.data_status = 'P' THEN '待审批'
+    WHEN a.data_status = 'A' THEN '审批通过'
+    WHEN a.data_status = 'D' THEN '审批未通过'
+    ELSE '未知数据状态'
+    END AS data_status_text,
+    b.admin_name AS create_user,
+    DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+    c.admin_name                                    AS update_user,
+    DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_base.exercise_warehouse_knowledge_blank_question a
+    INNER JOIN shangshufang_base.system_admin b
+    ON a.create_user = b.admin_id
+    INNER JOIN shangshufang_base.system_admin c
+    ON a.update_user = c.admin_id
+    WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
+  </select>
+
   <select id="searchList" resultMap="BaseResultMap">
     SELECT a.exercises_id,
     a.technology_id,

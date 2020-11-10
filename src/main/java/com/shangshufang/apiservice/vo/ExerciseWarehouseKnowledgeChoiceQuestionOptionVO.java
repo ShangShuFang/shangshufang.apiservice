@@ -8,4 +8,5 @@ public class ExerciseWarehouseKnowledgeChoiceQuestionOptionVO extends BaseVO {
     private int exercisesID;
     private String optionText;
     private Boolean rightAnswer;
+    private Boolean selectedAnswer;
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.StudentCourseExercisesCodeReviewDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.StudentCourseExercisesCodeReviewDetailEntity" >
+    <id column="code_review_id" property="codeReviewID" jdbcType="INTEGER" />
+    <result column="student_id" property="studentID" jdbcType="INTEGER" />
+    <result column="course_id" property="courseID" jdbcType="INTEGER" />
+    <result column="course_class" property="courseClass" jdbcType="INTEGER" />
+    <result column="course_exercises_id" property="courseExercisesID" jdbcType="INTEGER" />
+    <result column="course_exercises_detail_id" property="courseExercisesDetailID" jdbcType="INTEGER" />
+    <result column="language_id" property="languageID" jdbcType="INTEGER" />
+    <result column="code_standard_id" property="codeStandardID" jdbcType="INTEGER" />
+    <result column="data_status" property="dataStatus" jdbcType="VARCHAR"/>
+    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR"/>
+    <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.StudentCourseExercisesCodeReviewDetailEntity" >
+    INSERT INTO shangshufang_customer.student_course_exercises_code_review_detail
+    (
+      student_id,
+      course_id,
+      course_class,
+      course_exercises_id,
+      course_exercises_detail_id,
+      language_id,
+      code_standard_id,
+      create_user,
+      update_user
+    )
+    VALUES (
+             #{studentID, jdbcType=INTEGER},
+             #{courseID, jdbcType=INTEGER},
+             #{courseClass, jdbcType=INTEGER},
+             #{courseExercisesID, jdbcType=INTEGER},
+             #{courseExercisesDetailID, jdbcType=INTEGER},
+             #{languageID, jdbcType=INTEGER},
+             #{codeStandardID, jdbcType=INTEGER},
+             #{createUser, jdbcType=VARCHAR},
+             #{updateUser, jdbcType=VARCHAR}
+           )
+  </insert>
+</mapper>

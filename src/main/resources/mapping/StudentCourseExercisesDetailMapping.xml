@@ -273,4 +273,11 @@
     )
   </insert>
 
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.StudentCourseExercisesDetailEntity" >
+    UPDATE shangshufang_customer.student_course_exercises_detail
+    SET correct_result = #{correctResult,jdbcType=VARCHAR},
+        update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE course_exercises_detail_id = #{courseExercisesDetailID,jdbcType=INTEGER};
+  </update>
+
 </mapper>

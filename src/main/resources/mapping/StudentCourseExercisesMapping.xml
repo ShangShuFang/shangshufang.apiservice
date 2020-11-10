@@ -35,6 +35,23 @@
     </where>;
   </select>
 
+  <select id="searchTotalCount4Student" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS TotalCount
+    FROM shangshufang_customer.student_course_exercises
+    <where>
+      <if test="courseID != 0">
+        course_id = #{courseID,jdbcType=INTEGER}
+      </if>
+      <if test="studentID != 0">
+        AND student_id = #{studentID,jdbcType=INTEGER}
+      </if>
+      <if test="dataStatus != null">
+        AND data_status = #{dataStatus,jdbcType=VARCHAR}
+      </if>
+    </where>;
+  </select>
+
   <select id="search" resultMap="BaseResultMap">
     SELECT a.course_exercises_id,
            a.course_id,
@@ -92,6 +109,38 @@
     LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
 
+  <select id="searchList4Student" resultMap="BaseResultMap">
+    SELECT a.course_exercises_id,
+    a.course_id,
+    a.course_class,
+    a.student_id,
+    b.full_name AS student_name,
+    a.data_status,
+    CASE WHEN A.data_status = 'P' THEN '待提交'
+    WHEN A.data_status = 'C' THEN '批改中'
+    WHEN A.data_status = 'R' THEN '修改中'
+    WHEN A.data_status = 'S' THEN '已完成'
+    ELSE '未知数据状态'
+    END AS data_status_text,
+    DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+    DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.student_course_exercises a
+    LEFT JOIN shangshufang_customer.university_student b
+    ON a.student_id = b.student_id
+    <where>
+      <if test="courseID != 0">
+        a.course_id = #{courseID,jdbcType=INTEGER}
+      </if>
+      <if test="studentID != 0">
+        AND a.student_id = #{studentID,jdbcType=INTEGER}
+      </if>
+      <if test="dataStatus != null">
+        AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
+      </if>
+    </where>
+    ORDER BY a.course_class
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+  </select>
 
   <insert id="insert" useGeneratedKeys="true" keyProperty="courseExercisesID"
           parameterType="com.shangshufang.apiservice.entity.StudentCourseExercisesEntity">
@@ -107,4 +156,12 @@
             #{updateUser, jdbcType=VARCHAR})
   </insert>
 
+  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.StudentCourseExercisesEntity" >
+    UPDATE shangshufang_customer.student_course_exercises
+    SET data_status = #{dataStatus,jdbcType=VARCHAR},
+        update_user = #{updateUser,jdbcType=VARCHAR}
+    WHERE course_id = #{courseID,jdbcType=INTEGER}
+      AND course_class = #{courseClass,jdbcType=INTEGER}
+      AND student_id = #{studentID,jdbcType=INTEGER};
+  </update>
 </mapper>

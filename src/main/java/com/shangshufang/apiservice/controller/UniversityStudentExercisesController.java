@@ -1,5 +1,6 @@
 package com.shangshufang.apiservice.controller;
 
+import com.shangshufang.apiservice.dto.CourseExercisesPaperDTO;
 import com.shangshufang.apiservice.dto.UniversityStudentExercisesDTO;
 import com.shangshufang.apiservice.service.impl.UniversityStudentExercisesServiceImpl;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
@@ -21,15 +22,13 @@ public class UniversityStudentExercisesController {
         return serviceImpl.findList(pageNumber, pageSize, courseID, dataStatus, studentName);
     }
 
-    @RequestMapping(value = "/list/student/{pageNumber}/{pageSize}/{studentID}/{courseID}/{dataStatus}/{studentName}/{isSelf}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/student/{pageNumber}/{pageSize}/{courseID}/{studentID}/{dataStatus}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
-                                    @PathVariable("studentID") int studentID,
                                     @PathVariable("courseID") int courseID,
-                                    @PathVariable("dataStatus") String dataStatus,
-                                    @PathVariable("studentName") String studentName,
-                                    @PathVariable("isSelf") boolean isSelf) {
-        return serviceImpl.findList4Student(pageNumber, pageSize, studentID, courseID, dataStatus, studentName, isSelf);
+                                    @PathVariable("studentID") int studentID,
+                                    @PathVariable("dataStatus") String dataStatus) {
+        return serviceImpl.findList4Student(pageNumber, pageSize, courseID, studentID, dataStatus);
     }
 
     @RequestMapping(value = "/list/student/technology/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{studentID}/{technologyID}/{dataStatus}", method = RequestMethod.GET)
@@ -51,6 +50,11 @@ public class UniversityStudentExercisesController {
     @RequestMapping(value = "/assign", method = RequestMethod.POST)
     public UnifiedResponse assign(@RequestBody UniversityStudentExercisesDTO dto) {
         return serviceImpl.assign(dto);
+    }
+
+    @RequestMapping(value = "/mark", method = RequestMethod.POST)
+    public UnifiedResponse mark(@RequestBody CourseExercisesPaperDTO dto) {
+        return serviceImpl.markCourseExercises(dto);
     }
 
     @RequestMapping(value = "/change", method = RequestMethod.PUT)

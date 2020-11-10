@@ -20,5 +20,11 @@ public class StudentCourseExercisesDetailVO extends BaseVO {
     private String programExercisesCodeUri;
     private String correctResult;
     private String corrector;
+
     private List<ExerciseWarehouseKnowledgeChoiceQuestionOptionVO> optionList;
+
+    private List<Integer> selectedOptionList;
+    private int selectedOptionID;
+    private String fillInContent;
+    private String sourceCodeUrl;
 }

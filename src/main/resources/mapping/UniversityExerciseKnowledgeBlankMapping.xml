@@ -35,6 +35,36 @@
       </if>
     </where>
   </select>
+
+  <select id="search" resultMap="BaseResultMap">
+    SELECT a.exercises_id,
+    a.university_code,
+    b.university_name,
+    a.school_id,
+    c.school_name,
+    a.teacher_id,
+    d.full_name AS teacher_name,
+    a.technology_id,
+    a.knowledge_id,
+    a.exercises_title,
+    a.right_answers,
+    d.full_name AS create_user,
+    DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+    d.full_name AS update_user,
+    DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.university_exercise_knowledge_blank a
+    LEFT JOIN shangshufang_customer.university b
+    ON a.university_code = b.university_code
+    LEFT JOIN shangshufang_customer.school c
+    ON a.university_code = c.university_code
+    AND a.school_id = c.school_id
+    LEFT JOIN shangshufang_customer.university_customer d
+    ON a.university_code = d.university_code
+    AND a.school_id = d.school_id
+    AND a.teacher_id = d.customer_id
+    WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
+  </select>
+
   <select id="searchList" resultMap="BaseResultMap">
     SELECT a.exercises_id,
            a.university_code,

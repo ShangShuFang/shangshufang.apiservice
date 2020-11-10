@@ -12,6 +12,8 @@ public interface ExerciseWarehouseKnowledgeBlankQuestionMapper extends BaseMappe
                          @Param("knowledgeID") int knowledgeID,
                          @Param("dataStatus") String dataStatus);
 
+    ExerciseWarehouseKnowledgeBlankQuestionEntity search(@Param("exercisesID") int exercisesID);
+
     List<ExerciseWarehouseKnowledgeBlankQuestionEntity> searchList(@Param("technologyID") int technologyID,
                                                                    @Param("knowledgeID") int knowledgeID,
                                                                    @Param("dataStatus") String dataStatus,
