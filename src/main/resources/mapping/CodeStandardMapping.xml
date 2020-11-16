@@ -45,6 +45,20 @@
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 
+  <select id="searchListByTechnology" resultMap="BaseResultMap">
+    SELECT
+      b.code_standard_id,
+      b.language_id,
+      c.language_name,
+      b.code_standard_name
+    FROM shangshufang_base.technology a
+        INNER JOIN shangshufang_base.code_standard b
+                   ON a.language_id = b.language_id
+        INNER JOIN shangshufang_base.programming_language c
+            ON a.language_id = c.language_id
+    WHERE a.technology_id = #{technologyID,jdbcType=INTEGER}
+    ORDER BY code_standard_id;
+  </select>
   <select id="checkNameExist" resultType="java.lang.Integer">
     SELECT
       COUNT(1) AS total_count

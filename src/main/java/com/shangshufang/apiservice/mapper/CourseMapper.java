@@ -80,7 +80,10 @@ public interface CourseMapper extends BaseMapper<CourseEntity> {
 
     int searchSimpleTotalCount(int universityCode, int schoolID, int teacherID, int technologyID);
 
-    List<CourseEntity> searchSimpleList(int universityCode, int schoolID, int teacherID, int technologyID);
+    List<CourseEntity> searchSimpleList(@Param("universityCode") int universityCode,
+                                        @Param("schoolID") int schoolID,
+                                        @Param("teacherID") int teacherID,
+                                        @Param("technologyID") int technologyID);
 
     CourseEntity search(int universityCode,
                         int schoolID,

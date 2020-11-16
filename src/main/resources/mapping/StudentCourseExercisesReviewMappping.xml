@@ -1,43 +1,55 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.shangshufang.apiservice.mapper.StudentCourseExercisesReviewMapper" >
-  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.StudentCourseExercisesReviewEntity" >
-    <id column="review_id" property="reviewID" jdbcType="INTEGER" />
-    <result column="student_id" property="studentID" jdbcType="INTEGER" />
-    <result column="course_id" property="courseID" jdbcType="INTEGER" />
-    <result column="course_class" property="courseClass" jdbcType="INTEGER" />
-    <result column="course_exercises_id" property="courseExercisesID" jdbcType="INTEGER" />
-    <result column="course_exercises_detail_id" property="courseExercisesDetailID" jdbcType="INTEGER" />
-    <result column="correct_result" property="correctResult" jdbcType="VARCHAR" />
-    <result column="data_status" property="dataStatus" jdbcType="VARCHAR"/>
-    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR"/>
-    <result column="create_user" property="createUser" jdbcType="INTEGER"/>
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
-    <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
-    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
-  </resultMap>
-  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.StudentCourseExercisesReviewEntity" >
-    INSERT INTO shangshufang_customer.student_course_exercises_review
-    (
-      student_id,
-      course_id,
-      course_class,
-      course_exercises_id,
-      course_exercises_detail_id,
-      correct_result,
-      create_user,
-      update_user
-    )
-    VALUES (
-             #{studentID, jdbcType=INTEGER},
-             #{courseID, jdbcType=INTEGER},
-             #{courseClass, jdbcType=INTEGER},
-             #{courseExercisesID, jdbcType=INTEGER},
-             #{courseExercisesDetailID, jdbcType=INTEGER},
-             #{correctResult, jdbcType=VARCHAR},
-             #{createUser, jdbcType=VARCHAR},
-             #{updateUser, jdbcType=VARCHAR}
-           )
-  </insert>
+<mapper namespace="com.shangshufang.apiservice.mapper.StudentCourseExercisesReviewMapper">
+    <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.StudentCourseExercisesReviewEntity">
+        <id column="review_id" property="reviewID" jdbcType="INTEGER"/>
+        <result column="student_id" property="studentID" jdbcType="INTEGER"/>
+        <result column="course_id" property="courseID" jdbcType="INTEGER"/>
+        <result column="course_class" property="courseClass" jdbcType="INTEGER"/>
+        <result column="course_exercises_id" property="courseExercisesID" jdbcType="INTEGER"/>
+        <result column="course_exercises_detail_id" property="courseExercisesDetailID" jdbcType="INTEGER"/>
+        <result column="correct_result" property="correctResult" jdbcType="VARCHAR"/>
+        <result column="data_status" property="dataStatus" jdbcType="VARCHAR"/>
+        <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR"/>
+        <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <select id="searchList" resultMap="BaseResultMap">
+        SELECT review_id,
+               student_id,
+               course_id,
+               course_class,
+               course_exercises_id,
+               course_exercises_detail_id,
+               correct_result,
+               DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+               DATE_FORMAT(update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+        FROM shangshufang_customer.student_course_exercises_review
+        WHERE course_exercises_id = #{courseExercisesID,jdbcType=INTEGER}
+          AND course_exercises_detail_id = #{courseExercisesDetailID,jdbcType=INTEGER}
+        ORDER BY update_time DESC;
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="reviewID"
+            parameterType="com.shangshufang.apiservice.entity.StudentCourseExercisesReviewEntity">
+        INSERT INTO shangshufang_customer.student_course_exercises_review
+        (student_id,
+         course_id,
+         course_class,
+         course_exercises_id,
+         course_exercises_detail_id,
+         correct_result,
+         create_user,
+         update_user)
+        VALUES (#{studentID, jdbcType=INTEGER},
+                #{courseID, jdbcType=INTEGER},
+                #{courseClass, jdbcType=INTEGER},
+                #{courseExercisesID, jdbcType=INTEGER},
+                #{courseExercisesDetailID, jdbcType=INTEGER},
+                #{correctResult, jdbcType=VARCHAR},
+                #{createUser, jdbcType=VARCHAR},
+                #{updateUser, jdbcType=VARCHAR})
+    </insert>
 
 </mapper>

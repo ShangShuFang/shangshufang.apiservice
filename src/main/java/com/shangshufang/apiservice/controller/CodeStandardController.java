@@ -19,6 +19,11 @@ public class CodeStandardController {
         return serviceImpl.findList(pageNumber, pageSize, languageID);
     }
 
+    @RequestMapping(value = "/list/technology/{technologyID}", method = RequestMethod.GET)
+    public UnifiedResponse findList(@PathVariable("technologyID") int technologyID){
+        return serviceImpl.findList(technologyID);
+    }
+
     @RequestMapping(value = "/check/name/{languageID}/{codeStandardName}", method = RequestMethod.GET)
     public UnifiedResponse checkNameExist(@PathVariable("languageID") int languageID, @PathVariable("codeStandardName") String codeStandardName){
         return serviceImpl.checkNameExist(languageID, codeStandardName);

@@ -12,6 +12,8 @@ public interface CodeStandardMapper extends BaseMapper<CodeStandardEntity> {
 
     List<CodeStandardEntity> searchList(int startIndex, int pageSize, int languageID);
 
+    List<CodeStandardEntity> searchListByTechnology(@Param("technologyID") int technologyID);
+
     int checkNameExist(int languageID, String codeStandardName);
 
     int delete(int languageID, int codeStandardID);

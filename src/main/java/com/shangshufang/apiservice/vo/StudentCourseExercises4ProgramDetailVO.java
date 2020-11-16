@@ -2,6 +2,8 @@ package com.shangshufang.apiservice.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class StudentCourseExercises4ProgramDetailVO extends BaseVO {
     private int courseExercisesDetailID;
@@ -19,4 +21,11 @@ public class StudentCourseExercises4ProgramDetailVO extends BaseVO {
     private String corrector;
     private String submitSourceCodeUrl;
     private String answerSourceCodeUrl;
+    private String compilationResult;
+    private String runResult;
+    private String codeStandardResult;
+    private String reviewResult;
+    private String reviewMemo;
+    private List<CodeStandardVO> codeStandardErrorList;
+
 }

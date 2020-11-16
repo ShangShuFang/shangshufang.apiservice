@@ -3,6 +3,11 @@
 <mapper namespace="com.shangshufang.apiservice.mapper.StudentCourseExercisesMapper">
   <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.StudentCourseExercisesEntity">
     <id column="course_exercises_id" property="courseExercisesID" jdbcType="INTEGER"/>
+    <result column="language_id" property="languageID" jdbcType="INTEGER"/>
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
+    <result column="technology_name" property="technologyName" jdbcType="VARCHAR"/>
+    <result column="university_code" property="universityCode" jdbcType="INTEGER"/>
+    <result column="university_name" property="universityName" jdbcType="VARCHAR"/>
     <result column="course_id" property="courseID" jdbcType="INTEGER"/>
     <result column="course_name" property="courseName" jdbcType="VARCHAR"/>
     <result column="course_class" property="courseClass" jdbcType="INTEGER"/>
@@ -15,6 +20,42 @@
     <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
   </resultMap>
+
+  <select id="searchTotalCountNew" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.student_course_exercises a
+    INNER JOIN shangshufang_customer.course b
+        ON a.course_id = b.course_id
+    INNER JOIN shangshufang_customer.university_student c
+        ON a.student_id = c.student_id
+    INNER JOIN shangshufang_base.technology d
+        ON b.technology_id = d.technology_id
+    INNER JOIN shangshufang_customer.university e
+        ON c.university_code = e.university_code
+    <where>
+      <if test="technologyID != 0">
+        b.technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+      <if test="universityCode != 0">
+        AND b.university_code = #{universityCode,jdbcType=INTEGER}
+      </if>
+      <if test="schoolID != 0">
+        AND a.school_id = #{schoolID,jdbcType=INTEGER}
+      </if>
+      <if test="courseID != 0">
+        AND a.course_id = #{courseID,jdbcType=INTEGER}
+      </if>
+      <if test="studentID != 0">
+        AND a.student_id = #{studentID,jdbcType=INTEGER}
+      </if>
+      <if test="studentName != null">
+        AND c.full_name = #{studentName,jdbcType=VARCHAR}
+      </if>
+      <if test="dataStatus != null">
+        AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
+      </if>
+    </where>;
+  </select>
 
   <select id="searchTotalCount" resultType="java.lang.Integer">
     SELECT
@@ -59,10 +100,12 @@
            a.course_class,
            a.student_id,
            b.full_name AS student_name,
+           c.technology_id,
+           d.language_id,
            a.data_status,
     CASE WHEN A.data_status = 'P' THEN '待提交'
     WHEN A.data_status = 'C' THEN '批改中'
-    WHEN A.data_status = 'R' THEN '修改中'
+    WHEN A.data_status = 'R' THEN '待修改'
     WHEN A.data_status = 'S' THEN '已完成'
     ELSE '未知数据状态'
     END AS data_status_text,
@@ -73,7 +116,65 @@
     ON a.student_id = b.student_id
     LEFT JOIN shangshufang_customer.course c
     ON a.course_id = c.course_id
+    LEFT JOIN shangshufang_base.technology d
+    ON c.technology_id = d.technology_id
     WHERE course_exercises_id = #{courseExercisesID,jdbcType=INTEGER}
+  </select>
+
+  <select id="searchListNew" resultMap="BaseResultMap">
+    SELECT
+           a.course_exercises_id,
+           d.language_id,
+           d.technology_id,
+           d.technology_name,
+           e.university_code,
+           e.university_name,
+           a.course_id,
+           b.course_name,
+           a.course_class,
+           a.student_id,
+           c.full_name AS student_name,
+           a.data_status,
+           CASE WHEN A.data_status = 'P' THEN '待提交'
+           WHEN A.data_status = 'C' THEN '批改中'
+           WHEN A.data_status = 'R' THEN '待修改'
+           WHEN A.data_status = 'S' THEN '已完成'
+           ELSE '未知数据状态'
+           END AS data_status_text,
+           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.student_course_exercises a
+    INNER JOIN shangshufang_customer.course b
+    ON a.course_id = b.course_id
+    INNER JOIN shangshufang_customer.university_student c
+    ON a.student_id = c.student_id
+    INNER JOIN shangshufang_base.technology d
+    ON b.technology_id = d.technology_id
+    INNER JOIN shangshufang_customer.university e
+    ON c.university_code = e.university_code
+    <where>
+      <if test="technologyID != 0">
+        b.technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+      <if test="universityCode != 0">
+        AND b.university_code = #{universityCode,jdbcType=INTEGER}
+      </if>
+      <if test="schoolID != 0">
+        AND a.school_id = #{schoolID,jdbcType=INTEGER}
+      </if>
+      <if test="courseID != 0">
+        AND a.course_id = #{courseID,jdbcType=INTEGER}
+      </if>
+      <if test="studentID != 0">
+        AND a.student_id = #{studentID,jdbcType=INTEGER}
+      </if>
+      <if test="studentName != null">
+        AND c.full_name = #{studentName,jdbcType=VARCHAR}
+      </if>
+      <if test="dataStatus != null">
+        AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
+      </if>
+    </where>;
   </select>
 
   <select id="searchList" resultMap="BaseResultMap">
@@ -85,7 +186,7 @@
     a.data_status,
     CASE WHEN A.data_status = 'P' THEN '待提交'
     WHEN A.data_status = 'C' THEN '批改中'
-    WHEN A.data_status = 'R' THEN '修改中'
+    WHEN A.data_status = 'R' THEN '待修改'
     WHEN A.data_status = 'S' THEN '已完成'
     ELSE '未知数据状态'
     END AS data_status_text,
@@ -118,7 +219,7 @@
     a.data_status,
     CASE WHEN A.data_status = 'P' THEN '待提交'
     WHEN A.data_status = 'C' THEN '批改中'
-    WHEN A.data_status = 'R' THEN '修改中'
+    WHEN A.data_status = 'R' THEN '待修改'
     WHEN A.data_status = 'S' THEN '已完成'
     ELSE '未知数据状态'
     END AS data_status_text,
@@ -162,6 +263,7 @@
         update_user = #{updateUser,jdbcType=VARCHAR}
     WHERE course_id = #{courseID,jdbcType=INTEGER}
       AND course_class = #{courseClass,jdbcType=INTEGER}
-      AND student_id = #{studentID,jdbcType=INTEGER};
+      AND student_id = #{studentID,jdbcType=INTEGER}
+      AND course_exercises_id = #{courseExercisesID,jdbcType=INTEGER};
   </update>
 </mapper>

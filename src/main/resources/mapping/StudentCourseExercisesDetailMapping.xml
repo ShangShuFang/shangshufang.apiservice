@@ -249,7 +249,6 @@
       AND a.course_exercises_id = #{courseExercisesID, jdbcType=INTEGER};
   </select>
 
-
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.StudentCourseExercisesDetailEntity" >
     INSERT INTO shangshufang_customer.student_course_exercises_detail (
       course_exercises_id,

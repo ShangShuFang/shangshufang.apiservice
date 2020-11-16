@@ -47,6 +47,26 @@ public class CodeStandardServiceImpl implements CodeStandardService {
     }
 
     @Override
+    public UnifiedResponse findList(int technologyID) {
+        try {
+            List<CodeStandardVO> modelList = new ArrayList<>();
+            List<CodeStandardEntity> entityList =  myMapper.searchListByTechnology(technologyID);
+            if (entityList.isEmpty()) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            for (CodeStandardEntity entity : entityList) {
+                CodeStandardVO model = new CodeStandardVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse checkNameExist(int languageID, String codeStandardName) {
         try {
             int count =  myMapper.checkNameExist(languageID, codeStandardName);

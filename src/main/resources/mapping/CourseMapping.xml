@@ -1128,10 +1128,18 @@
            DATE_FORMAT(course_time_end, '%Y-%m-%d')   AS course_time_end
     FROM shangshufang_customer.course
     WHERE data_status != '3'
-      AND university_code = #{arg0,jdbcType=INTEGER}
-      AND school_id = #{arg1,jdbcType=INTEGER}
-      AND teacher_id = #{arg2,jdbcType=INTEGER}
-      AND technology_id = #{arg3,jdbcType=INTEGER};
+    <if test="universityCode != 0">
+      AND university_code = #{universityCode,jdbcType=INTEGER}
+    </if>
+    <if test="schoolID != 0">
+      AND school_id = #{schoolID,jdbcType=INTEGER}
+    </if>
+    <if test="teacherID != 0">
+      AND teacher_id = #{teacherID,jdbcType=INTEGER}
+    </if>
+    <if test="technologyID != 0">
+      AND technology_id = #{technologyID,jdbcType=INTEGER}
+    </if>;
   </select>
   <select id="search" resultMap="BaseResultMap">
     SELECT

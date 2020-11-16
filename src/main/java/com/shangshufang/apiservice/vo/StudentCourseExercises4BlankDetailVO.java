@@ -17,8 +17,6 @@ public class StudentCourseExercises4BlankDetailVO extends BaseVO {
     private String exercisesSource;
     private String correctResult;
     private String corrector;
-
     private String rightAnswer;
-
     private String fillInContent;
 }

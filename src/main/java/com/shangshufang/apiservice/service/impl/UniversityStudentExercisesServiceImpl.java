@@ -4,6 +4,7 @@ import com.shangshufang.apiservice.common.JsonUtils;
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
 import com.shangshufang.apiservice.constant.*;
 import com.shangshufang.apiservice.dto.CourseExercisesPaperDTO;
+import com.shangshufang.apiservice.dto.CourseProgramExercisesMarkDTO;
 import com.shangshufang.apiservice.dto.UniversityStudentExercisesDTO;
 import com.shangshufang.apiservice.entity.*;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
@@ -56,10 +57,46 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
     private StudentCourseExercisesProgramAnswerMapper programAnswerMapper;
     @Autowired
     private StudentCourseExercisesReviewMapper exercisesReviewMapper;
+    @Autowired
+    private StudentCourseExercisesProgramReviewDetailMapper programReviewDetailMapper;
+    @Autowired
+    private StudentCourseExercisesCodeReviewDetailMapper codeReviewDetailMapper;
 
     private final Logger logger = LogManager.getLogger(UniversityStudentExercisesServiceImpl.class);
 
     private final String SYS_ADMIN_ID = "0";
+
+    @Override
+    public UnifiedResponse findList(int pageNumber,
+                                    int pageSize,
+                                    int technologyID,
+                                    int universityCode,
+                                    int schoolID,
+                                    int courseID,
+                                    int studentID,
+                                    String studentName,
+                                    String dataStatus) {
+        try {
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<StudentCourseExercisesVO> modelList = new ArrayList<>();
+            dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
+            studentName = studentName.equals(ParameterConstant.NO_PARAMETER) ? null : studentName;
+            int totalCount = studentCourseExercisesMapper.searchTotalCountNew(technologyID, universityCode, schoolID, courseID, studentID, studentName, dataStatus);
+            if (totalCount == 0) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            List<StudentCourseExercisesEntity> entityList = studentCourseExercisesMapper.searchListNew(startIndex, pageSize, technologyID, universityCode, schoolID, courseID, studentID, studentName, dataStatus);
+            for (StudentCourseExercisesEntity entity : entityList) {
+                StudentCourseExercisesVO model = new StudentCourseExercisesVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
 
     @Override
     public UnifiedResponse findList(int pageNumber, int pageSize, int courseID, String dataStatus, String studentName) {
@@ -130,6 +167,52 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                 modelList.add(model);
             }
             return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse findProgramReviewList(int courseExercisesID, int courseExercisesDetailID) {
+        try {
+            List<StudentCourseExercises4ProgramDetailVO> modelList = new ArrayList<>();
+            List<StudentCourseExercisesReviewEntity> entityList =
+                    exercisesReviewMapper.searchList(courseExercisesID, courseExercisesDetailID);
+            if (entityList.isEmpty()) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+
+            for (StudentCourseExercisesReviewEntity entity : entityList) {
+                StudentCourseExercises4ProgramDetailVO model = new StudentCourseExercises4ProgramDetailVO();
+                //取得程序批改项明细
+                StudentCourseExercisesProgramReviewDetailEntity programReviewEntity =
+                        programReviewDetailMapper.search(courseExercisesID,
+                                courseExercisesDetailID,
+                                entity.getReviewID());
+                if (programReviewEntity == null) {
+                    throw new Exception(String.format("Can't find program detail, courseExercisesID: %s, courseExercisesDetailID: %s, reviewID: %s",
+                            courseExercisesID, courseExercisesDetailID, entity.getReviewID()));
+                }
+                ObjectConvertUtils.toBean(programReviewEntity, model);
+
+                //取得程序代码规范性问题列表
+                List<StudentCourseExercisesCodeReviewDetailEntity> codeReviewEntityList = codeReviewDetailMapper.searchList(courseExercisesID,
+                        courseExercisesDetailID,
+                        entity.getReviewID());
+                if (!codeReviewEntityList.isEmpty()) {
+                    List<CodeStandardVO> codeStandardErrorList = new ArrayList<>();
+                    for (StudentCourseExercisesCodeReviewDetailEntity codeReviewEntity : codeReviewEntityList) {
+                        CodeStandardVO codeStandardVO = new CodeStandardVO();
+                        ObjectConvertUtils.toBean(codeReviewEntity, codeStandardVO);
+                        codeStandardErrorList.add(codeStandardVO);
+                    }
+                    model.setCodeStandardErrorList(codeStandardErrorList);
+                }
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
         } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();
@@ -285,12 +368,31 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
             for (StudentCourseExercisesDetailEntity programExercisesEntity : programEntityList) {
                 StudentCourseExercises4ProgramDetailVO programExercisesModel = new StudentCourseExercises4ProgramDetailVO();
                 ObjectConvertUtils.toBean(programExercisesEntity, programExercisesModel);
-                //region todo 取得参考代码的地址（企业题库）或答案（自定义题库）
+                //region todo 取得参考答案的地址（企业题库）或答案（自定义题库）
 //                if (programExercisesEntity.getExercisesSourceType() == ExercisesSourceTypeConstant.COMPANY) {
 //                    //从企业题库从取得题目参考代码的地址
 //                } else {
 //                    //从自定义题库中取得题库的参考答案
 //                }
+                //endregion
+
+                //region 取得最近一次的代码批改结果
+                if (programExercisesEntity.getCorrectResult().equals(ExercisesStatusConstant.Reviewed) ||
+                        programExercisesEntity.getCorrectResult().equals(ExercisesStatusConstant.Yes)) {
+                    StudentCourseExercisesProgramReviewDetailEntity programReviewEntity =
+                            programReviewDetailMapper.searchLatest(programExercisesEntity.getCourseExercisesID(),
+                                    programExercisesEntity.getCourseExercisesDetailID());
+                    if (programReviewEntity == null) {
+                        throw new Exception(String.format("Can't find program review data. courseExercisesID: %s, courseExercisesDetailID: %s",
+                                programExercisesEntity.getCourseExercisesID(),
+                                programExercisesEntity.getCourseExercisesDetailID()));
+                    }
+                    programExercisesModel.setCompilationResult(programReviewEntity.getCompilationResult());
+                    programExercisesModel.setRunResult(programReviewEntity.getRunResult());
+                    programExercisesModel.setCodeStandardResult(programReviewEntity.getCodeStandardResult());
+                    programExercisesModel.setReviewResult(programReviewEntity.getReviewResult());
+                    programExercisesModel.setReviewMemo(programReviewEntity.getReviewMemo());
+                }
                 //endregion
 
                 //region 取得学生提交的代码地址
@@ -823,11 +925,18 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
             affectRow += correctSingleChoiceAnswer(courseExercisesVO, singleChoiceAnswerEntityList);
             affectRow += correctMultipleChoiceAnswer(courseExercisesVO, multipleChoiceAnswerEntityList);
             affectRow += correctBlankAnswer(courseExercisesVO, blankAnswerEntityList);
+            affectRow += changeProgramStatusToWaiting(programAnswerEntityList);
             //endregion
 
             //region 5.对学生测试卷的批改结果进行更新(批改中)
             if (affectRow > 0) {
-                affectRow += changeCourseExercisesStatus(dto, ExercisesStatusConstant.Correcting);
+                String courseExercisesChangeStatus = getCourseExercisesChangeStatus(dto.getCourseExercisesID());
+                affectRow += changeCourseExercisesStatus(
+                        dto.getStudentID(),
+                        dto.getCourseID(),
+                        dto.getCourseClass(),
+                        dto.getCourseExercisesID(),
+                        courseExercisesChangeStatus);
             }
             //endregion
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
@@ -837,19 +946,184 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
         }
     }
 
-    private int changeCourseExercisesStatus(CourseExercisesPaperDTO dto, String dataStatus) {
-        StudentCourseExercisesEntity entity = new StudentCourseExercisesEntity();
+    private String getCourseExercisesChangeStatus(int courseExercisesID) throws Exception {
+        StudentCourseExercisesVO model = getCourseExercisesModel(courseExercisesID);
+        if (model == null) {
+            throw new Exception(String.format("Can't find course exercises, courseExercisesID: %s", courseExercisesID));
+        }
+        if (model.getDataStatus().equals(ExercisesStatusConstant.Pending)) {
+            return ExercisesStatusConstant.Pending;
+        }
+        List<StudentCourseExercises4SingleChoiceDetailVO> singleChoiceExercisesList =
+                model.getSingleChoiceExercisesList();
+        List<StudentCourseExercises4MultipleChoiceDetailVO> multipleChoiceExercisesList =
+                model.getMultipleChoiceExercisesList();
+        List<StudentCourseExercises4BlankDetailVO> blankExercisesList =
+                model.getBlankExercisesList();
+        List<StudentCourseExercises4ProgramDetailVO> programExercisesList =
+                model.getProgramExercisesList();
+
+        if (!singleChoiceExercisesList.isEmpty()) {
+            for (StudentCourseExercises4SingleChoiceDetailVO vo : singleChoiceExercisesList) {
+                if (vo.getCorrectResult().equals(ExercisesStatusConstant.Pending)) {
+                    return ExercisesStatusConstant.Pending;
+                }
+                if (vo.getCorrectResult().equals(ExercisesStatusConstant.No)) {
+                    return ExercisesStatusConstant.Reviewed;
+                }
+            }
+        }
+
+        if (!multipleChoiceExercisesList.isEmpty()) {
+            for (StudentCourseExercises4MultipleChoiceDetailVO vo : multipleChoiceExercisesList) {
+                if (vo.getCorrectResult().equals(ExercisesStatusConstant.Pending)) {
+                    return ExercisesStatusConstant.Pending;
+                }
+                if (vo.getCorrectResult().equals(ExercisesStatusConstant.No)) {
+                    return ExercisesStatusConstant.Reviewed;
+                }
+            }
+        }
+
+        if (!blankExercisesList.isEmpty()) {
+            for (StudentCourseExercises4BlankDetailVO vo : blankExercisesList) {
+                if (vo.getCorrectResult().equals(ExercisesStatusConstant.Pending)) {
+                    return ExercisesStatusConstant.Pending;
+                }
+                if (vo.getCorrectResult().equals(ExercisesStatusConstant.No)) {
+                    return ExercisesStatusConstant.Reviewed;
+                }
+            }
+        }
+
+        boolean allProgramExercisesReviewedPass = true;
+        if (!programExercisesList.isEmpty()) {
+            for (StudentCourseExercises4ProgramDetailVO vo : programExercisesList) {
+                if (vo.getCorrectResult().equals(ExercisesStatusConstant.Waiting)) {
+                    return ExercisesStatusConstant.Correcting;
+                }
+                if (vo.getCorrectResult().equals(ExercisesStatusConstant.Reviewed)) {
+                    allProgramExercisesReviewedPass = false;
+                }
+            }
+            if (!allProgramExercisesReviewedPass) {
+                return ExercisesStatusConstant.Reviewed;
+            }
+        }
+        return ExercisesStatusConstant.Pass;
+    }
+
+    @Override
+    public UnifiedResponse correctProgramAnswer(CourseProgramExercisesMarkDTO dto) {
+        try {
+            int affectRow = 0;
+            List<CodeStandardEntity> codeStandardEntityList =
+                    JsonUtils.deserializationToObject(dto.getCodeStandardErrorListJson(), CodeStandardEntity.class);
+
+            //region 添加练习批改记录
+            boolean isRight = dto.getReviewResult().equals(ExercisesStatusConstant.Pass);
+            StudentCourseExercisesReviewEntity reviewEntity = new StudentCourseExercisesReviewEntity();
+            affectRow += saveCourseExercisesReview(
+                    dto.getStudentID(),
+                    dto.getCourseID(),
+                    dto.getCourseClass(),
+                    dto.getCourseExercisesID(),
+                    dto.getCourseExercisesDetailID(),
+                    isRight,
+                    reviewEntity);
+            //endregion
+
+            //region 添加编程题批改项记录
+            affectRow += saveCourseProgramReview(reviewEntity.getReviewID(), dto);
+            //endregion
+
+            //region 添加编程题代码规范问题项记录
+            affectRow += saveCourseProgramCodeReview(reviewEntity.getReviewID(), dto, codeStandardEntityList);
+            //endregion
+
+            //region 更新练习题状态 (通过：Y ｜ 未通过：R)
+            String courseExercisesDetailStatus = dto.getReviewResult().equals(ExercisesStatusConstant.Pass) ?
+                    ExercisesStatusConstant.Yes:
+                    ExercisesStatusConstant.Reviewed;
+            affectRow += changeCourseExercisesDetailStatus(dto.getCourseExercisesDetailID(), courseExercisesDetailStatus);
+            //endregion
+
+            //region 更新练习卷状态
+            String courseExercisesChangeStatus = getCourseExercisesChangeStatus(dto.getCourseExercisesID());
+            affectRow += changeCourseExercisesStatus(
+                    dto.getStudentID(),
+                    dto.getCourseID(),
+                    dto.getCourseClass(),
+                    dto.getCourseExercisesID(),
+                    courseExercisesChangeStatus);
+            //endregion
+
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    private int saveCourseProgramReview(int reviewID, CourseProgramExercisesMarkDTO dto) {
+        StudentCourseExercisesProgramReviewDetailEntity entity =
+                new StudentCourseExercisesProgramReviewDetailEntity();
+        entity.setReviewID(reviewID);
+        entity.setStudentID(dto.getStudentID());
         entity.setCourseID(dto.getCourseID());
         entity.setCourseClass(dto.getCourseClass());
-        entity.setStudentID(dto.getStudentID());
+        entity.setCourseExercisesID(dto.getCourseExercisesID());
+        entity.setCourseExercisesDetailID(dto.getCourseExercisesDetailID());
+        entity.setCompilationResult(dto.getCompilationResult());
+        entity.setRunResult(dto.getRunResult());
+        entity.setCodeStandardResult(dto.getCodeStandardResult());
+        entity.setReviewResult(dto.getReviewResult());
+        entity.setReviewMemo(dto.getReviewMemo());
+        entity.setCreateUser(dto.getLoginUser());
+        entity.setUpdateUser(dto.getLoginUser());
+        return programReviewDetailMapper.insert(entity);
+    }
+
+    private int saveCourseProgramCodeReview(int reviewID, CourseProgramExercisesMarkDTO dto, List<CodeStandardEntity> entityList) {
+        int affectRow = 0;
+        if (entityList.isEmpty()) {
+            return affectRow;
+        }
+        for (CodeStandardEntity entity : entityList) {
+            StudentCourseExercisesCodeReviewDetailEntity codeReviewEntity =
+                    new StudentCourseExercisesCodeReviewDetailEntity();
+            codeReviewEntity.setReviewID(reviewID);
+            codeReviewEntity.setStudentID(dto.getStudentID());
+            codeReviewEntity.setCourseID(dto.getCourseID());
+            codeReviewEntity.setCourseClass(dto.getCourseClass());
+            codeReviewEntity.setCourseExercisesID(dto.getCourseExercisesID());
+            codeReviewEntity.setCourseExercisesDetailID(dto.getCourseExercisesDetailID());
+            codeReviewEntity.setLanguageID(entity.getLanguageID());
+            codeReviewEntity.setCodeStandardID(entity.getCodeStandardID());
+            codeReviewEntity.setCreateUser(dto.getLoginUser());
+            codeReviewEntity.setUpdateUser(dto.getLoginUser());
+            affectRow += codeReviewDetailMapper.insert(codeReviewEntity);
+        }
+        return affectRow;
+    }
+
+    private int changeCourseExercisesStatus(int studentID,
+                                            int courseID,
+                                            int courseClass,
+                                            int courseExercisesID,
+                                            String dataStatus) {
+        StudentCourseExercisesEntity entity = new StudentCourseExercisesEntity();
+        entity.setStudentID(studentID);
+        entity.setCourseID(courseID);
+        entity.setCourseClass(courseClass);
+        entity.setCourseExercisesID(courseExercisesID);
         entity.setDataStatus(dataStatus);
         entity.setCreateUser(SYS_ADMIN_ID);
         entity.setUpdateUser(SYS_ADMIN_ID);
         return studentCourseExercisesMapper.updateDataStatus(entity);
     }
 
-    private int changeCourseExercisesDetailStatus(int courseExercisesDetailID, boolean isRight) {
-        String dataStatus = isRight ? ExercisesStatusConstant.Yes : ExercisesStatusConstant.No;
+    private int changeCourseExercisesDetailStatus(int courseExercisesDetailID, String dataStatus) {
         StudentCourseExercisesDetailEntity exercisesDetailEntity = new StudentCourseExercisesDetailEntity();
         exercisesDetailEntity.setCourseExercisesDetailID(courseExercisesDetailID);
         exercisesDetailEntity.setCorrectResult(dataStatus);
@@ -874,6 +1148,28 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
         exercisesReviewEntity.setCreateUser(SYS_ADMIN_ID);
         exercisesReviewEntity.setUpdateUser(SYS_ADMIN_ID);
         return exercisesReviewMapper.insert(exercisesReviewEntity);
+    }
+
+    private int saveCourseExercisesReview(int studentID,
+                                          int courseID,
+                                          int courseClass,
+                                          int courseExercisesID,
+                                          int courseExercisesDetailID,
+                                          boolean isRight,
+                                          StudentCourseExercisesReviewEntity entity) {
+        if (entity == null) {
+            return 0;
+        }
+        String dataStatus = isRight ? ExercisesStatusConstant.Yes : ExercisesStatusConstant.No;
+        entity.setStudentID(studentID);
+        entity.setCourseID(courseID);
+        entity.setCourseClass(courseClass);
+        entity.setCourseExercisesID(courseExercisesID);
+        entity.setCourseExercisesDetailID(courseExercisesDetailID);
+        entity.setCorrectResult(dataStatus);
+        entity.setCreateUser(SYS_ADMIN_ID);
+        entity.setUpdateUser(SYS_ADMIN_ID);
+        return exercisesReviewMapper.insert(entity);
     }
 
     private int correctSingleChoiceAnswer(StudentCourseExercisesVO courseExercisesVO, List<StudentCourseExercisesChoiceAnswerEntity> answerEntityList) {
@@ -908,7 +1204,8 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                     }
 
                     //2.批改结果更新
-                    affectRow += changeCourseExercisesDetailStatus(entity.getCourseExercisesDetailID(), isRight);
+                    String dataStatus = isRight ? ExercisesStatusConstant.Yes : ExercisesStatusConstant.No;
+                    affectRow += changeCourseExercisesDetailStatus(entity.getCourseExercisesDetailID(), dataStatus);
 
                     //3.保存批改记录
                     affectRow += saveCourseExercisesReview(
@@ -967,7 +1264,8 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                     }
 
                     //2.批改结果更新
-                    affectRow += changeCourseExercisesDetailStatus(entity.getCourseExercisesDetailID(), isRight);
+                    String dataStatus = isRight ? ExercisesStatusConstant.Yes : ExercisesStatusConstant.No;
+                    affectRow += changeCourseExercisesDetailStatus(entity.getCourseExercisesDetailID(), dataStatus);
 
                     //3.保存批改记录
                     affectRow += saveCourseExercisesReview(
@@ -1009,7 +1307,8 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                     }
 
                     //2.批改结果更新
-                    affectRow += changeCourseExercisesDetailStatus(entity.getCourseExercisesDetailID(), isRight);
+                    String dataStatus = isRight ? ExercisesStatusConstant.Yes : ExercisesStatusConstant.No;
+                    affectRow += changeCourseExercisesDetailStatus(entity.getCourseExercisesDetailID(), dataStatus);
 
                     //3.保存批改记录
                     affectRow += saveCourseExercisesReview(
@@ -1019,7 +1318,6 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
                             entity.getCourseExercisesID(),
                             entity.getCourseExercisesDetailID(),
                             isRight);
-
                     break;
                 }
             }
@@ -1028,9 +1326,17 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
         return affectRow;
     }
 
-    private int correctProgramAnswer(StudentCourseExercisesVO courseExercisesVO, List<StudentCourseExercisesProgramAnswerEntity> programAnswerEntityList) {
-        return 0;
+    private int changeProgramStatusToWaiting(List<StudentCourseExercisesProgramAnswerEntity> programAnswerEntityList) {
+        int affectRow = 0;
+        if (programAnswerEntityList.isEmpty()) {
+            return affectRow;
+        }
+        for (StudentCourseExercisesProgramAnswerEntity entity : programAnswerEntityList) {
+            affectRow += changeCourseExercisesDetailStatus(entity.getCourseExercisesDetailID(), ExercisesStatusConstant.Waiting);
+        }
+        return affectRow;
     }
+
     private List<StudentCourseExercisesChoiceAnswerEntity> getCourseSingleChoiceExercisesAnswerList(CourseExercisesPaperDTO dto) {
         List<StudentCourseExercisesChoiceAnswerEntity> singleChoiceAnswerEntityList =
                 JsonUtils.deserializationToObject(dto.getSingleChoiceListJson(), StudentCourseExercisesChoiceAnswerEntity.class);

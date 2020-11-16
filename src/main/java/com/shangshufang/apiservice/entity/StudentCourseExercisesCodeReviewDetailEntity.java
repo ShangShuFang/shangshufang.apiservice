@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class StudentCourseExercisesCodeReviewDetailEntity extends BaseEntity {
     private int codeReviewID;
+    private int reviewID;
     private int studentID;
     private int courseID;
     private int courseClass;
@@ -12,4 +13,5 @@ public class StudentCourseExercisesCodeReviewDetailEntity extends BaseEntity {
     private int courseExercisesDetailID;
     private int languageID;
     private int codeStandardID;
+    private String codeStandardName;
 }

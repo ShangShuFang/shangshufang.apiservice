@@ -7,6 +7,11 @@ import java.util.List;
 @Data
 public class StudentCourseExercisesVO extends BaseVO {
     private int courseExercisesID;
+    private int languageID;
+    private int technologyID;
+    private String technologyName;
+    private int universityCode;
+    private String universityName;
     private int courseID;
     private String courseName;
     private int courseClass;

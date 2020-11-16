@@ -1,11 +1,9 @@
-package com.shangshufang.apiservice.entity;
+package com.shangshufang.apiservice.dto;
 
 import lombok.Data;
 
 @Data
-public class StudentCourseExercisesProgramReviewDetailEntity extends BaseEntity {
-    private int programReviewID;
-    private int reviewID;
+public class CourseProgramExercisesMarkDTO extends BaseDTO {
     private int studentID;
     private int courseID;
     private int courseClass;
@@ -16,4 +14,5 @@ public class StudentCourseExercisesProgramReviewDetailEntity extends BaseEntity 
     private String codeStandardResult;
     private String reviewResult;
     private String reviewMemo;
+    private String codeStandardErrorListJson;
 }

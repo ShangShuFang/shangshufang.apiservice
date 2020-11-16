@@ -1,6 +1,7 @@
 package com.shangshufang.apiservice.controller;
 
 import com.shangshufang.apiservice.dto.CourseExercisesPaperDTO;
+import com.shangshufang.apiservice.dto.CourseProgramExercisesMarkDTO;
 import com.shangshufang.apiservice.dto.UniversityStudentExercisesDTO;
 import com.shangshufang.apiservice.service.impl.UniversityStudentExercisesServiceImpl;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
@@ -12,6 +13,19 @@ import org.springframework.web.bind.annotation.*;
 public class UniversityStudentExercisesController {
     @Autowired
     private UniversityStudentExercisesServiceImpl serviceImpl;
+
+    @RequestMapping(value = "/list/new/{pageNumber}/{pageSize}/{technologyID}/{universityCode}/{schoolID}/{courseID}/{studentID}/{studentName}/{dataStatus}", method = RequestMethod.GET)
+    public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
+                                    @PathVariable("pageSize") int pageSize,
+                                    @PathVariable("technologyID") int technologyID,
+                                    @PathVariable("universityCode") int universityCode,
+                                    @PathVariable("schoolID") int schoolID,
+                                    @PathVariable("courseID") int courseID,
+                                    @PathVariable("studentID") int studentID,
+                                    @PathVariable("studentName") String studentName,
+                                    @PathVariable("dataStatus") String dataStatus) {
+        return serviceImpl.findList(pageNumber, pageSize, technologyID, universityCode, schoolID, courseID, studentID, studentName, dataStatus);
+    }
 
     @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{courseID}/{dataStatus}/{studentName}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
@@ -43,8 +57,14 @@ public class UniversityStudentExercisesController {
     }
 
     @RequestMapping(value = "/any/{courseExercisesID}", method = RequestMethod.GET)
-    public UnifiedResponse findList(@PathVariable("courseExercisesID") int courseExercisesID) {
+    public UnifiedResponse find(@PathVariable("courseExercisesID") int courseExercisesID) {
         return serviceImpl.findCourseExercisesDetail(courseExercisesID);
+    }
+
+    @RequestMapping(value = "/list/review/program/{courseExercisesID}/{courseExercisesDetailID}", method = RequestMethod.GET)
+    public UnifiedResponse findList(@PathVariable("courseExercisesID") int courseExercisesID,
+                                    @PathVariable("courseExercisesDetailID") int courseExercisesDetailID) {
+        return serviceImpl.findProgramReviewList(courseExercisesID, courseExercisesDetailID);
     }
 
     @RequestMapping(value = "/assign", method = RequestMethod.POST)
@@ -55,6 +75,11 @@ public class UniversityStudentExercisesController {
     @RequestMapping(value = "/mark", method = RequestMethod.POST)
     public UnifiedResponse mark(@RequestBody CourseExercisesPaperDTO dto) {
         return serviceImpl.markCourseExercises(dto);
+    }
+
+    @RequestMapping(value = "/mark/program", method = RequestMethod.POST)
+    public UnifiedResponse mark(@RequestBody CourseProgramExercisesMarkDTO dto) {
+        return serviceImpl.correctProgramAnswer(dto);
     }
 
     @RequestMapping(value = "/change", method = RequestMethod.PUT)

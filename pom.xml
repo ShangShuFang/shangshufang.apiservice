@@ -10,7 +10,7 @@
   </parent>
   <groupId>com.shangshufang</groupId>
   <artifactId>shangshufang.apiservice</artifactId>
-  <version>0.0.9.2</version>
+  <version>0.9.1</version>
   <name>shangshufang.apiservice</name>
   <description>shangshufang apiservice project for Spring Boot</description>
 
