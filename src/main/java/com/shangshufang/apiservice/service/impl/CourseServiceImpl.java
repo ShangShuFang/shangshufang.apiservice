@@ -3,18 +3,11 @@ package com.shangshufang.apiservice.service.impl;
 import com.shangshufang.apiservice.common.DateUtils;
 import com.shangshufang.apiservice.common.JsonUtils;
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
-import com.shangshufang.apiservice.constant.CourseSearchTypeConstant;
-import com.shangshufang.apiservice.constant.CourseStatus;
-import com.shangshufang.apiservice.constant.ParameterConstant;
-import com.shangshufang.apiservice.constant.ResponseDataConstant;
+import com.shangshufang.apiservice.constant.*;
 import com.shangshufang.apiservice.dto.CourseDTO;
-import com.shangshufang.apiservice.entity.CourseEntity;
-import com.shangshufang.apiservice.entity.CoursePlanEntity;
-import com.shangshufang.apiservice.entity.CourseScheduleEntity;
+import com.shangshufang.apiservice.entity.*;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
-import com.shangshufang.apiservice.mapper.CourseMapper;
-import com.shangshufang.apiservice.mapper.CoursePlanMapper;
-import com.shangshufang.apiservice.mapper.CourseScheduleMapper;
+import com.shangshufang.apiservice.mapper.*;
 import com.shangshufang.apiservice.service.CourseService;
 import com.shangshufang.apiservice.vo.*;
 import org.apache.logging.log4j.LogManager;
@@ -22,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +27,14 @@ public class CourseServiceImpl implements CourseService {
     private CourseScheduleMapper courseScheduleMapper;
     @Autowired
     private CoursePlanMapper coursePlanMapper;
-    private Logger logger = LogManager.getLogger(CourseServiceImpl.class);
+    @Autowired
+    private CourseSignUpMapper signUpMapper;
+    @Autowired
+    private StudentCourseExercisesMapper courseExercisesMapper;
+    @Autowired
+    private StudentCourseExercisesDetailMapper courseExercisesDetailMapper;
+
+    private final Logger logger = LogManager.getLogger(CourseServiceImpl.class);
 
     @Override
     public UnifiedResponse findListLikeName(int pageNumber, int pageSize, String content) {
@@ -42,7 +43,7 @@ public class CourseServiceImpl implements CourseService {
             List<CourseVO> modelList = new ArrayList<>();
             content = content.equals(ParameterConstant.NO_PARAMETER) ? null : "%" + content + "%";
             int totalCount = courseMapper.searchTotalCountLikeName(content);
-            if(totalCount == 0) {
+            if (totalCount == 0) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
             List<CourseEntity> entityList = courseMapper.searchListLikeName(startIndex, pageSize, content);
@@ -81,7 +82,7 @@ public class CourseServiceImpl implements CourseService {
             courseTimeBegin = courseTimeBegin.equals(ParameterConstant.NO_PARAMETER) ? null : courseTimeBegin;
             dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
 
-            if(searchType.equals(CourseSearchTypeConstant.STARTED)){
+            if (searchType.equals(CourseSearchTypeConstant.STARTED)) {
                 totalCount = courseMapper.searchStartedTotalCount(
                         universityCode,
                         schoolID,
@@ -92,7 +93,7 @@ public class CourseServiceImpl implements CourseService {
                         directionID,
                         categoryID,
                         isSelf);
-            }else{
+            } else {
                 totalCount = courseMapper.searchTotalCount(
                         universityCode,
                         schoolID,
@@ -105,13 +106,13 @@ public class CourseServiceImpl implements CourseService {
                         isSelf);
             }
 
-            if(totalCount == 0) {
+            if (totalCount == 0) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
 
             //取得课程基本信息
-            if(searchType.equals(CourseSearchTypeConstant.STARTED)) {
-                entityList =  courseMapper.searchStartedList(
+            if (searchType.equals(CourseSearchTypeConstant.STARTED)) {
+                entityList = courseMapper.searchStartedList(
                         universityCode,
                         schoolID,
                         teacherID,
@@ -123,8 +124,8 @@ public class CourseServiceImpl implements CourseService {
                         directionID,
                         categoryID,
                         isSelf);
-            }else {
-                entityList =  courseMapper.searchList(
+            } else {
+                entityList = courseMapper.searchList(
                         universityCode,
                         schoolID,
                         teacherID,
@@ -168,7 +169,7 @@ public class CourseServiceImpl implements CourseService {
             int startIndex = (pageNumber - 1) * pageSize;
             List<CourseVO> modelList = new ArrayList<>();
             int totalCount = courseMapper.searchTotalCount4Student(directionID, categoryID, technologyID, universityCode, schoolID, isSelf, studentID);
-            if(totalCount == 0) {
+            if (totalCount == 0) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
             List<CourseEntity> entityList = courseMapper.searchList4Student(startIndex, pageSize, directionID, categoryID, technologyID, universityCode, schoolID, isSelf, studentID);
@@ -189,8 +190,8 @@ public class CourseServiceImpl implements CourseService {
         try {
             List<CourseVO> modelList = new ArrayList<>();
             //取得课程基本信息
-            List<CourseEntity> entityList =  courseMapper.searchSimpleList(universityCode, schoolID, teacherID, technologyID);
-            if(entityList.isEmpty()){
+            List<CourseEntity> entityList = courseMapper.searchSimpleList(universityCode, schoolID, teacherID, technologyID);
+            if (entityList.isEmpty()) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
 
@@ -216,8 +217,8 @@ public class CourseServiceImpl implements CourseService {
             CourseVO model = new CourseVO();
             dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
             //取得课程基本信息
-            CourseEntity entity =  courseMapper.search(universityCode, schoolID, courseID, dataStatus);
-            if(entity == null){
+            CourseEntity entity = courseMapper.search(universityCode, schoolID, courseID, dataStatus);
+            if (entity == null) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
             //取得课程的课表
@@ -239,14 +240,102 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public UnifiedResponse findKnowledgeLearnAnalyse(int pageNumber, int pageSize, int universityCode, int schoolID, int courseID) {
+        try {
+            DecimalFormat df = new DecimalFormat("0.00");
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<CourseKnowledgeLearnAnalyseVO> modelList = new ArrayList<>();
+            //取得课程的报名人数
+            float signUpTotalCount = signUpMapper.searchCourseSignUpTotalCount(universityCode, schoolID, courseID);
+            if (signUpTotalCount == 0) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            //取得课程教学计划
+            List<CoursePlanEntity> coursePlanEntityList = coursePlanMapper.searchList(startIndex, pageSize, universityCode, schoolID, courseID);
+            if (coursePlanEntityList.isEmpty()) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            //遍历教学计划，取得每节课、每个知识点学生的掌握情况
+            for (CoursePlanEntity entity : coursePlanEntityList) {
+                if (entity.getDataStatus().equals(DataStatusConstant.PENDING)) {
+                    continue;
+                }
+                CourseKnowledgeLearnAnalyseVO model = new CourseKnowledgeLearnAnalyseVO();
+                ObjectConvertUtils.toBean(entity, model);
+                //region 取得对应节次作业状态为"未提交"的作业信息并从中取得总数（学生人数），该学生人数也是对应节次每个知识点"未提交"的学生人数
+                List<StudentCourseExercisesEntity> pendingEntityList =
+                        courseExercisesMapper.searchList4CourseClass(courseID, entity.getCourseClass(), ExercisesStatusConstant.Pending);
+                model.setPendingCount(pendingEntityList.isEmpty() ? 0 : pendingEntityList.size());
+                model.setPendingPercent(pendingEntityList.isEmpty() ? 0 : Float.parseFloat(df.format(pendingEntityList.size() / signUpTotalCount)));
+                //endregion
+
+                //region 取得对应节次作业状态为"已掌握"的作业信息并从中取得总数（学生人数），该学生人数也是对应节次每个知识点"已掌握"的学生人数
+                List<StudentCourseExercisesEntity> learnedEntityList =
+                        courseExercisesMapper.searchList4CourseClass(courseID, entity.getCourseClass(), ExercisesStatusConstant.Pass);
+                model.setLearnedCount(learnedEntityList.isEmpty() ? 0 : learnedEntityList.size());
+                model.setLearnedPercent(learnedEntityList.isEmpty() ? 0 : Float.parseFloat(df.format(learnedEntityList.size() / signUpTotalCount)));
+                //endregion
+
+                //region 取得对应节次作业状态为"批改中"的作业信息，从依此取得详细的作业内容，再循环计算每个知识点的掌握
+                int correctingKnowledgeCount = 0;
+                //取得"批改中"的作业
+                List<StudentCourseExercisesEntity> correctingEntityList =
+                        courseExercisesMapper.searchList4CourseClass(courseID, entity.getCourseClass(), ExercisesStatusConstant.Correcting);
+                if (!correctingEntityList.isEmpty()) {
+                    for (StudentCourseExercisesEntity correctingEntity : correctingEntityList) {
+
+                        int correctingTotalCount = courseExercisesDetailMapper.searchKnowledgeCorrectingTotalCount(
+                                correctingEntity.getCourseExercisesID(),
+                                entity.getTechnologyID(),
+                                entity.getKnowledgeID());
+                        if (correctingTotalCount > 0) {
+                            correctingKnowledgeCount++;
+                        }
+                    }
+                    model.setCorrectingCount(correctingKnowledgeCount);
+                    model.setCorrectingPercent(Float.parseFloat(df.format(correctingKnowledgeCount / signUpTotalCount)));
+                }
+                //endregion
+
+                //region 取得对应节次每个知识点掌握情况为"较薄弱"的学生人数
+                int weaknessKnowledgeCount = 0;
+                //取得"待修改"的作业
+                List<StudentCourseExercisesEntity> reviewedEntityList =
+                        courseExercisesMapper.searchList4CourseClass(courseID, entity.getCourseClass(), ExercisesStatusConstant.Reviewed);
+                if (!reviewedEntityList.isEmpty()) {
+                    for (StudentCourseExercisesEntity reviewedEntity : reviewedEntityList) {
+                        int incorrectTotalCount = courseExercisesDetailMapper.searchKnowledgeIncorrectTotalCount(
+                                reviewedEntity.getCourseExercisesID(),
+                                entity.getTechnologyID(),
+                                entity.getKnowledgeID());
+                        if (incorrectTotalCount > 0) {
+                            weaknessKnowledgeCount++;
+                        }
+                    }
+                    model.setWeaknessCount(weaknessKnowledgeCount);
+                    model.setWeaknessPercent(Float.parseFloat(df.format(weaknessKnowledgeCount / signUpTotalCount)));
+                }
+                //endregion
+
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse checkCourseExist(int universityCode,
                                             int schoolID,
                                             String courseName,
                                             String courseTimeBegin,
                                             String courseTimeEnd) {
         try {
-            int count =  courseMapper.checkCourseExist(universityCode, schoolID, courseName, courseTimeBegin, courseTimeEnd);
-            Boolean exist =  count > 0;
+            int count = courseMapper.checkCourseExist(universityCode, schoolID, courseName, courseTimeBegin, courseTimeEnd);
+            Boolean exist = count > 0;
             return UnifiedResponseManager.buildSearchSuccessResponse(count, exist);
         } catch (Exception ex) {
             logger.error(ex.toString());
@@ -256,7 +345,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public UnifiedResponse changeCourseBaseInfo(CourseDTO dto) {
-        try{
+        try {
             int affectRow = 0;
             CourseEntity courseEntity = new CourseEntity();
             ObjectConvertUtils.toBean(dto, courseEntity);
@@ -264,7 +353,7 @@ public class CourseServiceImpl implements CourseService {
             courseEntity.setUpdateUser(dto.getLoginUser());
             affectRow += courseMapper.update(courseEntity);
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();
         }
@@ -272,10 +361,10 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public UnifiedResponse changeCourseSchedule(CourseDTO dto) {
-        try{
+        try {
             int affectRow = 0;
             List<CourseScheduleEntity> courseScheduleEntityList = JsonUtils.deserializationToObject(dto.getCourseScheduleJson(), CourseScheduleEntity.class);
-            if(courseScheduleEntityList != null) {
+            if (courseScheduleEntityList != null) {
                 affectRow += courseScheduleMapper.delete(dto.getUniversityCode(), dto.getSchoolID(), dto.getCourseID());
                 for (CourseScheduleEntity courseScheduleEntity : courseScheduleEntityList) {
                     courseScheduleEntity.setUniversityCode(dto.getUniversityCode());
@@ -287,7 +376,7 @@ public class CourseServiceImpl implements CourseService {
                 }
             }
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();
         }
@@ -295,13 +384,13 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public UnifiedResponse changeCoursePlan(CourseDTO dto) {
-        try{
+        try {
             int affectRow = 0;
             List<CoursePlanEntity> coursePlanEntityList = JsonUtils.deserializationToObject(dto.getCoursePlanJson(), CoursePlanEntity.class);
-            if(coursePlanEntityList != null) {
+            if (coursePlanEntityList != null) {
                 affectRow += coursePlanMapper.delete4Class(dto.getUniversityCode(), dto.getSchoolID(), dto.getCourseID());
                 for (CoursePlanEntity coursePlanEntity : coursePlanEntityList) {
-                    if(coursePlanEntity.getDataStatus().equals(CourseStatus.Finished)){
+                    if (coursePlanEntity.getDataStatus().equals(CourseStatus.Finished)) {
                         continue;
                     }
 
@@ -314,7 +403,7 @@ public class CourseServiceImpl implements CourseService {
                 }
             }
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();
         }
@@ -346,9 +435,9 @@ public class CourseServiceImpl implements CourseService {
             String currentDateTime = DateUtils.getCurrentDateTime();
             String courseBeginTime = dto.getCourseTimeBegin();
             int compareResult = DateUtils.compare(currentDateTime, courseBeginTime + " 00:00:00");
-            if(compareResult >= 0){
+            if (compareResult >= 0) {
                 courseEntity.setDataStatus(CourseStatus.Active);
-            }else{
+            } else {
                 courseEntity.setDataStatus(CourseStatus.Pending);
             }
 
@@ -356,7 +445,7 @@ public class CourseServiceImpl implements CourseService {
             affectRow += courseMapper.insert(courseEntity);
 
             //添加课程表
-            if(courseScheduleEntityList != null) {
+            if (courseScheduleEntityList != null) {
                 affectRow += courseScheduleMapper.delete(courseEntity.getUniversityCode(), courseEntity.getSchoolID(), courseEntity.getCourseID());
                 for (CourseScheduleEntity courseScheduleEntity : courseScheduleEntityList) {
                     courseScheduleEntity.setUniversityCode(dto.getUniversityCode());
@@ -369,7 +458,7 @@ public class CourseServiceImpl implements CourseService {
             }
 
             //添加课程授课计划
-            if(coursePlanEntityList != null) {
+            if (coursePlanEntityList != null) {
                 affectRow += coursePlanMapper.delete(courseEntity.getUniversityCode(), courseEntity.getSchoolID(), courseEntity.getCourseID());
                 for (CoursePlanEntity coursePlanEntity : coursePlanEntityList) {
                     coursePlanEntity.setUniversityCode(dto.getUniversityCode());
@@ -403,7 +492,7 @@ public class CourseServiceImpl implements CourseService {
             affectRow += courseMapper.update(courseEntity);
 
             //修改课程表
-            if(courseScheduleEntityList != null) {
+            if (courseScheduleEntityList != null) {
                 affectRow += courseScheduleMapper.delete(courseEntity.getUniversityCode(), courseEntity.getSchoolID(), courseEntity.getCourseID());
                 for (CourseScheduleEntity courseScheduleEntity : courseScheduleEntityList) {
                     affectRow += courseScheduleMapper.insert(courseScheduleEntity);
@@ -411,7 +500,7 @@ public class CourseServiceImpl implements CourseService {
             }
 
             //修改课程授课计划
-            if(coursePlanEntityList != null) {
+            if (coursePlanEntityList != null) {
                 affectRow += coursePlanMapper.delete(courseEntity.getUniversityCode(), courseEntity.getSchoolID(), courseEntity.getCourseID());
                 for (CoursePlanEntity coursePlanEntity : coursePlanEntityList) {
                     affectRow += coursePlanMapper.insert(coursePlanEntity);
@@ -443,7 +532,7 @@ public class CourseServiceImpl implements CourseService {
         List<CourseScheduleVO> courseScheduleModelList = new ArrayList<>();
 
         List<CourseScheduleEntity> courseScheduleEntityList = courseScheduleMapper.searchList(universityCode, schoolID, courseID);
-        if(courseScheduleEntityList.isEmpty()){
+        if (courseScheduleEntityList.isEmpty()) {
             return null;
         }
         for (CourseScheduleEntity courseScheduleEntity : courseScheduleEntityList) {
@@ -457,11 +546,11 @@ public class CourseServiceImpl implements CourseService {
     private List<CoursePlanVO> findCoursePlanList(int universityCode, int schoolID, int courseID) throws Exception {
         List<CoursePlanVO> coursePlanModelList = new ArrayList<>();
 
-        List<CoursePlanEntity> coursePlanEntityList = coursePlanMapper.searchList(universityCode, schoolID, courseID);
-        if(coursePlanEntityList.isEmpty()){
+        List<CoursePlanEntity> coursePlanEntityList = coursePlanMapper.searchAll(universityCode, schoolID, courseID);
+        if (coursePlanEntityList.isEmpty()) {
             return null;
         }
-        for (CoursePlanEntity coursePlanEntity : coursePlanEntityList ) {
+        for (CoursePlanEntity coursePlanEntity : coursePlanEntityList) {
             CoursePlanVO coursePlanModel = new CoursePlanVO();
             ObjectConvertUtils.toBean(coursePlanEntity, coursePlanModel);
             coursePlanModelList.add(coursePlanModel);

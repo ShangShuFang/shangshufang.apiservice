@@ -49,6 +49,15 @@ public class CourseController {
         return serviceImpl.findList(pageNumber, pageSize, universityCode, schoolID, teacherID, directionID, categoryID, technologyID, courseTimeBegin, dataStatus, isSelf, searchType);
     }
 
+    @RequestMapping(value = "/list/knowledge/analyse/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{courseID}", method = RequestMethod.GET)
+    public UnifiedResponse findKnowledgeLearnAnalyse(@PathVariable("pageNumber")  int pageNumber,
+                                                     @PathVariable("pageSize")  int pageSize,
+                                                     @PathVariable("universityCode")  int universityCode,
+                                                     @PathVariable("schoolID")  int schoolID,
+                                                     @PathVariable("courseID")  int courseID) {
+        return serviceImpl.findKnowledgeLearnAnalyse(pageNumber, pageSize, universityCode, schoolID, courseID);
+    }
+
     @RequestMapping(value = "/list/simple/{universityCode}/{schoolID}/{teacherID}/{technologyID}", method = RequestMethod.GET)
     public UnifiedResponse findSimpleList(@PathVariable("universityCode") int universityCode,
                                     @PathVariable("schoolID") int schoolID,

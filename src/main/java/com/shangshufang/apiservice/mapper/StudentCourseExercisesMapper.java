@@ -46,6 +46,9 @@ public interface StudentCourseExercisesMapper extends BaseMapper<StudentCourseEx
                                                           @Param("pageSize") int pageSize,
                                                           @Param("courseID") int courseID,
                                                           @Param("studentID") int studentID,
-                                                          @Param("dataStatus") String dataStatus
-    );
+                                                          @Param("dataStatus") String dataStatus);
+
+    List<StudentCourseExercisesEntity> searchList4CourseClass(@Param("courseID") int courseID,
+                                                              @Param("courseClass") int courseClass,
+                                                              @Param("dataStatus") String dataStatus);
 }

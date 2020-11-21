@@ -8,6 +8,14 @@ import java.util.List;
 
 @Mapper
 public interface StudentCourseExercisesDetailMapper extends BaseMapper<StudentCourseExercisesDetailEntity> {
+    int searchKnowledgeCorrectingTotalCount(@Param("courseExercisesID") int courseExercisesID,
+                                            @Param("technologyID") int technologyID,
+                                            @Param("knowledgeID") int knowledgeID);
+
+    int searchKnowledgeIncorrectTotalCount(@Param("courseExercisesID") int courseExercisesID,
+                                           @Param("technologyID") int technologyID,
+                                           @Param("knowledgeID") int knowledgeID);
+
     List<StudentCourseExercisesDetailEntity> searchChoiceList(@Param("courseExercisesID") int courseExercisesID);
 
     List<StudentCourseExercisesDetailEntity> searchBlankList(@Param("courseExercisesID") int courseExercisesID);

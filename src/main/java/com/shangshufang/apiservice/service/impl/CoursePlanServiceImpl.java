@@ -44,7 +44,7 @@ public class CoursePlanServiceImpl implements CoursePlanService {
         try {
             List<CoursePlanVO> modelList = new ArrayList<>();
 
-            List<CoursePlanEntity> entityList = myMapper.searchList(universityCode, schoolID, courseID);
+            List<CoursePlanEntity> entityList = myMapper.searchAll(universityCode, schoolID, courseID);
             if(entityList.isEmpty()){
                 return null;
             }

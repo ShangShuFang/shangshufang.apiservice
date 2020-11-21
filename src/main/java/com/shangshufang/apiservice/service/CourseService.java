@@ -39,6 +39,12 @@ public interface CourseService extends BaseService<CourseDTO> {
                          int courseID,
                          String dataStatus);
 
+    UnifiedResponse findKnowledgeLearnAnalyse(int pageNumber,
+                                              int pageSize,
+                                              int universityCode,
+                                              int schoolID,
+                                              int courseID);
+
     UnifiedResponse checkCourseExist(int universityCode,
                                       int schoolID,
                                       String courseName,

@@ -243,6 +243,18 @@
     LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
 
+  <select id="searchList4CourseClass" resultMap="BaseResultMap">
+    SELECT a.course_exercises_id,
+           a.course_id,
+           a.course_class,
+           a.student_id,
+           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.student_course_exercises a
+    WHERE course_id = #{courseID,jdbcType=INTEGER}
+      AND course_class = #{courseClass,jdbcType=INTEGER}
+      AND data_status = #{dataStatus,jdbcType=VARCHAR}
+  </select>
   <insert id="insert" useGeneratedKeys="true" keyProperty="courseExercisesID"
           parameterType="com.shangshufang.apiservice.entity.StudentCourseExercisesEntity">
     INSERT INTO shangshufang_customer.student_course_exercises (course_id,
