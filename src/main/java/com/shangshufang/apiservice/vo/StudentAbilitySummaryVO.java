@@ -3,7 +3,7 @@ package com.shangshufang.apiservice.vo;
 import lombok.Data;
 
 @Data
-public class AbilityAnalysisResult4StudentSummaryVO {
+public class StudentAbilitySummaryVO {
     private int universityCode;
     private String universityName;
     private int schoolID;

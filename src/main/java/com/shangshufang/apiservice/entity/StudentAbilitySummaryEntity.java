@@ -3,7 +3,7 @@ package com.shangshufang.apiservice.entity;
 import lombok.Data;
 
 @Data
-public class AbilityAnalysisResult4StudentSummaryEntity {
+public class StudentAbilitySummaryEntity {
     private int universityCode;
     private String universityName;
     private int schoolID;

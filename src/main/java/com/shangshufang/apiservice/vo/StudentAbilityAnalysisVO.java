@@ -1,10 +1,11 @@
-package com.shangshufang.apiservice.entity;
+package com.shangshufang.apiservice.vo;
 
 import lombok.Data;
 
 @Data
-public class AbilityAnalysisResult4StudentMainInfoEntity extends BaseEntity {
+public class StudentAbilityAnalysisVO {
     private int analysisID;
+
     private int universityCode;
     private String universityName;
     private int schoolID;
@@ -15,16 +16,18 @@ public class AbilityAnalysisResult4StudentMainInfoEntity extends BaseEntity {
     private String studentName;
     private String studentPhoto;
     private String studentCellphone;
+
     private int technologyID;
+    private int languageID;
     private String technologyName;
     private int knowledgeTotalCount;
-    private int finishKnowledgeCount;
-    private float finishKnowledgePercent;
-    private int finishExercisesCount;
-    private int finishUnionExercisesCount;
-    private int finishProjectCount;
-    private float onceCompilationSuccessRate;
-    private float onceRunSuccessRate;
+    private int finishedKnowledgeCount;
+    private float finishedKnowledgePercent;
+    private int weaknessKnowledgeCount;
+    private int noLearnKnowledgeCount;
+
+    private int finishedUnitExercisesCount;
+    private int joinedProjectCount;
     private double standardScore;
     private float positionSite;
     private String abilityLevel;

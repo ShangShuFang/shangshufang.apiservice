@@ -93,6 +93,55 @@
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
 
+    <select id="searchAllStudent" resultMap="BaseResultMap">
+        SELECT a.sign_up_id,
+               a.student_university_code,
+               b.university_name                               AS student_university_name,
+               a.student_school_id,
+               c.school_name                                   AS student_school_name,
+               a.student_id,
+               f.full_name                                     AS student_name,
+               f.photo                                         AS student_photo,
+               f.cellphone,
+               LEFT(f.enrollment_year, 4)                      AS enrollment_year,
+               a.is_assistant,
+               a.course_university_code,
+               d.university_name                               AS course_university_name,
+               a.course_school_id,
+               e.school_name                                   AS course_school_name,
+               a.course_id,
+               g.course_name,
+               a.data_status,
+               CASE
+                   WHEN a.data_status = 'A' THEN '报名成功'
+                   WHEN a.data_status = 'C' THEN '报名取消'
+                   ELSE '未知数据状态'
+                   END                                           AS data_status_text,
+               DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+               DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+        FROM shangshufang_customer.course_sign_up a
+                 INNER JOIN shangshufang_customer.university b
+                            ON a.student_university_code = b.university_code
+                 INNER JOIN shangshufang_customer.school c
+                            ON a.student_university_code = c.university_code
+                                AND a.student_school_id = c.school_id
+                 INNER JOIN shangshufang_customer.university d
+                            ON a.course_university_code = d.university_code
+                 INNER JOIN shangshufang_customer.school e
+                            ON a.course_university_code = e.university_code
+                                AND a.course_school_id = e.school_id
+                 INNER JOIN shangshufang_customer.university_student f
+                            ON a.student_university_code = f.university_code
+                                AND a.student_school_id = f.school_id
+                                AND a.student_id = f.student_id
+                 INNER JOIN shangshufang_customer.course g
+                            ON a.course_university_code = g.university_code
+                                AND a.course_school_id = g.school_id
+                                AND a.course_id = g.course_id
+        WHERE a.data_status = 'A'
+        ORDER BY a.update_time
+        LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+    </select>
   <select id="searchAllCourseSignUpList" resultMap="BaseResultMap">
     SELECT a.sign_up_id,
            a.student_university_code,
@@ -138,10 +187,16 @@
                       ON a.course_university_code = g.university_code
                         AND a.course_school_id = g.school_id
                         AND a.course_id = g.course_id
-    WHERE a.course_university_code = #{arg0,jdbcType=INTEGER}
-      AND a.course_school_id = #{arg1,jdbcType=INTEGER}
-      AND a.course_id = #{arg2,jdbcType=INTEGER}
-      AND a.data_status = 'A'
+    WHERE a.data_status = 'A'
+      <if test="universityCode != 0">
+          a.course_university_code = #{universityCode,jdbcType=INTEGER}
+      </if>
+      <if test="schoolID != 0">
+          AND a.course_school_id = #{schoolID,jdbcType=INTEGER}
+      </if>
+      <if test="courseID != 0">
+          AND a.course_id = #{courseID,jdbcType=INTEGER}
+      </if>
     ORDER BY a.update_time;
   </select>
 

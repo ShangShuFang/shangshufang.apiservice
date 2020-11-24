@@ -22,6 +22,13 @@
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
+    <resultMap id="KnowledgeResultMap" type="com.shangshufang.apiservice.entity.TechnologyKnowledgeEntity">
+        <id column="knowledge_id" property="knowledgeID" jdbcType="INTEGER"/>
+        <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
+        <result column="technology_name" property="technologyName" jdbcType="VARCHAR"/>
+        <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR"/>
+    </resultMap>
+
     <select id="searchKnowledgeCorrectingTotalCount" resultType="java.lang.Integer">
         SELECT
             COUNT(1) AS total_count
@@ -40,6 +47,166 @@
           AND technology_id = #{technologyID, jdbcType=INTEGER}
           AND knowledge_id = #{knowledgeID, jdbcType=INTEGER}
           AND correct_result IN ('R', 'N');
+    </select>
+
+    <select id="searchWeaknessKnowledgeTotalCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) AS total_count
+        FROM
+         (
+             SELECT DISTINCT b.technology_id,
+                             b.knowledge_id
+             FROM shangshufang_customer.student_course_exercises a
+                      LEFT JOIN shangshufang_customer.student_course_exercises_detail b
+                                ON a.course_exercises_id = b.course_exercises_id
+             WHERE a.student_id = #{studentID, jdbcType=INTEGER}
+               AND b.technology_id = #{technologyID, jdbcType=INTEGER}
+               AND (b.correct_result = 'R' OR b.correct_result = 'N')
+         ) A
+    </select>
+
+    <select id="searchLearnedKnowledgeTotalCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) AS total_count
+        FROM
+            (
+                SELECT DISTINCT b.technology_id,
+                                b.knowledge_id
+                FROM shangshufang_customer.student_course_exercises a
+                         LEFT JOIN shangshufang_customer.student_course_exercises_detail b
+                                   ON a.course_exercises_id = b.course_exercises_id
+                WHERE a.student_id = #{studentID, jdbcType=INTEGER}
+                  AND b.technology_id = #{technologyID, jdbcType=INTEGER}
+            ) a
+                LEFT JOIN
+            (
+                SELECT DISTINCT b.technology_id,
+                                b.knowledge_id
+                FROM shangshufang_customer.student_course_exercises a
+                         LEFT JOIN shangshufang_customer.student_course_exercises_detail b
+                                   ON a.course_exercises_id = b.course_exercises_id
+                WHERE a.student_id = #{studentID, jdbcType=INTEGER}
+                  AND b.technology_id = #{technologyID, jdbcType=INTEGER}
+                  AND b.correct_result != 'Y'
+            ) b
+            ON a.technology_id = b.technology_id
+                AND a.knowledge_id = b.knowledge_id
+        WHERE b.knowledge_id IS NULL;
+    </select>
+
+    <select id="searchStudentWeaknessKnowledgeList" resultMap="KnowledgeResultMap">
+        SELECT a.technology_id,
+               a.knowledge_id,
+               b.knowledge_name
+        FROM
+             (
+                 SELECT a.technology_id, a.knowledge_id
+                 FROM
+                     (
+                         SELECT DISTINCT b.technology_id,
+                                         b.knowledge_id
+                         FROM shangshufang_customer.student_course_exercises a
+                                  LEFT JOIN shangshufang_customer.student_course_exercises_detail b
+                                            ON a.course_exercises_id = b.course_exercises_id
+                         WHERE a.student_id = #{studentID, jdbcType=INTEGER}
+                           AND b.technology_id = #{technologyID, jdbcType=INTEGER}
+                           AND (b.correct_result = 'R' OR b.correct_result = 'N')
+                     ) a
+                 LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+             ) a
+        LEFT JOIN shangshufang_base.technology_knowledge b
+                  ON a.technology_id = b.technology_id
+                      AND a.knowledge_id = b.knowledge_id;
+    </select>
+
+    <select id="searchStudentLearnedKnowledgeList" resultMap="KnowledgeResultMap">
+        SELECT a.technology_id,
+               a.knowledge_id,
+               b.knowledge_name
+        FROM
+           (
+               SELECT a.technology_id, a.knowledge_id
+               FROM (
+                        SELECT DISTINCT b.technology_id,
+                                        b.knowledge_id
+                        FROM shangshufang_customer.student_course_exercises a
+                                 LEFT JOIN shangshufang_customer.student_course_exercises_detail b
+                                           ON a.course_exercises_id = b.course_exercises_id
+                        WHERE a.student_id = #{studentID, jdbcType=INTEGER}
+                          AND b.technology_id = #{technologyID, jdbcType=INTEGER}
+                    ) a
+                        LEFT JOIN
+                    (
+                        SELECT DISTINCT b.technology_id,
+                                        b.knowledge_id
+                        FROM shangshufang_customer.student_course_exercises a
+                                 LEFT JOIN shangshufang_customer.student_course_exercises_detail b
+                                           ON a.course_exercises_id = b.course_exercises_id
+                        WHERE a.student_id = #{studentID, jdbcType=INTEGER}
+                          AND b.technology_id = #{technologyID, jdbcType=INTEGER}
+                          AND b.correct_result != 'Y'
+                    ) b
+                    ON a.technology_id = b.technology_id
+                        AND a.knowledge_id = b.knowledge_id
+               WHERE b.knowledge_id IS NULL
+               LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+           ) a
+        LEFT JOIN shangshufang_base.technology_knowledge b
+            ON a.technology_id = b.technology_id
+                AND a.knowledge_id = b.knowledge_id;
+    </select>
+
+    <select id="searchStudentNoLearnKnowledgeList" resultMap="KnowledgeResultMap">
+        SELECT a.knowledge_id,
+               a.knowledge_name
+        FROM (
+                 SELECT knowledge_id, knowledge_name
+                 FROM shangshufang_base.technology_knowledge
+                 WHERE technology_id = #{technologyID, jdbcType=INTEGER}
+             ) a
+                 LEFT JOIN
+             (
+                 SELECT a.knowledge_id
+                 FROM (
+                          SELECT DISTINCT b.technology_id,
+                                          b.knowledge_id
+                          FROM shangshufang_customer.student_course_exercises a
+                                   LEFT JOIN shangshufang_customer.student_course_exercises_detail b
+                                             ON a.course_exercises_id = b.course_exercises_id
+                          WHERE a.student_id = #{studentID, jdbcType=INTEGER}
+                            AND b.technology_id = #{technologyID, jdbcType=INTEGER}
+                      ) a
+                          LEFT JOIN
+                      (
+                          SELECT DISTINCT b.technology_id,
+                                          b.knowledge_id
+                          FROM shangshufang_customer.student_course_exercises a
+                                   LEFT JOIN shangshufang_customer.student_course_exercises_detail b
+                                             ON a.course_exercises_id = b.course_exercises_id
+                          WHERE a.student_id = #{studentID, jdbcType=INTEGER}
+                            AND b.technology_id = #{technologyID, jdbcType=INTEGER}
+                            AND b.correct_result != 'Y'
+                      ) b
+                      ON a.technology_id = b.technology_id
+                          AND a.knowledge_id = b.knowledge_id
+                 WHERE b.knowledge_id IS NULL
+             ) b
+             ON a.knowledge_id = b.knowledge_id
+                 LEFT JOIN
+             (
+                 SELECT a.knowledge_id
+                 FROM (
+                          SELECT DISTINCT b.technology_id,
+                                          b.knowledge_id
+                          FROM shangshufang_customer.student_course_exercises a
+                                   LEFT JOIN shangshufang_customer.student_course_exercises_detail b
+                                             ON a.course_exercises_id = b.course_exercises_id
+                          WHERE a.student_id = #{studentID, jdbcType=INTEGER}
+                            AND b.technology_id = #{technologyID, jdbcType=INTEGER}
+                            AND (b.correct_result = 'R' OR b.correct_result = 'N')
+                      ) a
+             ) c
+             ON a.knowledge_id = c.knowledge_id
+        WHERE b.knowledge_id IS NULL AND c.knowledge_id IS NULL
+        LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
     </select>
 
     <select id="searchChoiceList" resultMap="BaseResultMap">

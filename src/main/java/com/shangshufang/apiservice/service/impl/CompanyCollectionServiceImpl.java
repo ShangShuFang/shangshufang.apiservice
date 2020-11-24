@@ -67,7 +67,7 @@ public class CompanyCollectionServiceImpl implements CompanyCollectionService {
                         continue;
                     }
                     //取得当前学生对与每个技术此刻的能力信息（包含级别、已掌握知识点百分比）
-                    AbilityAnalysisResult4StudentMainInfoEntity studentAbilityOfTechnologyEntity = analysisAbilityMapper.searchStudentAbilityOfTechnology(studentID, technologyUsingEntity.getTechnologyID());
+                    StudentAbilityAnalysisEntity studentAbilityOfTechnologyEntity = analysisAbilityMapper.searchStudentAbility(studentID, technologyUsingEntity.getTechnologyID());
                     //取得当前学生已完成的综合练习数量
                     int finishComprehensiveExercisesCount = studentComprehensiveExercisesMapper.searchTotalCount(studentID, 0,0, technologyUsingEntity.getTechnologyID(), DataStatusConstant.ACTIVE);
 
@@ -83,7 +83,7 @@ public class CompanyCollectionServiceImpl implements CompanyCollectionService {
                     gapAnalysisModel.setRequiredProjectExercises(abilityLevelEntity.getRequiredProjectExercises());
 
                     gapAnalysisModel.setStudentLevel(studentAbilityOfTechnologyEntity == null ? "无" : studentAbilityOfTechnologyEntity.getAbilityLevel());
-                    gapAnalysisModel.setFinishKnowledgePercent(studentAbilityOfTechnologyEntity == null ? 0 : studentAbilityOfTechnologyEntity.getFinishKnowledgePercent());
+                    gapAnalysisModel.setFinishKnowledgePercent(studentAbilityOfTechnologyEntity == null ? 0 : studentAbilityOfTechnologyEntity.getFinishedKnowledgePercent());
                     gapAnalysisModel.setFinishComprehensiveExercisesCount(finishComprehensiveExercisesCount);
                     gapAnalysisModel.setJoinProjectExercisesCount(joinProjectExercisesCount);
 

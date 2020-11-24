@@ -5,14 +5,14 @@ import com.shangshufang.apiservice.constant.DataStatusConstant;
 import com.shangshufang.apiservice.constant.ParameterConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.UniversityStudentDTO;
-import com.shangshufang.apiservice.entity.AbilityAnalysisResult4StudentMainInfoEntity;
+import com.shangshufang.apiservice.entity.StudentAbilityAnalysisEntity;
 import com.shangshufang.apiservice.entity.UniversityStudentEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
 import com.shangshufang.apiservice.mapper.AnalysisAbilityMapper;
 import com.shangshufang.apiservice.mapper.TechnologyUsingMapper;
 import com.shangshufang.apiservice.mapper.UniversityStudentMapper;
 import com.shangshufang.apiservice.service.UniversityStudentService;
-import com.shangshufang.apiservice.vo.AbilityAnalysisResult4StudentMainInfoVO;
+import com.shangshufang.apiservice.vo.StudentAbilityAnalysisVO;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
 import com.shangshufang.apiservice.vo.UniversityStudentVO;
 import org.apache.logging.log4j.LogManager;
@@ -59,14 +59,14 @@ public class UniversityStudentServiceImpl implements UniversityStudentService {
     @Override
     public UnifiedResponse findTopList(int technologyID, int topNumber) {
         try {
-            List<AbilityAnalysisResult4StudentMainInfoVO> modelList = new ArrayList<>();
+            List<StudentAbilityAnalysisVO> modelList = new ArrayList<>();
             String lowestRecruitLevel = technologyUsingMapper.searchLowestRecruitLevel(technologyID);
-            List<AbilityAnalysisResult4StudentMainInfoEntity> entityList = analysisAbilityMapper.searchTopStudentSummary(technologyID, lowestRecruitLevel, topNumber);
+            List<StudentAbilityAnalysisEntity> entityList = analysisAbilityMapper.searchTopStudentSummary(technologyID, lowestRecruitLevel, topNumber);
             if (entityList.isEmpty()) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            for (AbilityAnalysisResult4StudentMainInfoEntity entity : entityList) {
-                AbilityAnalysisResult4StudentMainInfoVO model = new AbilityAnalysisResult4StudentMainInfoVO();
+            for (StudentAbilityAnalysisEntity entity : entityList) {
+                StudentAbilityAnalysisVO model = new StudentAbilityAnalysisVO();
                 ObjectConvertUtils.toBean(entity, model);
                 modelList.add(model);
             }

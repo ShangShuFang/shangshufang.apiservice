@@ -5,13 +5,12 @@ import com.shangshufang.apiservice.constant.DataStatusConstant;
 import com.shangshufang.apiservice.constant.ParameterConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.TechnologyDTO;
-import com.shangshufang.apiservice.entity.AbilityAnalysisResult4StudentMainInfoEntity;
-import com.shangshufang.apiservice.entity.TechnologyDirectionEntity;
+import com.shangshufang.apiservice.entity.StudentAbilityAnalysisEntity;
 import com.shangshufang.apiservice.entity.TechnologyEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
 import com.shangshufang.apiservice.mapper.*;
 import com.shangshufang.apiservice.service.TechnologyService;
-import com.shangshufang.apiservice.vo.AbilityAnalysisResult4StudentMainInfoVO;
+import com.shangshufang.apiservice.vo.StudentAbilityAnalysisVO;
 import com.shangshufang.apiservice.vo.TechnologyVO;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
 import org.apache.logging.log4j.LogManager;
@@ -69,12 +68,12 @@ public class TechnologyServiceImpl implements TechnologyService {
 
             for (TechnologyEntity entity : entityList) {
                 TechnologyVO model = new TechnologyVO();
-                List<AbilityAnalysisResult4StudentMainInfoVO> topStudentMainInfoModelList = new ArrayList<>();
+                List<StudentAbilityAnalysisVO> topStudentMainInfoModelList = new ArrayList<>();
                 String lowestRecruitLevel = technologyUsingMapper.searchLowestRecruitLevel(entity.getTechnologyID());
-                List<AbilityAnalysisResult4StudentMainInfoEntity> topStudentMainInfoEntityList = analysisAbilityMapper.searchTopStudentSummary(entity.getTechnologyID(), lowestRecruitLevel, 4);
+                List<StudentAbilityAnalysisEntity> topStudentMainInfoEntityList = analysisAbilityMapper.searchTopStudentSummary(entity.getTechnologyID(), lowestRecruitLevel, 4);
                 if (!topStudentMainInfoEntityList.isEmpty()) {
-                    for (AbilityAnalysisResult4StudentMainInfoEntity topStudentMainInfoEntity : topStudentMainInfoEntityList) {
-                        AbilityAnalysisResult4StudentMainInfoVO topStudentMainInfoModel = new AbilityAnalysisResult4StudentMainInfoVO();
+                    for (StudentAbilityAnalysisEntity topStudentMainInfoEntity : topStudentMainInfoEntityList) {
+                        StudentAbilityAnalysisVO topStudentMainInfoModel = new StudentAbilityAnalysisVO();
                         ObjectConvertUtils.toBean(topStudentMainInfoEntity, topStudentMainInfoModel);
                         topStudentMainInfoModelList.add(topStudentMainInfoModel);
                     }

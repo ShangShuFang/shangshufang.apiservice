@@ -23,16 +23,17 @@
     SELECT
     COUNT(1) AS TotalCount
     FROM shangshufang_base.technology_knowledge
-    WHERE 1=1
-    <if test="arg0 != 0">
-      AND technology_id = #{arg0,jdbcType=INTEGER}
-    </if>
-    <if test="arg1 != 0">
-      AND learning_phase_id = #{arg1,jdbcType=INTEGER}
-    </if>
-    <if test="arg2 != null">
-      AND data_status = #{arg2,jdbcType=VARCHAR}
-    </if>;
+    <where>
+      <if test="technologyID != 0">
+        AND technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+      <if test="learningPhaseID != 0">
+        AND learning_phase_id = #{learningPhaseID,jdbcType=INTEGER}
+      </if>
+      <if test="dataStatus != null">
+        AND data_status = #{dataStatus,jdbcType=VARCHAR}
+      </if>
+    </where>;
   </select>
   <select id="searchList" resultMap="BaseResultMap">
     SELECT

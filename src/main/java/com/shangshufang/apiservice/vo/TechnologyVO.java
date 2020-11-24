@@ -22,5 +22,5 @@ public class TechnologyVO extends BaseVO {
     private String difficultyLevelText;
     private int languageID;
     private String languageName;
-    List<AbilityAnalysisResult4StudentMainInfoVO> topStudentMainInfoList;
+    List<StudentAbilityAnalysisVO> topStudentMainInfoList;
 }

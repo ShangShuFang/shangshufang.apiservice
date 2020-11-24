@@ -8,7 +8,9 @@ import java.util.List;
 
 @Mapper
 public interface TechnologyKnowledgeMapper extends BaseMapper<TechnologyKnowledgeEntity>{
-    int searchTotalCount(int technologyID, int learningPhaseID, String dataStatus);
+    int searchTotalCount(@Param("technologyID") int technologyID,
+                         @Param("learningPhaseID") int learningPhaseID,
+                         @Param("dataStatus") String dataStatus);
 
     List<TechnologyKnowledgeEntity> searchList(int startIndex, int pageSize, int technologyID, int learningPhaseID, String dataStatus);
 

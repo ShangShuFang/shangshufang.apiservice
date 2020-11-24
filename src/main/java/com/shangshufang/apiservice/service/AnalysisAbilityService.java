@@ -10,50 +10,33 @@ public interface AnalysisAbilityService {
                              int directionID,
                              int categoryID,
                              int technologyID,
-                             int studentUniversityCode,
-                             int studentSchoolID,
-                             String studentName,
-                             int studentID);
+                             int universityCode,
+                             int schoolID,
+                             int studentID,
+                             String studentName);
 
-    UnifiedResponse findStudentSummaryResult(int universityCode, int schoolID, int studentID);
+    UnifiedResponse findStudentAbilitySummary(int studentID);
 
-    UnifiedResponse findLearningTechnologyResultList(int universityCode, int schoolID, int studentID);
+    UnifiedResponse findLearningTechnologyList(int studentID);
 
-    UnifiedResponse findKnowledgeSummaryResult(int studentUniversityCode, int studentSchoolID, int studentID, int technologyID);
+    UnifiedResponse findTechnologySummary(int studentID, int technologyID);
 
-    UnifiedResponse findCodeGuidelineResult(int studentUniversityCode, int studentSchoolID, int studentID, int languageID);
+    UnifiedResponse findCodeGuidelineSummary(int studentID, int languageID);
 
-    UnifiedResponse findExerciseNumberResultList(int studentUniversityCode, int studentSchoolID, int studentID, int technologyID);
-
-    UnifiedResponse findExercisePercentResultList(int studentUniversityCode, int studentSchoolID, int studentID, int technologyID);
-
-    UnifiedResponse findFinishKnowledgeList(int pageNumber,
-                                            int pageSize,
-                                            int studentUniversityCode,
-                                            int studentSchoolID,
-                                            int studentID,
-                                            int technologyID);
-
-    UnifiedResponse findLearningKnowledgeList(int pageNumber,
+    UnifiedResponse findFinishedKnowledgeList(int pageNumber,
                                               int pageSize,
-                                              int studentUniversityCode,
-                                              int studentSchoolID,
+                                              int studentID,
+                                              int technologyID);
+
+    UnifiedResponse findWeaknessKnowledgeList(int pageNumber,
+                                              int pageSize,
                                               int studentID,
                                               int technologyID);
 
     UnifiedResponse findNoLearningKnowledgeList(int pageNumber,
                                                 int pageSize,
-                                                int studentUniversityCode,
-                                                int studentSchoolID,
                                                 int studentID,
                                                 int technologyID);
-
-    UnifiedResponse findWeakKnowledgeList(int pageNumber,
-                                          int pageSize,
-                                          int universityCode,
-                                          int schoolID,
-                                          int studentID,
-                                          int technologyID);
 
 
 }
