@@ -29,13 +29,13 @@ public interface UniversityStudentExercisesService extends BaseService<Universit
                                      int studentID,
                                      String dataStatus);
 
-    UnifiedResponse findList4Technology(int pageNumber,
-                                        int pageSize,
-                                        int universityCode,
-                                        int schoolID,
-                                        int studentID,
-                                        int technologyID,
-                                        String dataStatus);
+//    UnifiedResponse findList4Technology(int pageNumber,
+//                                        int pageSize,
+//                                        int universityCode,
+//                                        int schoolID,
+//                                        int studentID,
+//                                        int technologyID,
+//                                        String dataStatus);
 
     UnifiedResponse findProgramReviewList(int courseExercisesID, int courseExercisesDetailID);
 

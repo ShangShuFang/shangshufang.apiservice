@@ -370,9 +370,9 @@
     <!--endregion-->
 
     <select id="searchTopStudentSummary" resultMap="StudentAbilityAnalysisResultMap">
-        SELECT a.student_university_code,
+        SELECT b.university_code,
                c.university_name AS student_university_name,
-               a.student_school_id,
+               b.school_id,
                d.school_name     AS student_school_name,
                b.major_id,
                e.major_name,
@@ -380,12 +380,8 @@
                b.full_name       AS student_name,
                b.photo,
                a.technology_id,
-               a.knowledge_total_count,
                a.finish_knowledge_count,
                a.finish_knowledge_percent,
-               a.finish_exercises_count,
-               a.once_compilation_success_rate,
-               a.once_run_success_rate,
                a.position_site,
                a.standard_score,
                a.ability_level

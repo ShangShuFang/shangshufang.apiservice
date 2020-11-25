@@ -45,16 +45,16 @@ public class UniversityStudentExercisesController {
         return serviceImpl.findList4Student(pageNumber, pageSize, courseID, studentID, dataStatus);
     }
 
-    @RequestMapping(value = "/list/student/technology/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{studentID}/{technologyID}/{dataStatus}", method = RequestMethod.GET)
-    public UnifiedResponse findList4Technology(@PathVariable("pageNumber") int pageNumber,
-                                               @PathVariable("pageSize") int pageSize,
-                                               @PathVariable("universityCode") int universityCode,
-                                               @PathVariable("schoolID") int schoolID,
-                                               @PathVariable("studentID") int studentID,
-                                               @PathVariable("technologyID") int technologyID,
-                                               @PathVariable("dataStatus") String dataStatus) {
-        return serviceImpl.findList4Technology(pageNumber, pageSize, universityCode, schoolID, studentID, technologyID, dataStatus);
-    }
+//    @RequestMapping(value = "/list/student/technology/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{studentID}/{technologyID}/{dataStatus}", method = RequestMethod.GET)
+//    public UnifiedResponse findList4Technology(@PathVariable("pageNumber") int pageNumber,
+//                                               @PathVariable("pageSize") int pageSize,
+//                                               @PathVariable("universityCode") int universityCode,
+//                                               @PathVariable("schoolID") int schoolID,
+//                                               @PathVariable("studentID") int studentID,
+//                                               @PathVariable("technologyID") int technologyID,
+//                                               @PathVariable("dataStatus") String dataStatus) {
+//        return serviceImpl.findList4Technology(pageNumber, pageSize, universityCode, schoolID, studentID, technologyID, dataStatus);
+//    }
 
     @RequestMapping(value = "/any/{courseExercisesID}", method = RequestMethod.GET)
     public UnifiedResponse find(@PathVariable("courseExercisesID") int courseExercisesID) {

@@ -83,9 +83,7 @@
                         AND a.course_school_id = g.school_id
                         AND a.course_id = g.course_id
            LEFT JOIN shangshufang_customer.university_student_ability_analysis h
-                      ON a.student_university_code = h.student_university_code
-                        AND a.student_school_id = h.student_school_id
-                        AND a.student_id = h.student_id
+                      ON a.student_id = h.student_id
     WHERE a.course_university_code = #{arg2,jdbcType=INTEGER}
       AND a.course_school_id = #{arg3,jdbcType=INTEGER}
       AND a.course_id = #{arg4,jdbcType=INTEGER}
@@ -312,9 +310,7 @@
            LEFT JOIN shangshufang_customer.university_student g
                      ON b.student_id = g.student_id
            LEFT JOIN shangshufang_customer.university_student_ability_analysis h
-                     ON g.university_code = h.student_university_code
-                       AND g.school_id = h.student_school_id
-                       AND g.student_id = h.student_id
+                     ON g.student_id = h.student_id
                        AND h.technology_id = #{arg2,jdbcType=INTEGER}
     WHERE a.technology_id = #{arg2,jdbcType=INTEGER}
       AND a.data_status = '1'
