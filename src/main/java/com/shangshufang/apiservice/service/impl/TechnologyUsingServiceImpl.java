@@ -2,6 +2,7 @@ package com.shangshufang.apiservice.service.impl;
 
 import com.shangshufang.apiservice.common.JsonUtils;
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
+import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.TechnologyUsingDTO;
 import com.shangshufang.apiservice.entity.TechnologyUsingEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
@@ -35,6 +36,30 @@ public class TechnologyUsingServiceImpl implements TechnologyUsingService {
                 modelList.add(model);
             }
             return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse findCompanyList(int pageNumber, int pageSize, int technologyID) {
+        try {
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<TechnologyUsingVO> modelList = new ArrayList<>();
+
+            int totalCount = myMapper.searchCompanyTotalCount(technologyID);
+            if(totalCount == 0){
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+
+            List<TechnologyUsingEntity> entityList = myMapper.searchCompanyList(startIndex, pageSize, technologyID);
+            for (TechnologyUsingEntity entity : entityList) {
+                TechnologyUsingVO model = new TechnologyUsingVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
         } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();

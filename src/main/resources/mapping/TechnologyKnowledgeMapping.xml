@@ -9,9 +9,15 @@
     <result column="learning_phase_name" property="learningPhaseName" jdbcType="VARCHAR" />
     <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR" />
     <result column="using_company_count" property="usingCompanyCount" jdbcType="INTEGER" />
+
     <result column="choice_exercises_count" property="choiceExercisesCount" jdbcType="INTEGER" />
     <result column="blank_exercises_count" property="blankExercisesCount" jdbcType="INTEGER" />
     <result column="program_exercises_count" property="programExercisesCount" jdbcType="INTEGER" />
+
+    <result column="custom_choice_exercises_count" property="customChoiceExercisesCount" jdbcType="INTEGER" />
+    <result column="custom_blank_exercises_count" property="customBlankExercisesCount" jdbcType="INTEGER" />
+    <result column="custom_program_exercises_count" property="customProgramExercisesCount" jdbcType="INTEGER" />
+
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -36,27 +42,31 @@
     </where>;
   </select>
   <select id="searchList" resultMap="BaseResultMap">
-    SELECT
-      A.knowledge_id,
-      A.technology_id,
-      B.technology_name,
-      A.learning_phase_id,
-      C.learning_phase_name,
-      A.knowledge_name,
-      A.data_status,
-      CASE WHEN A.data_status = 'P' THEN '未激活'
+    SELECT A.knowledge_id,
+          A.technology_id,
+          B.technology_name,
+          A.learning_phase_id,
+          C.learning_phase_name,
+          A.knowledge_name,
+          A.data_status,
+          CASE
+          WHEN A.data_status = 'P' THEN '未激活'
           WHEN A.data_status = 'A' THEN '正常'
           WHEN A.data_status = 'D' THEN '禁用'
-      ELSE '未知数据状态'
-      END AS data_status_text,
-      IFNULL(D.using_company_count, 0) AS using_company_count,
-      IFNULL(E.program_exercises_count, 0) AS program_exercises_count,
-      IFNULL(f.choice_exercises_count, 0) AS choice_exercises_count,
-      IFNULL(g.blank_exercises_count, 0) AS blank_exercises_count,
-      h.admin_name AS create_user,
-      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-      i.admin_name AS update_user,
-      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+          ELSE '未知数据状态'
+          END                                         AS data_status_text,
+          IFNULL(E.program_exercises_count, 0)        AS program_exercises_count,
+          IFNULL(f.choice_exercises_count, 0)         AS choice_exercises_count,
+          IFNULL(g.blank_exercises_count, 0)          AS blank_exercises_count,
+
+          IFNULL(h.custom_choice_exercises_count, 0)  AS custom_choice_exercises_count,
+          IFNULL(i.custom_blank_exercises_count, 0)   AS custom_blank_exercises_count,
+          IFNULL(j.custom_program_exercises_count, 0) AS custom_program_exercises_count,
+
+          k.admin_name                                    AS create_user,
+          DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+          l.admin_name                                    AS update_user,
+          DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
     FROM shangshufang_base.technology_knowledge A
     INNER JOIN shangshufang_base.technology B
     ON A.technology_id = B.technology_id
@@ -70,13 +80,14 @@
         knowledge_id,
         COUNT(1) AS using_company_count
       FROM shangshufang_customer.technology_knowledge_using
-      WHERE 1=1
-      <if test="arg2 != 0">
-        AND technology_id = #{arg2,jdbcType=INTEGER}
-      </if>
-      <if test="arg3 != 0">
-        AND learning_phase_id = #{arg3,jdbcType=INTEGER}
-      </if>
+      <where>
+        <if test="technologyID != 0">
+          technology_id = #{technologyID,jdbcType=INTEGER}
+        </if>
+        <if test="learningPhaseID != 0">
+          AND learning_phase_id = #{learningPhaseID,jdbcType=INTEGER}
+        </if>
+      </where>
       GROUP BY technology_id, learning_phase_id, knowledge_id
     ) D
     ON A.technology_id = D.technology_id
@@ -88,13 +99,14 @@
       knowledge_id,
       COUNT(1) AS program_exercises_count
       FROM shangshufang_base.technology_knowledge_exercises
-      WHERE 1 = 1
-      <if test="arg2 != 0">
-        AND technology_id = #{arg2,jdbcType=INTEGER}
-      </if>
-      <if test="arg3 != 0">
-        AND learning_phase_id = #{arg3,jdbcType=INTEGER}
-      </if>
+      <where>
+        <if test="technologyID != 0">
+          technology_id = #{technologyID,jdbcType=INTEGER}
+        </if>
+        <if test="learningPhaseID != 0">
+          AND learning_phase_id = #{learningPhaseID,jdbcType=INTEGER}
+        </if>
+      </where>
       GROUP BY technology_id, knowledge_id
     ) E
     ON A.technology_id = E.technology_id
@@ -105,9 +117,9 @@
       knowledge_id,
       COUNT(1) AS choice_exercises_count
       FROM shangshufang_base.exercise_warehouse_knowledge_choice_question
-      WHERE 1 = 1
-      <if test="arg2 != 0">
-        AND technology_id = #{arg2,jdbcType=INTEGER}
+      WHERE data_status = 'A'
+      <if test="technologyID != 0">
+        AND technology_id = #{technologyID,jdbcType=INTEGER}
       </if>
       GROUP BY technology_id, knowledge_id
     ) f
@@ -119,31 +131,77 @@
              knowledge_id,
       COUNT(1) AS blank_exercises_count
       FROM shangshufang_base.exercise_warehouse_knowledge_blank_question
-      WHERE 1 = 1
-      <if test="arg2 != 0">
-        AND technology_id = #{arg2,jdbcType=INTEGER}
+      WHERE data_status = 'A'
+      <if test="technologyID != 0">
+        AND technology_id = #{technologyID,jdbcType=INTEGER}
       </if>
       GROUP BY technology_id, knowledge_id
     ) g
-    ON A.technology_id = f.technology_id
-    AND A.knowledge_id = f.knowledge_id
-    INNER JOIN shangshufang_base.system_admin h
-    ON A.create_user = h.admin_id
-    INNER JOIN shangshufang_base.system_admin i
-    ON A.update_user = i.admin_id
+    ON A.technology_id = g.technology_id
+    AND A.knowledge_id = g.knowledge_id
+    LEFT JOIN
+    (
+    SELECT technology_id,
+    knowledge_id,
+    COUNT(1) AS custom_choice_exercises_count
+    FROM shangshufang_customer.university_exercise_knowledge_choice
+    <where>
+      <if test="technologyID != 0">
+        technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+    </where>
+    GROUP BY technology_id, knowledge_id
+    ) h
+    ON A.technology_id = h.technology_id
+    AND A.knowledge_id = h.knowledge_id
+    LEFT JOIN
+    (
+    SELECT technology_id,
+    knowledge_id,
+    COUNT(1) AS custom_blank_exercises_count
+    FROM shangshufang_customer.university_exercise_knowledge_blank
+    <where>
+      <if test="technologyID != 0">
+        technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+    </where>
+    GROUP BY technology_id, knowledge_id
+    ) i
+    ON A.technology_id = i.technology_id
+    AND A.knowledge_id = i.knowledge_id
+    LEFT JOIN
+    (
+    SELECT technology_id,
+    knowledge_id,
+    COUNT(1) AS custom_program_exercises_count
+    FROM shangshufang_customer.university_exercise_knowledge_program
+    <where>
+      <if test="technologyID != 0">
+        technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+    </where>
+    GROUP BY technology_id, knowledge_id
+    ) j
+    ON A.technology_id = j.technology_id
+    AND A.knowledge_id = j.knowledge_id
 
-    WHERE 1=1
-    <if test="arg2 != 0">
-      AND A.technology_id = #{arg2,jdbcType=INTEGER}
-    </if>
-    <if test="arg3 != 0">
-      AND A.learning_phase_id = #{arg3,jdbcType=INTEGER}
-    </if>
-    <if test="arg4 != null">
-      AND A.data_status = #{arg4,jdbcType=VARCHAR}
-    </if>
+    LEFT JOIN shangshufang_base.system_admin k
+    ON A.create_user = k.admin_id
+    LEFT JOIN shangshufang_base.system_admin l
+    ON A.update_user = l.admin_id
+    <where>
+      <if test="technologyID != 0">
+        A.technology_id = #{technologyID,jdbcType=INTEGER}
+      </if>
+      <if test="learningPhaseID != 0">
+        AND A.learning_phase_id = #{learningPhaseID,jdbcType=INTEGER}
+      </if>
+      <if test="dataStatus != null">
+        AND A.data_status = #{dataStatus,jdbcType=VARCHAR}
+      </if>
+    </where>
     ORDER BY A.knowledge_id, A.learning_phase_id
-    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
 
   <select id="search" resultMap="BaseResultMap">

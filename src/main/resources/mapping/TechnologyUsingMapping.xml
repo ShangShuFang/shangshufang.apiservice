@@ -5,6 +5,7 @@
     <id column="using_id" property="usingID" jdbcType="INTEGER" />
     <result column="company_id" property="companyID" jdbcType="INTEGER" />
     <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="brand" property="companyLogo" jdbcType="VARCHAR" />
     <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
     <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
     <result column="technology_thumbnail_square" property="technologyThumbnailSquare" jdbcType="VARCHAR" />
@@ -29,7 +30,38 @@
            INNER JOIN shangshufang_base.technology c
                       ON a.technology_id = c.technology_id
     WHERE a.company_id = #{companyID,jdbcType=INTEGER}
+      AND c.data_status = 'A'
     ORDER BY a.recruit_level;
+  </select>
+
+  <select id="searchCompanyTotalCount" resultType="java.lang.Integer">
+    SELECT COUNT(1) AS total_count
+    FROM shangshufang_customer.technology_using a
+           INNER JOIN shangshufang_customer.company b
+                      ON a.company_id = b.company_id
+           INNER JOIN shangshufang_base.technology c
+                      ON a.technology_id = c.technology_id
+    WHERE a.technology_id = #{technologyID,jdbcType=INTEGER}
+      AND c.data_status = 'A'
+  </select>
+  <select id="searchCompanyList" resultMap="BaseResultMap">
+    SELECT a.company_id,
+           b.company_name,
+           b.brand,
+           a.technology_id,
+           c.technology_name,
+           c.technology_thumbnail_square,
+           c.technology_thumbnail_rectangle,
+           a.recruit_level
+    FROM shangshufang_customer.technology_using a
+           INNER JOIN shangshufang_customer.company b
+                      ON a.company_id = b.company_id
+           INNER JOIN shangshufang_base.technology c
+                      ON a.technology_id = c.technology_id
+    WHERE a.technology_id = #{technologyID,jdbcType=INTEGER}
+      AND c.data_status = 'A'
+    ORDER BY a.recruit_level
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
 
   <select id="searchLowestRecruitLevel" resultType="java.lang.String">

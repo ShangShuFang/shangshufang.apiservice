@@ -930,13 +930,13 @@ public class UniversityStudentExercisesServiceImpl implements UniversityStudentE
 
             //region 5.对学生测试卷的批改结果进行更新(批改中)
             if (affectRow > 0) {
-                String courseExercisesChangeStatus = getCourseExercisesChangeStatus(dto.getCourseExercisesID());
+                // String courseExercisesChangeStatus = getCourseExercisesChangeStatus(dto.getCourseExercisesID());
                 affectRow += changeCourseExercisesStatus(
                         dto.getStudentID(),
                         dto.getCourseID(),
                         dto.getCourseClass(),
                         dto.getCourseExercisesID(),
-                        courseExercisesChangeStatus);
+                        ExercisesStatusConstant.Correcting);
             }
             //endregion
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);

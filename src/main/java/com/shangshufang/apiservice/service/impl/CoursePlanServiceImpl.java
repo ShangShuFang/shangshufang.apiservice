@@ -1,6 +1,7 @@
 package com.shangshufang.apiservice.service.impl;
 
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
+import com.shangshufang.apiservice.constant.CoursePlanStatus;
 import com.shangshufang.apiservice.constant.CourseStatus;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.CoursePlanDTO;
@@ -29,7 +30,7 @@ public class CoursePlanServiceImpl implements CoursePlanService {
         try {
             CoursePlanEntity entity = new CoursePlanEntity();
             ObjectConvertUtils.toBean(dto, entity);
-            entity.setDataStatus(CourseStatus.Finished);
+            entity.setDataStatus(CoursePlanStatus.Finished);
             entity.setUpdateUser(dto.getLoginUser());
             int affectRow = myMapper.updateDataStatus(entity);
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);

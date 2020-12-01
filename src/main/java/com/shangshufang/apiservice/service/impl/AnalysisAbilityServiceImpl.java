@@ -271,12 +271,14 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
             for (CourseSignUpEntity signUpEntity : signUpEntityList) {
                 try {
                     StudentAbilityAnalysisEntity entity = new StudentAbilityAnalysisEntity();
+                    ObjectConvertUtils.toBean(signUpEntity, entity);
                     //region 取得当前学生所报名课程的详细信息（包含对应的技术）
                     CourseEntity courseEntity = courseMapper.search(
                             signUpEntity.getCourseUniversityCode(),
                             signUpEntity.getCourseSchoolID(),
                             signUpEntity.getCourseID(),
-                            ParameterConstant.NO_PARAMETER);
+                            null);
+                    ObjectConvertUtils.toBean(courseEntity, entity);
                     //endregion
 
                     //region 取得当前技术的知识点总数量
@@ -346,8 +348,9 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
                 continue;
             }
             //取得当前技术的学生列表，并计算每个学生的整体排名
-            int startIndex = (pageNumber - 1) * PAGE_SIZE;
+
             while (true) {
+                int startIndex = (pageNumber - 1) * PAGE_SIZE;
                 List<StudentAbilityAnalysisEntity> studentList = myMapper.searchStudentList(
                         technologyEntity.getTechnologyID(),
                         startIndex,

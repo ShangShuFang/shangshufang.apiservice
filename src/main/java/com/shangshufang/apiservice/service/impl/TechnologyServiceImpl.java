@@ -69,8 +69,7 @@ public class TechnologyServiceImpl implements TechnologyService {
             for (TechnologyEntity entity : entityList) {
                 TechnologyVO model = new TechnologyVO();
                 List<StudentAbilityAnalysisVO> topStudentMainInfoModelList = new ArrayList<>();
-                String lowestRecruitLevel = technologyUsingMapper.searchLowestRecruitLevel(entity.getTechnologyID());
-                List<StudentAbilityAnalysisEntity> topStudentMainInfoEntityList = analysisAbilityMapper.searchTopStudentSummary(entity.getTechnologyID(), lowestRecruitLevel, 4);
+                List<StudentAbilityAnalysisEntity> topStudentMainInfoEntityList = analysisAbilityMapper.searchTopStudentSummary(entity.getTechnologyID(), 4);
                 if (!topStudentMainInfoEntityList.isEmpty()) {
                     for (StudentAbilityAnalysisEntity topStudentMainInfoEntity : topStudentMainInfoEntityList) {
                         StudentAbilityAnalysisVO topStudentMainInfoModel = new StudentAbilityAnalysisVO();

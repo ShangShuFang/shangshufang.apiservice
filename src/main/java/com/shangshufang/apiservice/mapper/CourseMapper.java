@@ -85,16 +85,20 @@ public interface CourseMapper extends BaseMapper<CourseEntity> {
                                         @Param("teacherID") int teacherID,
                                         @Param("technologyID") int technologyID);
 
-    CourseEntity search(int universityCode,
-                        int schoolID,
-                        int courseID,
-                        String dataStatus);
+    CourseEntity search(@Param("universityCode") int universityCode,
+                        @Param("schoolID") int schoolID,
+                        @Param("courseID") int courseID,
+                        @Param("dataStatus") String dataStatus);
 
     int checkCourseExist(int universityCode,
                          int schoolID,
                          String courseName,
                          String courseTimeBegin,
                          String courseTimeEnd);
+
+    int searchCourseClassExercisesTotalCount(@Param("technologyID") int technologyID,
+                                             @Param("courseID") int courseID,
+                                             @Param("courseClass") int courseClass);
 
     int updateCourseToStart();
 }

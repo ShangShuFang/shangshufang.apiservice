@@ -152,11 +152,10 @@ public interface AnalysisAbilityMapper {
      * 取得指定技术，能力最强的前几名的学生
      *
      * @param technologyID       技术
-     * @param lowestRecruitLevel 最低级别
      * @param topNum             取得人数
      * @return 指定技术，能力最强的前几名的学生
      */
-    List<StudentAbilityAnalysisEntity> searchTopStudentSummary(int technologyID, String lowestRecruitLevel, int topNum);
+    List<StudentAbilityAnalysisEntity> searchTopStudentSummary(@Param("technologyID") int technologyID, @Param("topNum") int topNum);
 
 
     List<StudentAbilityAnalysisEntity> searchTechnologyList();

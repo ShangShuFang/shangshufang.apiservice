@@ -10,6 +10,12 @@ import java.util.List;
 public interface TechnologyUsingMapper extends BaseMapper<TechnologyUsingEntity> {
     List<TechnologyUsingEntity> searchUsingTechnologyList(@Param("companyID") int companyID);
 
+    int searchCompanyTotalCount(@Param("technologyID") int technologyID);
+
+    List<TechnologyUsingEntity> searchCompanyList(@Param("startIndex") int startIndex,
+                                                  @Param("pageSize") int pageSize,
+                                                  @Param("technologyID") int technologyID);
+
     String searchLowestRecruitLevel(@Param("technologyID") int technologyID);
 
     int delete(int companyID);

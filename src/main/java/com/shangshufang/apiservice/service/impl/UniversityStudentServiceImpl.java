@@ -60,8 +60,8 @@ public class UniversityStudentServiceImpl implements UniversityStudentService {
     public UnifiedResponse findTopList(int technologyID, int topNumber) {
         try {
             List<StudentAbilityAnalysisVO> modelList = new ArrayList<>();
-            String lowestRecruitLevel = technologyUsingMapper.searchLowestRecruitLevel(technologyID);
-            List<StudentAbilityAnalysisEntity> entityList = analysisAbilityMapper.searchTopStudentSummary(technologyID, lowestRecruitLevel, topNumber);
+//            String lowestRecruitLevel = technologyUsingMapper.searchLowestRecruitLevel(technologyID);
+            List<StudentAbilityAnalysisEntity> entityList = analysisAbilityMapper.searchTopStudentSummary(technologyID, topNumber);
             if (entityList.isEmpty()) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }

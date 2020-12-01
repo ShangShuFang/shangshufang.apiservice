@@ -394,10 +394,10 @@
                             ON b.school_id = d.school_id
                  INNER JOIN shangshufang_customer.major e
                             ON b.major_id = e.major_id
-        WHERE a.technology_id = #{arg0,jdbcType=INTEGER}
-          AND a.ability_level &gt;= #{arg1,jdbcType=VARCHAR}
+        WHERE a.technology_id = #{technologyID,jdbcType=INTEGER}
+          AND a.ability_level &gt;= 'L3'
         ORDER BY a.standard_score DESC
-        LIMIT 0, #{arg2,jdbcType=INTEGER};
+        LIMIT 0, #{topNum,jdbcType=INTEGER};
     </select>
 
 </mapper>

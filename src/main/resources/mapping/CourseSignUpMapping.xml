@@ -187,7 +187,7 @@
                         AND a.course_id = g.course_id
     WHERE a.data_status = 'A'
       <if test="universityCode != 0">
-          a.course_university_code = #{universityCode,jdbcType=INTEGER}
+          AND a.course_university_code = #{universityCode,jdbcType=INTEGER}
       </if>
       <if test="schoolID != 0">
           AND a.course_school_id = #{schoolID,jdbcType=INTEGER}

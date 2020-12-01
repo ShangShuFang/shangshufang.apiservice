@@ -8,6 +8,7 @@ import com.shangshufang.apiservice.entity.CoursePlanEntity;
 import com.shangshufang.apiservice.entity.TechnologyKnowledgeExercisesDocumentEntity;
 import com.shangshufang.apiservice.entity.TechnologyKnowledgeExercisesEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
+import com.shangshufang.apiservice.mapper.CourseMapper;
 import com.shangshufang.apiservice.mapper.CoursePlanMapper;
 import com.shangshufang.apiservice.mapper.TechnologyKnowledgeExercisesMapper;
 import com.shangshufang.apiservice.service.TechnologyKnowledgeExercisesService;
@@ -29,6 +30,8 @@ public class TechnologyKnowledgeExercisesServiceImpl implements TechnologyKnowle
     private TechnologyKnowledgeExercisesMapper myMapper;
     @Autowired
     private CoursePlanMapper coursePlanMapper;
+    @Autowired
+    private CourseMapper courseMapper;
     @Autowired
     private TechnologyKnowledgeExercisesMapper knowledgeExercisesMapper;
 
@@ -66,33 +69,48 @@ public class TechnologyKnowledgeExercisesServiceImpl implements TechnologyKnowle
             }
             for (CoursePlanEntity coursePlanEntity : coursePlanEntityList) {
                 CourseExercisesVO model = new CourseExercisesVO();
+
+                //region 取得当前节次包含的练习题数量
+                int classExercisesTotalCount = courseMapper.searchCourseClassExercisesTotalCount(
+                        coursePlanEntity.getTechnologyID(),
+                        coursePlanEntity.getCourseID(),
+                        coursePlanEntity.getCourseClass());
+                model.setClassExercisesTotalCount(classExercisesTotalCount);
+                //endregion
+
+                //region 取得当前节次包含的知识点
                 List<CoursePlanEntity> knowledgeList = coursePlanMapper.searchKnowledgeList4CourseClass(universityCode, schoolID, courseID, coursePlanEntity.getCourseClass());
                 if(knowledgeList.isEmpty()){
                     continue;
                 }
-
                 ObjectConvertUtils.toBean(coursePlanEntity, model);
                 List<CourseExercisesKnowledgeVO> knowledgeModelList = new ArrayList<>();
                 for (CoursePlanEntity knowledgeEntity : knowledgeList) {
                     CourseExercisesKnowledgeVO knowledgeModel = new CourseExercisesKnowledgeVO();
                     ObjectConvertUtils.toBean(knowledgeEntity, knowledgeModel);
+                    //region 已删除
 
-                    List<TechnologyKnowledgeExercisesEntity> exercisesEntityList = knowledgeExercisesMapper.searchList4Knowledge(knowledgeEntity.getTechnologyID(), knowledgeEntity.getKnowledgeID());
-                    List<TechnologyKnowledgeExercisesVO> knowledgeExercisesModelList = new ArrayList<>();
-                    if(exercisesEntityList.isEmpty()){
-                        knowledgeModel.setKnowledgeExercisesList(knowledgeExercisesModelList);
-                        knowledgeModelList.add(knowledgeModel);
-                        continue;
-                    }
-                    for (TechnologyKnowledgeExercisesEntity exercisesEntity : exercisesEntityList) {
-                        TechnologyKnowledgeExercisesVO exercisesModel = new TechnologyKnowledgeExercisesVO();
-                        ObjectConvertUtils.toBean(exercisesEntity, exercisesModel);
-                        knowledgeExercisesModelList.add(exercisesModel);
-                    }
-                    knowledgeModel.setKnowledgeExercisesList(knowledgeExercisesModelList);
+                    //List<TechnologyKnowledgeExercisesEntity> exercisesEntityList = knowledgeExercisesMapper.searchList4Knowledge(knowledgeEntity.getTechnologyID(), knowledgeEntity.getKnowledgeID());
+                    //List<TechnologyKnowledgeExercisesVO> knowledgeExercisesModelList = new ArrayList<>();
+//                    if(exercisesEntityList.isEmpty()){
+//                        knowledgeModel.setKnowledgeExercisesList(knowledgeExercisesModelList);
+//                        knowledgeModelList.add(knowledgeModel);
+//                        continue;
+//                    }
+//
+//                    for (TechnologyKnowledgeExercisesEntity exercisesEntity : exercisesEntityList) {
+//                        TechnologyKnowledgeExercisesVO exercisesModel = new TechnologyKnowledgeExercisesVO();
+//                        ObjectConvertUtils.toBean(exercisesEntity, exercisesModel);
+//                        knowledgeExercisesModelList.add(exercisesModel);
+//                    }
+//
+//                    knowledgeModel.setKnowledgeExercisesList(knowledgeExercisesModelList);
+                    //endregion
                     knowledgeModelList.add(knowledgeModel);
                 }
                 model.setKnowledgeList(knowledgeModelList);
+                //endregion
+
                 modelList.add(model);
             }
 

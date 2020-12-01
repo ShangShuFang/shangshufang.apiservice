@@ -14,4 +14,7 @@ public class TechnologyKnowledgeVO extends BaseVO {
     private int choiceExercisesCount;
     private int blankExercisesCount;
     private int programExercisesCount;
+    private int customChoiceExercisesCount;
+    private int customBlankExercisesCount;
+    private int customProgramExercisesCount;
 }

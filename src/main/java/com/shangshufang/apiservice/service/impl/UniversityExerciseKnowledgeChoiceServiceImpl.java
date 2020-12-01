@@ -80,8 +80,7 @@ public class UniversityExerciseKnowledgeChoiceServiceImpl implements UniversityE
     public UnifiedResponse add(UniversityExerciseKnowledgeChoiceDTO dto) {
         try {
             int affectRow = 0;
-
-            List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> optionEntityList = JsonUtils.deserializationToObject(dto.getChoiceOptionsJson(), UniversityExerciseKnowledgeChoiceOptionEntity.class);
+            List<ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity> optionEntityList = JsonUtils.deserializationToObject(dto.getChoiceOptionsJson(), ExerciseWarehouseKnowledgeChoiceQuestionOptionEntity.class);
             UniversityExerciseKnowledgeChoiceEntity entity = new UniversityExerciseKnowledgeChoiceEntity();
             ObjectConvertUtils.toBean(dto, entity);
             entity.setCreateUser(dto.getLoginUser());

@@ -30,16 +30,17 @@
     SELECT
     COUNT(1) AS TotalCount
     FROM shangshufang_customer.company
-    WHERE 1=1
-    <if test="arg0 != 0">
-      AND province_code = #{arg0,jdbcType=INTEGER}
-    </if>
-    <if test="arg1 != 0">
-      AND city_code = #{arg1,jdbcType=INTEGER}
-    </if>
-    <if test="arg2 != null">
-      AND data_status = #{arg2,jdbcType=VARCHAR}
-    </if>;
+    <where>
+      <if test="arg0 != 0">
+        AND province_code = #{arg0,jdbcType=INTEGER}
+      </if>
+      <if test="arg1 != 0">
+        AND city_code = #{arg1,jdbcType=INTEGER}
+      </if>
+      <if test="arg2 != null">
+        AND data_status = #{arg2,jdbcType=VARCHAR}
+      </if>
+    </where>;
   </select>
   <select id="searchList" resultMap="BaseResultMap">
     SELECT
@@ -89,16 +90,17 @@
     ON A.create_user = G.admin_id
     INNER JOIN shangshufang_base.system_admin H
     ON A.update_user = H.admin_id
-    WHERE 1=1
-    <if test="arg2 != 0">
-      AND A.province_code = #{arg2,jdbcType=INTEGER}
-    </if>
-    <if test="arg3 != 0">
-      AND A.city_code = #{arg3,jdbcType=INTEGER}
-    </if>
-    <if test="arg4 != null">
-      AND data_status = #{arg4,jdbcType=VARCHAR}
-    </if>
+    <where>
+      <if test="arg2 != 0">
+        AND A.province_code = #{arg2,jdbcType=INTEGER}
+      </if>
+      <if test="arg3 != 0">
+        AND A.city_code = #{arg3,jdbcType=INTEGER}
+      </if>
+      <if test="arg4 != null">
+        AND data_status = #{arg4,jdbcType=VARCHAR}
+      </if>
+    </where>
     ORDER BY A.update_time DESC
     LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
   </select>
