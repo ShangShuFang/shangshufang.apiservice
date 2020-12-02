@@ -1451,18 +1451,18 @@
         SELECT COUNT(1) AS totalcount
         FROM shangshufang_customer.course
         WHERE university_code = #{universityCode,jdbcType=INTEGER}
-          AND school_id = #{arg1,jdbcType=INTEGER}
-          AND course_name = #{arg2,jdbcType=VARCHAR}
+          AND school_id = #{schoolID,jdbcType=INTEGER}
+          AND course_name = #{courseName,jdbcType=VARCHAR}
           AND (
-                (course_time_begin &gt;= #{arg3,jdbcType=VARCHAR} AND course_time_end &lt;= #{arg4,jdbcType=VARCHAR})
+                (course_time_begin &gt;= #{courseTimeBegin,jdbcType=VARCHAR} AND course_time_end &lt;= #{courseTimeEnd,jdbcType=VARCHAR})
                 OR
-                (course_time_begin &gt;= #{arg3,jdbcType=VARCHAR} AND course_time_end &gt;= #{arg4,jdbcType=VARCHAR})
+                (course_time_begin &gt;= #{courseTimeBegin,jdbcType=VARCHAR} AND course_time_end &gt;= #{courseTimeEnd,jdbcType=VARCHAR})
                 OR
-                (course_time_begin &lt;= #{arg3,jdbcType=VARCHAR} AND course_time_end &gt;= #{arg3,jdbcType=VARCHAR} AND
-                 course_time_end &gt;= #{arg4,jdbcType=VARCHAR})
+                (course_time_begin &lt;= #{courseTimeBegin,jdbcType=VARCHAR} AND course_time_end &gt;= #{courseTimeBegin,jdbcType=VARCHAR} AND
+                 course_time_end &gt;= #{courseTimeEnd,jdbcType=VARCHAR})
                 OR
-                (course_time_begin &lt;= #{arg3,jdbcType=VARCHAR} AND course_time_end &gt;= #{arg3,jdbcType=VARCHAR} AND
-                 course_time_end &lt;= #{arg4,jdbcType=VARCHAR})
+                (course_time_begin &lt;= #{courseTimeBegin,jdbcType=VARCHAR} AND course_time_end &gt;= #{courseTimeBegin,jdbcType=VARCHAR} AND
+                 course_time_end &lt;= #{courseTimeEnd,jdbcType=VARCHAR})
             );
     </select>
 

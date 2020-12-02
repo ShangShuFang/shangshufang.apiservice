@@ -90,11 +90,11 @@ public interface CourseMapper extends BaseMapper<CourseEntity> {
                         @Param("courseID") int courseID,
                         @Param("dataStatus") String dataStatus);
 
-    int checkCourseExist(int universityCode,
-                         int schoolID,
-                         String courseName,
-                         String courseTimeBegin,
-                         String courseTimeEnd);
+    int checkCourseExist(@Param("universityCode") int universityCode,
+                         @Param("schoolID") int schoolID,
+                         @Param("courseName") String courseName,
+                         @Param("courseTimeBegin") String courseTimeBegin,
+                         @Param("courseTimeEnd") String courseTimeEnd);
 
     int searchCourseClassExercisesTotalCount(@Param("technologyID") int technologyID,
                                              @Param("courseID") int courseID,
