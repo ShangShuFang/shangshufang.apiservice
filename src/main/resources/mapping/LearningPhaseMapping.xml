@@ -3,12 +3,14 @@
 <mapper namespace="com.shangshufang.apiservice.mapper.LearningPhaseMapper" >
   <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.LearningPhaseEntity" >
     <id column="learning_phase_id" property="learningPhaseID" jdbcType="INTEGER" />
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER" />
     <result column="learning_phase_name" property="learningPhaseName" jdbcType="VARCHAR" />
   </resultMap>
   <select id="searchList" resultMap="BaseResultMap">
     SELECT
     learning_phase_id,
     learning_phase_name
-    FROM shangshufang_base.learning_phase;
+    FROM shangshufang_base.learning_phase
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER};
   </select>
 </mapper>

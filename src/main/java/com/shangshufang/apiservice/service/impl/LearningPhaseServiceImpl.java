@@ -20,10 +20,10 @@ public class LearningPhaseServiceImpl {
     private LearningPhaseMapper myMapper;
     private Logger logger = LogManager.getLogger(LearningPhaseServiceImpl.class);
 
-    public UnifiedResponse findList() {
+    public UnifiedResponse findList(int technologyID) {
         try {
             List<LearningPhaseVO> modelList = new ArrayList<>();
-            List<LearningPhaseEntity> entityList =  myMapper.searchList();
+            List<LearningPhaseEntity> entityList =  myMapper.searchList(technologyID);
             for (LearningPhaseEntity entity : entityList) {
                 LearningPhaseVO model = new LearningPhaseVO();
                 ObjectConvertUtils.toBean(entity, model);
