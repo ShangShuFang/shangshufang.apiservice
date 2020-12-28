@@ -7,13 +7,14 @@ public class StudentComprehensiveExercisesVO extends BaseVO {
     private int collectionID;
     private int studentID;
     private int exercisesID;
-    private String exercisesName;
-    private int technologyID;
-    private String technologyName;
-    private String technologyThumbnailRectangle;
-    private String documentUrl;
-    private int reviewCompanyCount;
-    private int reviewTotalCount;
+    private String exercisesTitle;
+    private String examKnowledge;
+    private int examType;
+    private String examTypeText;
+    private int difficultyLevel;
+    private String difficultyLevelText;
+    private int programLanguage;
+    private String programLanguageName;
     private String gitUrl;
     private String memo;
 }

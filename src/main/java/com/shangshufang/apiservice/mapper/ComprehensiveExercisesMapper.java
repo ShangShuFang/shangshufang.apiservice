@@ -8,17 +8,17 @@ import java.util.List;
 
 @Mapper
 public interface ComprehensiveExercisesMapper extends BaseMapper<ComprehensiveExercisesEntity> {
-    int searchTotalCount(@Param("directionID") int directionID,
-                         @Param("categoryID") int categoryID,
-                         @Param("technologyID") int technologyID,
+    int searchTotalCount(@Param("examType") int examType,
+                         @Param("difficultyLevel") int difficultyLevel,
                          @Param("dataStatus") String dataStatus);
 
     List<ComprehensiveExercisesEntity> searchList(@Param("startIndex") int startIndex,
                                                   @Param("pageSize") int pageSize,
-                                                  @Param("directionID") int directionID,
-                                                  @Param("categoryID") int categoryID,
-                                                  @Param("technologyID") int technologyID,
+                                                  @Param("examType") int examType,
+                                                  @Param("difficultyLevel") int difficultyLevel,
                                                   @Param("dataStatus") String dataStatus);
+
+    ComprehensiveExercisesEntity search(@Param("exercisesID") int exercisesID, @Param("dataStatus") String dataStatus);
 
     int delete(int exercisesID);
 }

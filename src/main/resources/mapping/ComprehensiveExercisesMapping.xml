@@ -1,140 +1,174 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.shangshufang.apiservice.mapper.ComprehensiveExercisesMapper">
-  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.ComprehensiveExercisesEntity">
-    <id column="exercises_id" property="exercisesID" jdbcType="INTEGER"/>
-    <result column="exercises_name" property="exercisesName" jdbcType="VARCHAR"/>
-    <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
-    <result column="technology_name" property="technologyName" jdbcType="VARCHAR"/>
-    <result column="technology_thumbnail_rectangle" property="technologyThumbnailRectangle" jdbcType="VARCHAR"/>
-    <result column="document_url" property="documentUrl" jdbcType="VARCHAR"/>
-    <result column="answer_url" property="answerUrl" jdbcType="VARCHAR"/>
-    <result column="memo" property="memo" jdbcType="VARCHAR"/>
-    <result column="data_status" property="dataStatus" jdbcType="VARCHAR"/>
-    <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR"/>
-    <result column="create_user" property="createUser" jdbcType="INTEGER"/>
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
-    <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
-    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.ComprehensiveExercisesEntity">
+        <id column="exercises_id" property="exercisesID" jdbcType="INTEGER"/>
+        <result column="exercises_title" property="exercisesTitle" jdbcType="VARCHAR"/>
+        <result column="exercises_content" property="exercisesDescription" jdbcType="VARCHAR"/>
+        <result column="exam_knowledge" property="examKnowledge" jdbcType="VARCHAR"/>
+        <result column="exam_type" property="examType" jdbcType="INTEGER"/>
+        <result column="exam_type_text" property="examTypeText" jdbcType="VARCHAR"/>
+        <result column="difficulty_level" property="difficultyLevel" jdbcType="INTEGER"/>
+        <result column="difficulty_level_text" property="difficultyLevelText" jdbcType="VARCHAR"/>
+        <result column="data_status" property="dataStatus" jdbcType="VARCHAR"/>
+        <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR"/>
+        <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
 
-  <select id="searchTotalCount" resultType="java.lang.Integer">
-    SELECT COUNT(1) AS total_count
-    FROM shangshufang_base.comprehensive_exercises a
-    INNER JOIN shangshufang_base.technology b
-    ON a.technology_id = b.technology_id
-    INNER JOIN shangshufang_base.direction c
-    ON b.direction_id = c.direction_id
-    INNER JOIN shangshufang_base.technology_category d
-    ON b.category_id = d.technology_category_id
-    AND b.direction_id = d.direction_id
-    <where>
-      <if test="directionID != 0">
-        b.direction_id = #{directionID,jdbcType=INTEGER}
-      </if>
-      <if test="categoryID != 0">
-        AND b.category_id = #{categoryID,jdbcType=INTEGER}
-      </if>
-      <if test="technologyID != 0">
-        AND a.technology_id = #{technologyID,jdbcType=INTEGER}
-      </if>
-      <if test="dataStatus != null">
-        AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
-      </if>
-    </where>
-  </select>
+    <select id="searchTotalCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) AS total_count
+        FROM shangshufang_base.comprehensive_exercises
+        <where>
+            <if test="examType != 0">
+                exam_type = #{examType,jdbcType=INTEGER}
+            </if>
+            <if test="difficultyLevel != 0">
+                AND difficulty_level = #{difficultyLevel,jdbcType=INTEGER}
+            </if>
+            <if test="dataStatus != null">
+                AND data_status = #{dataStatus,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
 
-  <select id="searchList" resultMap="BaseResultMap">
-    SELECT a.exercises_id,
-           a.exercises_name,
-           a.technology_id,
-           b.technology_name,
-           b.technology_thumbnail_rectangle,
-           a.document_url,
-           a.answer_url,
-           a.memo,
-           a.data_status,
-           CASE WHEN a.data_status = 'P' THEN '待审批'
-                WHEN a.data_status = 'A' THEN '启用'
-                WHEN a.data_status = 'D' THEN '禁用'
-                ELSE '未知数据状态'
-           END AS data_status_text,
-           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-           f.admin_name                                    AS update_user,
-           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
-    FROM shangshufang_base.comprehensive_exercises a
-    INNER JOIN shangshufang_base.technology b
-    ON a.technology_id = b.technology_id
-    INNER JOIN shangshufang_base.direction c
-    ON b.direction_id = c.direction_id
-    INNER JOIN shangshufang_base.technology_category d
-    ON b.category_id = d.technology_category_id
-    AND b.direction_id = d.direction_id
-    INNER JOIN shangshufang_base.system_admin e
-    ON a.create_user = e.admin_id
-    INNER JOIN shangshufang_base.system_admin f
-    ON a.update_user = f.admin_id
-    <where>
-      <if test="directionID != 0">
-        b.direction_id = #{directionID,jdbcType=INTEGER}
-      </if>
-      <if test="categoryID != 0">
-        AND b.category_id = #{categoryID,jdbcType=INTEGER}
-      </if>
-      <if test="technologyID != 0">
-        AND a.technology_id = #{technologyID,jdbcType=INTEGER}
-      </if>
-      <if test="dataStatus != null">
-        AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
-      </if>
-    </where>
-    ORDER BY a.exercises_id DESC
-    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
-  </select>
+    <select id="searchList" resultMap="BaseResultMap">
+        SELECT a.exercises_id,
+            a.exercises_title,
+            a.exercises_content,
+            a.exam_knowledge,
+            a.exam_type,
+            CASE WHEN a.exam_type = '1' THEN '服务端'
+            WHEN a.exam_type = '2' THEN '前端'
+            WHEN a.exam_type = '3' THEN '数据库'
+            WHEN a.exam_type = '4' THEN '全栈'
+            ELSE '未知数据状态'
+            END AS exam_type_text,
+            a.difficulty_level,
+            CASE WHEN a.difficulty_level = '1' THEN '入门'
+            WHEN a.difficulty_level = '2' THEN '简单'
+            WHEN a.difficulty_level = '3' THEN '中等'
+            WHEN a.difficulty_level = '4' THEN '较难'
+            WHEN a.difficulty_level = '5' THEN '困难'
+            ELSE '未知数据状态'
+            END AS difficulty_level_text,
+            a.data_status,
+            CASE WHEN a.data_status = 'P' THEN '待审批'
+            WHEN a.data_status = 'A' THEN '启用'
+            WHEN a.data_status = 'D' THEN '禁用'
+            ELSE '未知数据状态'
+            END AS data_status_text,
+            DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+            b.admin_name AS create_user,
+            DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time,
+            c.admin_name AS update_user
+        FROM shangshufang_base.comprehensive_exercises a
+        INNER JOIN shangshufang_base.system_admin b
+        ON a.create_user = b.admin_id
+        INNER JOIN shangshufang_base.system_admin c
+        ON a.update_user = c.admin_id
+        <where>
+            <if test="examType != 0">
+                exam_type = #{examType,jdbcType=INTEGER}
+            </if>
+            <if test="difficultyLevel != 0">
+                AND difficulty_level = #{difficultyLevel,jdbcType=INTEGER}
+            </if>
+            <if test="dataStatus != null">
+                AND data_status = #{dataStatus,jdbcType=VARCHAR}
+            </if>
+        </where>
+        ORDER BY a.exercises_id DESC
+        LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+    </select>
 
-  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.ComprehensiveExercisesEntity">
-    INSERT INTO shangshufang_base.comprehensive_exercises
-    (
-      exercises_name,
-      technology_id,
-      document_url,
-      answer_url,
-      memo,
-      create_user,
-      update_user
-     )
-    VALUES
-     (
-      #{exercisesName, jdbcType=INTEGER},
-      #{technologyID, jdbcType=INTEGER},
-      #{documentUrl, jdbcType=VARCHAR},
-      #{answerUrl, jdbcType=VARCHAR},
-      #{memo, jdbcType=VARCHAR},
-      #{createUser, jdbcType=VARCHAR},
-      #{updateUser, jdbcType=VARCHAR}
-      )
-  </insert>
+    <select id="search" resultMap="BaseResultMap">
+        SELECT a.exercises_id,
+        a.exercises_title,
+        a.exercises_content,
+        a.exam_knowledge,
+        a.exam_type,
+        CASE WHEN a.exam_type = '1' THEN '服务端'
+        WHEN a.exam_type = '2' THEN '前端'
+        WHEN a.exam_type = '3' THEN '数据库'
+        WHEN a.exam_type = '4' THEN '全栈'
+        ELSE '未知数据状态'
+        END AS exam_type_text,
+        a.difficulty_level,
+        CASE WHEN a.difficulty_level = '1' THEN '入门'
+        WHEN a.difficulty_level = '2' THEN '简单'
+        WHEN a.difficulty_level = '3' THEN '中等'
+        WHEN a.difficulty_level = '4' THEN '较难'
+        WHEN a.difficulty_level = '5' THEN '困难'
+        ELSE '未知数据状态'
+        END AS difficulty_level_text,
+        a.data_status,
+        CASE WHEN a.data_status = 'P' THEN '待审批'
+        WHEN a.data_status = 'A' THEN '启用'
+        WHEN a.data_status = 'D' THEN '禁用'
+        ELSE '未知数据状态'
+        END AS data_status_text,
+        DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+        b.admin_name AS create_user,
+        DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time,
+        c.admin_name AS update_user
+        FROM shangshufang_base.comprehensive_exercises a
+        INNER JOIN shangshufang_base.system_admin b
+        ON a.create_user = b.admin_id
+        INNER JOIN shangshufang_base.system_admin c
+        ON a.update_user = c.admin_id
+        WHERE a.exercises_id = #{exercisesID,jdbcType=INTEGER}
+        <if test="dataStatus != null">
+            AND data_status = #{dataStatus,jdbcType=VARCHAR}
+        </if>;
+    </select>
 
-  <update id="update" parameterType="com.shangshufang.apiservice.entity.ComprehensiveExercisesEntity" >
-    UPDATE shangshufang_base.comprehensive_exercises
-    SET exercises_name = #{exercisesName,jdbcType=VARCHAR},
-        answer_url = #{answerUrl,jdbcType=VARCHAR},
-        document_url = #{documentUrl,jdbcType=VARCHAR},
-        memo = #{memo,jdbcType=VARCHAR},
-        update_user = #{updateUser,jdbcType=VARCHAR}
-    WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
-  </update>
+    <insert id="insert" parameterType="com.shangshufang.apiservice.entity.ComprehensiveExercisesEntity">
+        INSERT INTO shangshufang_base.comprehensive_exercises
+            (
+                exercises_title,
+                exercises_content,
+                exam_knowledge,
+                exam_type,
+                difficulty_level,
+                create_user,
+                update_user
+             )
+        VALUES
+               (
+                    #{exercisesTitle, jdbcType=VARCHAR},
+                    #{exercisesDescription, jdbcType=VARCHAR},
+                    #{examKnowledge, jdbcType=VARCHAR},
+                    #{examType, jdbcType=INTEGER},
+                    #{difficultyLevel, jdbcType=INTEGER},
+                    #{createUser, jdbcType=VARCHAR},
+                    #{updateUser, jdbcType=VARCHAR}
+                )
+    </insert>
 
-  <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.ComprehensiveExercisesEntity" >
-    UPDATE shangshufang_base.comprehensive_exercises
-    SET data_status = #{dataStatus,jdbcType=VARCHAR},
-        update_user = #{updateUser,jdbcType=VARCHAR}
-    WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
-  </update>
+    <update id="update" parameterType="com.shangshufang.apiservice.entity.ComprehensiveExercisesEntity">
+        UPDATE shangshufang_base.comprehensive_exercises
+        SET exercises_title = #{exercisesTitle,jdbcType=VARCHAR},
+            exercises_content = #{exercisesDescription,jdbcType=VARCHAR},
+            exam_knowledge = #{examKnowledge,jdbcType=VARCHAR},
+            exam_type = #{examType,jdbcType=INTEGER},
+            difficulty_level = #{difficultyLevel,jdbcType=INTEGER},
+            update_user = #{updateUser,jdbcType=VARCHAR}
+        WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
+    </update>
 
-  <delete id="delete" parameterType="java.lang.Integer">
-    DELETE
-    FROM shangshufang_base.comprehensive_exercises
-    WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
-  </delete>
+    <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.ComprehensiveExercisesEntity">
+        UPDATE shangshufang_base.comprehensive_exercises
+        SET data_status = #{dataStatus,jdbcType=VARCHAR},
+            update_user = #{updateUser,jdbcType=VARCHAR}
+        WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        DELETE
+        FROM shangshufang_base.comprehensive_exercises
+        WHERE exercises_id = #{exercisesID,jdbcType=INTEGER};
+    </delete>
 </mapper>

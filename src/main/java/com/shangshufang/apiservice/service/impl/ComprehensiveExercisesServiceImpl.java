@@ -25,22 +25,39 @@ public class ComprehensiveExercisesServiceImpl implements ComprehensiveExercises
     private final Logger logger = LogManager.getLogger(ComprehensiveExercisesServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, int directionID, int categoryID, int technologyID, String dataStatus) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, int examType, int difficultyLevel, String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<ComprehensiveExercisesVO> modelList = new ArrayList<>();
             dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
-            int totalCount = myMapper.searchTotalCount(directionID, categoryID, technologyID, dataStatus);
+            int totalCount = myMapper.searchTotalCount(examType, difficultyLevel, dataStatus);
             if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<ComprehensiveExercisesEntity> entityList =  myMapper.searchList(startIndex, pageSize, directionID, categoryID, technologyID, dataStatus);
+            List<ComprehensiveExercisesEntity> entityList =  myMapper.searchList(startIndex, pageSize, examType, difficultyLevel, dataStatus);
             for (ComprehensiveExercisesEntity entity : entityList) {
                 ComprehensiveExercisesVO model = new ComprehensiveExercisesVO();
                 ObjectConvertUtils.toBean(entity, model);
                 modelList.add(model);
             }
             return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse find(int exercisesID, String dataStatus) {
+        try {
+            ComprehensiveExercisesVO model = new ComprehensiveExercisesVO();
+            dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
+            ComprehensiveExercisesEntity entity = myMapper.search(exercisesID, dataStatus);
+            if(entity == null){
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            ObjectConvertUtils.toBean(entity, model);
+            return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.ONE_SEARCH_COUNT, model);
         } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();

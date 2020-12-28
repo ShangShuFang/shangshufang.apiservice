@@ -5,9 +5,9 @@ import lombok.Data;
 @Data
 public class ComprehensiveExercisesDTO extends BaseDTO {
     private int exercisesID;
-    private String exercisesName;
-    private int technologyID;
-    private String documentUrl;
-    private String answerUrl;
-    private String memo;
+    private String exercisesTitle;
+    private String exercisesDescription;
+    private String examKnowledge;
+    private int examType;
+    private int difficultyLevel;
 }

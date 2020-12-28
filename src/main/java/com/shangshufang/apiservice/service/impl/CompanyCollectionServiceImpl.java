@@ -68,8 +68,8 @@ public class CompanyCollectionServiceImpl implements CompanyCollectionService {
                     }
                     //取得当前学生对与每个技术此刻的能力信息（包含级别、已掌握知识点百分比）
                     StudentAbilityAnalysisEntity studentAbilityOfTechnologyEntity = analysisAbilityMapper.searchStudentAbility(studentID, technologyUsingEntity.getTechnologyID());
-                    //取得当前学生已完成的综合练习数量
-                    int finishComprehensiveExercisesCount = studentComprehensiveExercisesMapper.searchTotalCount(studentID, 0,0, technologyUsingEntity.getTechnologyID(), DataStatusConstant.ACTIVE);
+                    //TODO: 取得当前学生已完成的综合练习数量
+                    int finishComprehensiveExercisesCount = studentComprehensiveExercisesMapper.searchTotalCount4Student(studentID, 0, technologyUsingEntity.getTechnologyID(), 0, DataStatusConstant.YES);
 
                     //TODO: 取得当前学生参与的项目数量
                     int joinProjectExercisesCount = 0;

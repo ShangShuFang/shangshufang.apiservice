@@ -8,4 +8,5 @@ public class StudentComprehensiveExercisesDTO extends BaseDTO {
     private int studentID;
     private int exercisesID;
     private String gitUrl;
+    private int programLanguage;
 }

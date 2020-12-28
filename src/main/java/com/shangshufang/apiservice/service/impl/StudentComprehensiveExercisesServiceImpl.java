@@ -25,22 +25,68 @@ public class StudentComprehensiveExercisesServiceImpl implements StudentComprehe
     private final Logger logger = LogManager.getLogger(StudentComprehensiveExercisesServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, int studentID, int directionID, int categoryID, int technologyID, String dataStatus) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, int programLanguage, String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<StudentComprehensiveExercisesVO> modelList = new ArrayList<>();
             dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
-            int totalCount = myMapper.searchTotalCount(studentID, directionID, categoryID, technologyID, dataStatus);
+            int totalCount = myMapper.searchTotalCount(programLanguage, dataStatus);
             if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<StudentComprehensiveExercisesEntity> entityList =  myMapper.searchList(startIndex, pageSize, studentID, directionID, categoryID, technologyID, dataStatus);
+            List<StudentComprehensiveExercisesEntity> entityList =  myMapper.searchList(startIndex, pageSize, programLanguage, dataStatus);
             for (StudentComprehensiveExercisesEntity entity : entityList) {
                 StudentComprehensiveExercisesVO model = new StudentComprehensiveExercisesVO();
                 ObjectConvertUtils.toBean(entity, model);
                 modelList.add(model);
             }
             return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse findList4Student(int pageNumber,
+                                            int pageSize,
+                                            int studentID,
+                                            int directionCode,
+                                            int programLanguage,
+                                            int difficultyLevelCode,
+                                            String dataStatus) {
+        try {
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<StudentComprehensiveExercisesVO> modelList = new ArrayList<>();
+            dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
+            int totalCount = myMapper.searchTotalCount4Student(studentID, directionCode, programLanguage, difficultyLevelCode, dataStatus);
+            if(totalCount == 0){
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            List<StudentComprehensiveExercisesEntity> entityList =  myMapper.searchList4Student(startIndex, pageSize, studentID, directionCode, programLanguage, difficultyLevelCode, dataStatus);
+            for (StudentComprehensiveExercisesEntity entity : entityList) {
+                StudentComprehensiveExercisesVO model = new StudentComprehensiveExercisesVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse find(int studentID, int exercisesID) {
+        try {
+            StudentComprehensiveExercisesVO model = new StudentComprehensiveExercisesVO();
+            StudentComprehensiveExercisesEntity entity =  myMapper.search(studentID, exercisesID);
+            if(entity == null){
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            ObjectConvertUtils.toBean(entity, model);
+
+            return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.ONE_SEARCH_COUNT, model);
         } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();
@@ -102,6 +148,16 @@ public class StudentComprehensiveExercisesServiceImpl implements StudentComprehe
 
     @Override
     public UnifiedResponse changeDataStatus(StudentComprehensiveExercisesDTO dto) {
-        return null;
+        try {
+            StudentComprehensiveExercisesEntity entity = new StudentComprehensiveExercisesEntity();
+            ObjectConvertUtils.toBean(dto, entity);
+            entity.setCreateUser(dto.getLoginUser());
+            entity.setUpdateUser(dto.getLoginUser());
+            int affectRow = myMapper.updateDataStatus(entity);
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
     }
 }
