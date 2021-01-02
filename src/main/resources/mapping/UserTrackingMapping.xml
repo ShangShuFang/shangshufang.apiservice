@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.UserTrackingMapper">
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.UserTrackingEntity">
+    <id column="tracking_id" property="trackingID" jdbcType="INTEGER"/>
+    <result column="city_ip" property="cityIP" jdbcType="VARCHAR"/>
+    <result column="city_id" property="cityID" jdbcType="VARCHAR"/>
+    <result column="city_name" property="cityName" jdbcType="VARCHAR"/>
+    <result column="customer" property="customer" jdbcType="VARCHAR"/>
+    <result column="device" property="device" jdbcType="VARCHAR"/>
+    <result column="browser" property="browser" jdbcType="VARCHAR"/>
+    <result column="system_id" property="systemID" jdbcType="INTEGER"/>
+    <result column="system_name" property="systemName" jdbcType="VARCHAR"/>
+    <result column="view_id" property="viewID" jdbcType="INTEGER"/>
+    <result column="view_name" property="viewName" jdbcType="VARCHAR"/>
+    <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.UserTrackingEntity">
+    INSERT INTO shangshufang_log.user_tracking
+    (
+        city_ip,
+        city_id,
+        city_name,
+        customer,
+        device,
+        browser,
+        system_id,
+        view_id
+    )
+    VALUES
+     (
+          #{cityIP, jdbcType=VARCHAR},
+          #{cityID, jdbcType=VARCHAR},
+          #{cityName, jdbcType=VARCHAR},
+          #{customer, jdbcType=VARCHAR},
+          #{device, jdbcType=VARCHAR},
+          #{browser, jdbcType=VARCHAR},
+          #{systemID, jdbcType=INTEGER},
+          #{viewID, jdbcType=INTEGER}
+      )
+  </insert>
+</mapper>
