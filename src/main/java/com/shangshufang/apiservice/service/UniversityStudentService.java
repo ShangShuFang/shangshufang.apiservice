@@ -4,7 +4,7 @@ import com.shangshufang.apiservice.dto.UniversityStudentDTO;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
 
 public interface UniversityStudentService extends BaseService<UniversityStudentDTO> {
-    UnifiedResponse findList(int pageNumber, int pageSize, int universityCode, int schoolID, String fullName);
+    UnifiedResponse findList(int pageNumber, int pageSize, int universityCode, int schoolID, int majorID, String fullName);
 
     UnifiedResponse findTopList(int technologyID, int topNumber);
 

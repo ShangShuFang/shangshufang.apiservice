@@ -12,13 +12,14 @@ public class UniversityStudentController {
     @Autowired
     private UniversityStudentServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{fullName}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{universityCode}/{schoolID}/{majorID}/{fullName}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
                                     @PathVariable("universityCode") int universityCode,
                                     @PathVariable("schoolID") int schoolID,
+                                    @PathVariable("majorID") int majorID,
                                     @PathVariable("fullName") String fullName){
-        return serviceImpl.findList(pageNumber, pageSize, universityCode, schoolID, fullName);
+        return serviceImpl.findList(pageNumber, pageSize, universityCode, schoolID, majorID, fullName);
     }
 
     @RequestMapping(value = "/list/top/{technologyID}/{topNumber}", method = RequestMethod.GET)

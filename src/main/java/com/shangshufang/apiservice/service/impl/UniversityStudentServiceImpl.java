@@ -34,7 +34,7 @@ public class UniversityStudentServiceImpl implements UniversityStudentService {
     private final Logger logger = LogManager.getLogger(UniversityStudentServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, int universityCode, int schoolID, String fullName) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, int universityCode, int schoolID, int majorID, String fullName) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<UniversityStudentVO> modelList = new ArrayList<>();
@@ -43,7 +43,7 @@ public class UniversityStudentServiceImpl implements UniversityStudentService {
             if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<UniversityStudentEntity> entityList =  myMapper.searchList(startIndex, pageSize, universityCode, schoolID, fullName);
+            List<UniversityStudentEntity> entityList =  myMapper.searchList(startIndex, pageSize, universityCode, schoolID, majorID, fullName);
             for (UniversityStudentEntity entity : entityList) {
                 UniversityStudentVO model = new UniversityStudentVO();
                 ObjectConvertUtils.toBean(entity, model);

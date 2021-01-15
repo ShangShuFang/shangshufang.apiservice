@@ -46,6 +46,8 @@
       B.university_name,
       A.school_id,
       C.school_name,
+      a.major_id,
+      d.major_name,
       A.full_name,
       A.sex,
       A.birth,
@@ -54,23 +56,31 @@
       A.email,
       A.photo
     FROM shangshufang_customer.university_student A
-    INNER JOIN shangshufang_customer.university B
+    LEFT JOIN shangshufang_customer.university B
     ON A.university_code = B.university_code
-    INNER JOIN shangshufang_customer.school C
+    LEFT JOIN shangshufang_customer.school C
     ON A.university_code = C.university_code
     AND A.school_id = C.school_id
-    WHERE 1 = 1
-    <if test="arg2 != 0">
-      AND university_code = #{arg2,jdbcType=INTEGER}
+    LEFT JOIN shangshufang_customer.major d
+    ON a.university_code = d.university_code
+    AND a.school_id = c.school_id
+    AND a.major_id = d.major_id
+    <where>
+      <if test="universityCode != 0">
+        a.university_code = #{universityCode,jdbcType=INTEGER}
+      </if>
+      <if test="schoolID != 0">
+        AND a.school_id = #{schoolID,jdbcType=INTEGER}
+      </if>
+      <if test="majorID != 0">
+        AND a.major_id = #{majorID,jdbcType=INTEGER}
+      </if>
+      <if test="fullName != null">
+        AND a.full_name LIKE #{fullName,jdbcType=VARCHAR}
     </if>
-    <if test="arg3 != 0">
-      AND school_id = #{arg3,jdbcType=INTEGER}
-    </if>
-    <if test="arg4 != null">
-      AND full_name LIKE #{arg4,jdbcType=VARCHAR}
-    </if>
+    </where>
     ORDER BY A.update_time DESC
-    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
   <select id="search" resultMap="BaseResultMap">
     SELECT
