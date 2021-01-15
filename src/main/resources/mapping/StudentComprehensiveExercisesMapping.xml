@@ -4,17 +4,28 @@
     <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.StudentComprehensiveExercisesEntity">
         <id column="collection_id" property="collectionID" jdbcType="INTEGER"/>
         <result column="student_id" property="studentID" jdbcType="INTEGER"/>
-        <result column="exercises_id" property="exercisesID" jdbcType="INTEGER"/>
-        <result column="exercises_title" property="exercisesTitle" jdbcType="VARCHAR"/>
-        <result column="exam_knowledge" property="examKnowledge" jdbcType="VARCHAR"/>
-        <result column="exam_type" property="examType" jdbcType="INTEGER"/>
+        <result column="full_name" property="fullName" jdbcType="VARCHAR"/>
+        <result column="university_code" property="universityCode" jdbcType="INTEGER"/>
+        <result column="university_name" property="universityName" jdbcType="VARCHAR"/>
+        <result column="school_id" property="schoolID" jdbcType="VARCHAR"/>
+        <result column="school_name" property="schoolName" jdbcType="INTEGER"/>
+        <result column="major_id" property="majorID" jdbcType="VARCHAR"/>
+        <result column="major_name" property="majorName" jdbcType="INTEGER"/>
+        <result column="exercises_id" property="exercisesID" jdbcType="VARCHAR"/>
+        <result column="exam_type" property="examType" jdbcType="VARCHAR"/>
         <result column="exam_type_text" property="examTypeText" jdbcType="VARCHAR"/>
-        <result column="difficulty_level" property="difficultyLevel" jdbcType="INTEGER"/>
+        <result column="exercises_title" property="exercisesTitle" jdbcType="VARCHAR"/>
+
+        <result column="exam_knowledge" property="examKnowledge" jdbcType="VARCHAR"/>
+        <result column="exercises_content" property="exercisesContent" jdbcType="VARCHAR"/>
+
+
+        <result column="difficulty_level" property="difficultyLevel" jdbcType="VARCHAR"/>
         <result column="difficulty_level_text" property="difficultyLevelText" jdbcType="VARCHAR"/>
         <result column="program_language" property="programLanguage" jdbcType="VARCHAR"/>
-        <result column="program_language_name" property="programLanguageName" jdbcType="VARCHAR"/>
+        <result column="language_name" property="programLanguageName" jdbcType="VARCHAR"/>
         <result column="git_url" property="gitUrl" jdbcType="VARCHAR"/>
-        <result column="memo" property="memo" jdbcType="VARCHAR"/>
+        <result column="review_memo" property="reviewMemo" jdbcType="VARCHAR"/>
         <result column="data_status" property="dataStatus" jdbcType="VARCHAR"/>
         <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR"/>
         <result column="create_user" property="createUser" jdbcType="INTEGER"/>
@@ -26,45 +37,122 @@
     <select id="searchTotalCount" resultType="java.lang.Integer">
         SELECT COUNT(1) AS total_count
         FROM shangshufang_customer.student_comprehensive_exercises a
-        LEFT JOIN shangshufang_base.programming_language b
-        ON a.program_language = b.language_id
-        <where>
-            <if test="programLanguage != 0">
-                a.program_language = #{programLanguage,jdbcType=VARCHAR}
-            </if>
-            <if test="dataStatus != null">
-                AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
-            </if>
-        </where>;
+        LEFT JOIN shangshufang_customer.university_student b
+        ON a.student_id = b.student_id
+        LEFT JOIN shangshufang_customer.university c
+        ON b.university_code = c.university_code
+        LEFT JOIN shangshufang_customer.school d
+        ON b.university_code = d.university_code
+        AND b.school_id = d.school_id
+        LEFT JOIN shangshufang_customer.major e
+        ON b.university_code = e.university_code
+        AND b.school_id = e.school_id
+        AND b.major_id = e.major_id
+        LEFT JOIN shangshufang_base.comprehensive_exercises f
+        ON a.exercises_id = f.exercises_id
+        LEFT JOIN shangshufang_base.programming_language g
+        ON a.program_language = g.language_id
+        WHERE b.cellphone NOT IN ('15353752299', '18182505299', '18100000011', '18100000004', '18100000001', '13000000002', '13000000001','13000000000')
+        <if test="programLanguage != 0">
+            AND a.program_language = #{programLanguage,jdbcType=INTEGER}
+        </if>
+        <if test="universityCode != 0">
+            AND b.university_code = #{universityCode,jdbcType=INTEGER}
+        </if>
+        <if test="schoolID != 0">
+            AND b.school_id = #{schoolID,jdbcType=INTEGER}
+        </if>
+        <if test="majorID != 0">
+            AND b.major_id = #{majorID,jdbcType=INTEGER}
+        </if>
+        <if test="fullName != null">
+            AND b.full_name = #{fullName,jdbcType=VARCHAR}
+        </if>
+        <if test="dataStatus != null">
+            AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
+        </if>;
     </select>
 
     <select id="searchList" resultMap="BaseResultMap">
         SELECT a.collection_id,
-        a.student_id,
-        a.exercises_id,
-        a.program_language,
-        b.language_name AS program_language_name,
-        a.git_url,
-        a.data_status,
-        CASE WHEN A.data_status = 'P' THEN '待批改'
-        WHEN A.data_status = 'Y' THEN '正确'
-        WHEN A.data_status = 'N' THEN '错误'
-        ELSE '未知数据状态'
-        END AS data_status_text,
-        DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-        DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+               a.student_id,
+               b.full_name,
+               b.university_code,
+               c.university_name,
+               b.school_id,
+               d.school_name,
+               b.major_id,
+               e.major_name,
+               a.exercises_id,
+               f.exam_type,
+               CASE
+                   WHEN f.exam_type = 1 THEN '服务端'
+                   WHEN f.exam_type = 2 THEN '前端'
+                   WHEN f.exam_type = 3 THEN '数据库'
+                   WHEN f.exam_type = 4 THEN '全栈'
+                   ELSE '其他'
+                   END AS exam_type_text,
+               f.exercises_title,
+               f.exam_knowledge,
+               f.exercises_content,
+               f.difficulty_level,
+               CASE WHEN f.difficulty_level = 1 THEN '入门'
+                    WHEN f.difficulty_level = 2 THEN '简单'
+                    WHEN f.difficulty_level = 3 THEN '中等'
+                    WHEN f.difficulty_level = 4 THEN '较难'
+                    WHEN f.difficulty_level = 5 THEN '困难'
+                    ELSE '未知数据状态'
+               END AS difficulty_level_text,
+               a.program_language,
+               g.language_name,
+               a.git_url,
+               a.review_memo,
+               a.data_status,
+               CASE WHEN a.data_status = 'P' THEN '待批改'
+                   WHEN a.data_status = 'Y' THEN '正确'
+                   WHEN a.data_status = 'N' THEN '错误'
+                   ELSE '未知数据状态'
+               END AS data_status_text,
+               DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+               DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
         FROM shangshufang_customer.student_comprehensive_exercises a
-        LEFT JOIN shangshufang_base.programming_language b
-        ON a.program_language = b.language_id
-        <where>
-            <if test="programLanguage != 0">
-                a.program_language = #{programLanguage,jdbcType=VARCHAR}
-            </if>
-            <if test="dataStatus != null">
-                AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
-            </if>
-        </where>
-        ORDER BY a.collection_id DESC
+                 LEFT JOIN shangshufang_customer.university_student b
+                           ON a.student_id = b.student_id
+                 LEFT JOIN shangshufang_customer.university c
+                           ON b.university_code = c.university_code
+                 LEFT JOIN shangshufang_customer.school d
+                           ON b.university_code = d.university_code
+                               AND b.school_id = d.school_id
+                 LEFT JOIN shangshufang_customer.major e
+                           ON b.university_code = e.university_code
+                               AND b.school_id = e.school_id
+                               AND b.major_id = e.major_id
+                 LEFT JOIN shangshufang_base.comprehensive_exercises f
+                           ON a.exercises_id = f.exercises_id
+                 LEFT JOIN shangshufang_base.programming_language g
+                           ON a.program_language = g.language_id
+        WHERE b.cellphone NOT IN
+              ('15353752299', '18182505299', '18100000011', '18100000004', '18100000001', '13000000002', '13000000001',
+               '13000000000')
+        <if test="programLanguage != 0">
+            AND a.program_language = #{programLanguage,jdbcType=INTEGER}
+        </if>
+        <if test="universityCode != 0">
+            AND b.university_code = #{universityCode,jdbcType=INTEGER}
+        </if>
+        <if test="schoolID != 0">
+            AND b.school_id = #{schoolID,jdbcType=INTEGER}
+        </if>
+        <if test="majorID != 0">
+            AND b.major_id = #{majorID,jdbcType=INTEGER}
+        </if>
+        <if test="fullName != null">
+            AND b.full_name = #{fullName,jdbcType=VARCHAR}
+        </if>
+        <if test="dataStatus != null">
+            AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
+        </if>
+        ORDER BY a.update_time DESC
         LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
     </select>
 
@@ -205,6 +293,7 @@
             parameterType="com.shangshufang.apiservice.entity.StudentComprehensiveExercisesEntity">
         UPDATE shangshufang_customer.student_comprehensive_exercises
         SET data_status = #{dataStatus,jdbcType=VARCHAR},
+            review_memo =  #{reviewMemo,jdbcType=VARCHAR},
             update_user = #{updateUser,jdbcType=VARCHAR}
         WHERE collection_id = #{collectionID,jdbcType=INTEGER};
     </update>

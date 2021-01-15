@@ -25,16 +25,24 @@ public class StudentComprehensiveExercisesServiceImpl implements StudentComprehe
     private final Logger logger = LogManager.getLogger(StudentComprehensiveExercisesServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, int programLanguage, String dataStatus) {
+    public UnifiedResponse findList(int pageNumber,
+                                    int pageSize,
+                                    int programLanguage,
+                                    int universityCode,
+                                    int schoolID,
+                                    int majorID,
+                                    String fullName,
+                                    String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<StudentComprehensiveExercisesVO> modelList = new ArrayList<>();
+            fullName = fullName.equals(ParameterConstant.NO_PARAMETER) ? null : fullName;
             dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
-            int totalCount = myMapper.searchTotalCount(programLanguage, dataStatus);
+            int totalCount = myMapper.searchTotalCount(programLanguage, universityCode, schoolID, majorID, fullName, dataStatus);
             if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<StudentComprehensiveExercisesEntity> entityList =  myMapper.searchList(startIndex, pageSize, programLanguage, dataStatus);
+            List<StudentComprehensiveExercisesEntity> entityList =  myMapper.searchList(startIndex, pageSize, programLanguage, universityCode, schoolID, majorID, fullName, dataStatus);
             for (StudentComprehensiveExercisesEntity entity : entityList) {
                 StudentComprehensiveExercisesVO model = new StudentComprehensiveExercisesVO();
                 ObjectConvertUtils.toBean(entity, model);

@@ -12,12 +12,16 @@ public class StudentComprehensiveExercisesController {
     @Autowired
     private StudentComprehensiveExercisesServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{programLanguage}/{dataStatus}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{programLanguage}/{universityCode}/{schoolID}/{majorID}/{fullName}/{dataStatus}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
                                     @PathVariable("programLanguage") int programLanguage,
+                                    @PathVariable("universityCode") int universityCode,
+                                    @PathVariable("schoolID") int schoolID,
+                                    @PathVariable("majorID") int majorID,
+                                    @PathVariable("fullName") String fullName,
                                     @PathVariable("dataStatus") String dataStatus){
-        return serviceImpl.findList(pageNumber, pageSize, programLanguage, dataStatus);
+        return serviceImpl.findList(pageNumber, pageSize, programLanguage, universityCode, schoolID, majorID, fullName, dataStatus);
     }
 
     @RequestMapping(value = "/list/choose/{pageNumber}/{pageSize}/{studentID}/{directionCode}/{programLanguage}/{difficultyLevelCode}/{dataStatus}", method = RequestMethod.GET)

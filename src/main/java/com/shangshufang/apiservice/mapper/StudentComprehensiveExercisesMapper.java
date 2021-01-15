@@ -9,11 +9,19 @@ import java.util.List;
 @Mapper
 public interface StudentComprehensiveExercisesMapper extends BaseMapper<StudentComprehensiveExercisesEntity> {
     int searchTotalCount(@Param("programLanguage") int programLanguage,
+                         @Param("universityCode") int universityCode,
+                         @Param("schoolID") int schoolID,
+                         @Param("majorID") int majorID,
+                         @Param("fullName") String fullName,
                          @Param("dataStatus") String dataStatus);
 
     List<StudentComprehensiveExercisesEntity> searchList(@Param("startIndex") int startIndex,
                                                          @Param("pageSize") int pageSize,
                                                          @Param("programLanguage") int programLanguage,
+                                                         @Param("universityCode") int universityCode,
+                                                         @Param("schoolID") int schoolID,
+                                                         @Param("majorID") int majorID,
+                                                         @Param("fullName") String fullName,
                                                          @Param("dataStatus") String dataStatus);
 
     int searchTotalCount4Student(@Param("studentID") int studentID,
