@@ -15,11 +15,8 @@
         <result column="exam_type" property="examType" jdbcType="VARCHAR"/>
         <result column="exam_type_text" property="examTypeText" jdbcType="VARCHAR"/>
         <result column="exercises_title" property="exercisesTitle" jdbcType="VARCHAR"/>
-
         <result column="exam_knowledge" property="examKnowledge" jdbcType="VARCHAR"/>
         <result column="exercises_content" property="exercisesContent" jdbcType="VARCHAR"/>
-
-
         <result column="difficulty_level" property="difficultyLevel" jdbcType="VARCHAR"/>
         <result column="difficulty_level_text" property="difficultyLevelText" jdbcType="VARCHAR"/>
         <result column="program_language" property="programLanguage" jdbcType="VARCHAR"/>
@@ -163,6 +160,7 @@
                a.program_language,
                b.language_name                                 AS program_language_name,
                a.git_url,
+               a.review_memo,
                a.data_status,
                CASE
                    WHEN a.data_status = 'P' THEN '待批改'
