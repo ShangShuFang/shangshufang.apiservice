@@ -28,7 +28,7 @@
     SELECT
     COUNT(1) AS TotalCount
     FROM shangshufang_customer.university_student
-    WHERE 1 = 1
+    WHERE cellphone NOT IN ('15353752299', '18182505299', '18100000011', '18100000004', '18100000001', '13000000002', '13000000001','13000000000')
     <if test="arg0 != 0">
       AND university_code = #{arg0,jdbcType=INTEGER}
     </if>
@@ -54,7 +54,9 @@
       A.enrollment_year,
       A.cellphone,
       A.email,
-      A.photo
+      A.photo,
+      DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+      DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
     FROM shangshufang_customer.university_student A
     LEFT JOIN shangshufang_customer.university B
     ON A.university_code = B.university_code
@@ -65,20 +67,19 @@
     ON a.university_code = d.university_code
     AND a.school_id = c.school_id
     AND a.major_id = d.major_id
-    <where>
-      <if test="universityCode != 0">
-        a.university_code = #{universityCode,jdbcType=INTEGER}
-      </if>
-      <if test="schoolID != 0">
-        AND a.school_id = #{schoolID,jdbcType=INTEGER}
-      </if>
-      <if test="majorID != 0">
-        AND a.major_id = #{majorID,jdbcType=INTEGER}
-      </if>
-      <if test="fullName != null">
-        AND a.full_name LIKE #{fullName,jdbcType=VARCHAR}
+    WHERE a.cellphone NOT IN ('15353752299', '18182505299', '18100000011', '18100000004', '18100000001', '13000000002', '13000000001','13000000000')
+    <if test="universityCode != 0">
+      AND a.university_code = #{universityCode,jdbcType=INTEGER}
     </if>
-    </where>
+    <if test="schoolID != 0">
+      AND a.school_id = #{schoolID,jdbcType=INTEGER}
+    </if>
+    <if test="majorID != 0">
+      AND a.major_id = #{majorID,jdbcType=INTEGER}
+    </if>
+    <if test="fullName != null">
+      AND a.full_name LIKE #{fullName,jdbcType=VARCHAR}
+    </if>
     ORDER BY A.update_time DESC
     LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
