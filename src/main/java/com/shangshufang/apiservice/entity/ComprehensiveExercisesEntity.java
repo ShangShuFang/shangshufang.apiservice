@@ -12,4 +12,5 @@ public class ComprehensiveExercisesEntity extends BaseEntity {
     private String examTypeText;
     private int difficultyLevel;
     private String difficultyLevelText;
+    private String documentUrl;
 }

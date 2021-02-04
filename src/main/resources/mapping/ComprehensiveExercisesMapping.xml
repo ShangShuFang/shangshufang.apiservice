@@ -5,6 +5,7 @@
         <id column="exercises_id" property="exercisesID" jdbcType="INTEGER"/>
         <result column="exercises_title" property="exercisesTitle" jdbcType="VARCHAR"/>
         <result column="exercises_content" property="exercisesDescription" jdbcType="VARCHAR"/>
+        <result column="document_url" property="documentUrl" jdbcType="VARCHAR"/>
         <result column="exam_knowledge" property="examKnowledge" jdbcType="VARCHAR"/>
         <result column="exam_type" property="examType" jdbcType="INTEGER"/>
         <result column="exam_type_text" property="examTypeText" jdbcType="VARCHAR"/>
@@ -38,6 +39,7 @@
         SELECT a.exercises_id,
             a.exercises_title,
             a.exercises_content,
+            a.document_url,
             a.exam_knowledge,
             a.exam_type,
             CASE WHEN a.exam_type = '1' THEN '服务端'
@@ -88,6 +90,7 @@
         SELECT a.exercises_id,
         a.exercises_title,
         a.exercises_content,
+        a.document_url,
         a.exam_knowledge,
         a.exam_type,
         CASE WHEN a.exam_type = '1' THEN '服务端'
@@ -130,6 +133,7 @@
             (
                 exercises_title,
                 exercises_content,
+                document_url,
                 exam_knowledge,
                 exam_type,
                 difficulty_level,
@@ -140,6 +144,7 @@
                (
                     #{exercisesTitle, jdbcType=VARCHAR},
                     #{exercisesDescription, jdbcType=VARCHAR},
+                    #{documentUrl, jdbcType=VARCHAR},
                     #{examKnowledge, jdbcType=VARCHAR},
                     #{examType, jdbcType=INTEGER},
                     #{difficultyLevel, jdbcType=INTEGER},
@@ -152,6 +157,7 @@
         UPDATE shangshufang_base.comprehensive_exercises
         SET exercises_title = #{exercisesTitle,jdbcType=VARCHAR},
             exercises_content = #{exercisesDescription,jdbcType=VARCHAR},
+            document_url = #{documentUrl,jdbcType=VARCHAR},
             exam_knowledge = #{examKnowledge,jdbcType=VARCHAR},
             exam_type = #{examType,jdbcType=INTEGER},
             difficulty_level = #{difficultyLevel,jdbcType=INTEGER},

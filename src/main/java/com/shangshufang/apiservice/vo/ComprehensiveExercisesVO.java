@@ -12,4 +12,5 @@ public class ComprehensiveExercisesVO extends BaseVO {
     private String examTypeText;
     private int difficultyLevel;
     private String difficultyLevelText;
+    private String documentUrl;
 }

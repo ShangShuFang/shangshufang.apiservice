@@ -10,4 +10,5 @@ public class ComprehensiveExercisesDTO extends BaseDTO {
     private String examKnowledge;
     private int examType;
     private int difficultyLevel;
+    private String documentUrl;
 }
