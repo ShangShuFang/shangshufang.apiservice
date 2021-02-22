@@ -20,6 +20,8 @@ public class StudentAbilityAnalysisVO {
     private int technologyID;
     private int languageID;
     private String technologyName;
+    private String technologyThumbnailSquare;
+    private String technologyThumbnailRectangle;
     private int knowledgeTotalCount;
     private int finishedKnowledgeCount;
     private float finishedKnowledgePercent;

@@ -75,4 +75,14 @@ public class AnalysisAbilityController {
                                                        @PathVariable("technologyID") int technologyID) {
         return serviceImpl.findNoLearningKnowledgeList(pageNumber, pageSize, studentID, technologyID);
     }
+
+    @RequestMapping(value = "/list/comprehensive/analysis/{studentID}", method = RequestMethod.GET)
+    public UnifiedResponse selectComprehensiveExercisesAnalysisList(@PathVariable("studentID") int studentID) {
+        return serviceImpl.selectComprehensiveExercisesAnalysisList(studentID);
+    }
+
+    @RequestMapping(value = "/list/comprehensive/submit/{studentID}", method = RequestMethod.GET)
+    public UnifiedResponse selectComprehensiveExercisesSubmitList(@PathVariable("studentID") int studentID) {
+        return serviceImpl.selectComprehensiveExercisesSubmitList(studentID);
+    }
 }

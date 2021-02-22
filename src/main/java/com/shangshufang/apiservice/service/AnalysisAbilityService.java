@@ -38,5 +38,9 @@ public interface AnalysisAbilityService {
                                                 int studentID,
                                                 int technologyID);
 
+    UnifiedResponse selectComprehensiveExercisesAnalysisList(int studentID);
 
+    UnifiedResponse selectComprehensiveExercisesSubmitList(int studentID);
+
+    UnifiedResponse searchComprehensiveExercisesKnowledgeAnalysis(int studentID, int technologyID);
 }

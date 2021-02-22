@@ -15,6 +15,8 @@
         <result column="photo" property="studentPhoto" jdbcType="VARCHAR"/>
         <result column="cellphone" property="studentCellphone" jdbcType="VARCHAR"/>
         <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
+        <result column="technology_thumbnail_square" property="technologyThumbnailSquare" jdbcType="VARCHAR"/>
+        <result column="technology_thumbnail_rectangle" property="technologyThumbnailRectangle" jdbcType="VARCHAR"/>
         <result column="language_id" property="languageID" jdbcType="INTEGER"/>
         <result column="technology_name" property="technologyName" jdbcType="VARCHAR"/>
         <result column="finish_knowledge_count" property="finishedKnowledgeCount" jdbcType="INTEGER"/>
@@ -34,6 +36,8 @@
         <result column="university_name" property="universityName" jdbcType="VARCHAR"/>
         <result column="school_id" property="schoolID" jdbcType="INTEGER"/>
         <result column="school_name" property="schoolName" jdbcType="VARCHAR"/>
+        <result column="major_id" property="majorID" jdbcType="INTEGER"/>
+        <result column="major_name" property="majorName" jdbcType="VARCHAR"/>
         <result column="student_id" property="studentID" jdbcType="INTEGER"/>
         <result column="full_name" property="fullName" jdbcType="VARCHAR"/>
         <result column="sex" property="sex" jdbcType="VARCHAR"/>
@@ -51,8 +55,6 @@
         <result column="code_standard_name" property="codeStandardName" jdbcType="VARCHAR"/>
         <result column="total_count" property="totalCount" jdbcType="INTEGER"/>
     </resultMap>
-
-
 
     <!-- region 学生能力批量分析 -->
     <select id="searchDataSource4Base" resultMap="StudentAbilityAnalysisResultMap">
@@ -300,6 +302,8 @@
                c.university_name,
                b.school_id,
                d.school_name,
+               b.major_id,
+               m.major_name,
                a.student_id,
                b.full_name,
                b.sex,
@@ -313,11 +317,15 @@
         FROM shangshufang_customer.university_student_ability_analysis a
             LEFT JOIN shangshufang_customer.university_student b
                 ON a.student_id = b.student_id
-            INNER JOIN shangshufang_customer.university c
+            LEFT JOIN shangshufang_customer.university c
                 ON b.university_code = c.university_code
-            INNER JOIN shangshufang_customer.school d
+            LEFT JOIN shangshufang_customer.school d
                 ON b.university_code = d.university_code
                 AND b.school_id = d.school_id
+            LEFT JOIN shangshufang_customer.major m
+                ON b.university_code = m.university_code
+                AND b.school_id = m.school_id
+                AND b.major_id = m.major_id
             LEFT JOIN
              (
                  SELECT questioner_university_code,
@@ -354,6 +362,8 @@
                a.technology_id,
                b.language_id,
                b.technology_name,
+               b.technology_thumbnail_square,
+               b.technology_thumbnail_rectangle,
                a.finish_knowledge_count,
                a.finish_knowledge_percent,
                a.position_site,
@@ -364,8 +374,6 @@
                             ON a.technology_id = b.technology_id
         WHERE student_id = #{studentID,jdbcType=INTEGER};
     </select>
-
-
 
     <!--endregion-->
 

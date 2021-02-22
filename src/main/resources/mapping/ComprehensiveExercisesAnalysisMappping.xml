@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.ComprehensiveExercisesAnalysisMapper">
+    <resultMap id="ComprehensiveExercisesAnalysisMap" type="com.shangshufang.apiservice.entity.ComprehensiveExercisesAnalysisEntity">
+        <id column="technology_id" property="technologyID" jdbcType="INTEGER"/>
+        <result column="technology_name" property="technologyName" jdbcType="VARCHAR"/>
+        <result column="total_count" property="totalCount" jdbcType="INTEGER"/>
+        <result column="submit_total_count" property="submitTotalCount" jdbcType="INTEGER"/>
+        <result column="correct_total_count" property="correctTotalCount" jdbcType="INTEGER"/>
+        <result column="error_total_count" property="errorTotalCount" jdbcType="INTEGER"/>
+        <result column="un_submit_total_count" property="unSubmitTotalCount" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="ComprehensiveExercisesKnowledgeAnalysisMap" type="com.shangshufang.apiservice.entity.ComprehensiveExercisesKnowledgeAnalysisEntity">
+        <id column="analysis_id" property="analysisID" jdbcType="INTEGER"/>
+        <result column="student_id" property="studentID" jdbcType="INTEGER"/>
+        <result column="language_id" property="languageID" jdbcType="INTEGER"/>
+        <result column="language_name" property="languageName" jdbcType="VARCHAR"/>
+        <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
+        <result column="technology_name" property="technologyName" jdbcType="VARCHAR"/>
+        <result column="knowledge_id" property="knowledgeID" jdbcType="INTEGER"/>
+        <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR"/>
+        <result column="result" property="result" jdbcType="VARCHAR"/>
+        <result column="result_text" property="resultText" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="ComprehensiveSubmitMap" type="com.shangshufang.apiservice.entity.MapEntity">
+        <id column="submit_date" property="key" jdbcType="VARCHAR"/>
+        <result column="submit_count" property="value" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="searchComprehensiveExercisesAnalysis" resultMap="ComprehensiveExercisesAnalysisMap">
+        SELECT a.technology_id,
+               a.technology_name,
+               a.total_count,
+               IFNULL(b.submit_total_count, 0) AS submit_total_count,
+               IFNULL(c.correct_total_count, 0) AS correct_total_count,
+               IFNULL(d.error_total_count, 0) AS error_total_count,
+               a.total_count - IFNULL(b.submit_total_count, 0) AS un_submit_total_count
+        FROM
+            (
+                SELECT a.technology_id, b.technology_name, COUNT(1) AS total_count
+                FROM shangshufang_base.comprehensive_exercises a
+                         LEFT JOIN shangshufang_base.technology b
+                                   ON a.technology_id = b.technology_id
+                WHERE a.technology_id != 0
+                GROUP BY a.technology_id
+            ) a
+                LEFT JOIN
+            (
+                SELECT technology_id, COUNT(1) AS submit_total_count
+                FROM shangshufang_customer.student_comprehensive_exercises
+                WHERE student_id = #{studentID,jdbcType=INTEGER}
+                GROUP BY technology_id
+            ) b
+            ON a.technology_id = b.technology_id
+                LEFT JOIN
+            (
+                SELECT technology_id, COUNT(1) AS correct_total_count
+                FROM shangshufang_customer.student_comprehensive_exercises
+                WHERE student_id = #{studentID,jdbcType=INTEGER}
+                  AND data_status = 'Y'
+                GROUP BY technology_id
+            ) c
+            ON a.technology_id = c.technology_id
+                LEFT JOIN
+            (
+                SELECT technology_id, COUNT(1) AS error_total_count
+                FROM shangshufang_customer.student_comprehensive_exercises
+                WHERE student_id = #{studentID,jdbcType=INTEGER}
+                  AND data_status = 'N'
+                GROUP BY technology_id
+            ) d
+            ON a.technology_id = d.technology_id
+        ORDER BY total_count DESC;
+    </select>
+
+    <select id="searchComprehensiveExercisesKnowledgeAnalysis" resultMap="ComprehensiveExercisesKnowledgeAnalysisMap">
+        SELECT a.analysis_id,
+               a.student_id,
+               a.language_id,
+               b.language_name,
+               a.technology_id,
+               c.technology_name,
+               a.knowledge_id,
+               d.knowledge_name,
+               a.result,
+               CASE
+                   WHEN a.result = 'Y' THEN '已掌握'
+                   WHEN a.result = 'N' THEN '未掌握'
+                   ELSE '未知状态'
+                   END AS result_text
+        FROM shangshufang_customer.comprehensive_exercises_analysis a
+                 LEFT JOIN shangshufang_base.programming_language b
+                           ON a.language_id = b.language_id
+                 LEFT JOIN shangshufang_base.technology c
+                           ON a.technology_id = c.technology_id
+                               AND a.language_id = c.language_id
+                 LEFT JOIN shangshufang_base.technology_knowledge d
+                           ON a.technology_id = d.technology_id
+                               AND a.knowledge_id = d.knowledge_id
+        WHERE student_id = #{studentID,jdbcType=INTEGER}
+          AND a.technology_id = #{technologyID,jdbcType=INTEGER}
+        ORDER BY a.result;
+    </select>
+
+    <select id="selectComprehensiveExercisesSubmit" resultMap="ComprehensiveSubmitMap">
+        SELECT date_format(create_time, '%Y-%m-%d') submit_date,
+               count(1) as                          submit_count
+        FROM shangshufang_customer.student_comprehensive_exercises
+        WHERE student_id = #{studentID,jdbcType=INTEGER}
+        GROUP BY date_format(create_time, '%Y-%m-%d');
+    </select>
+
+</mapper>

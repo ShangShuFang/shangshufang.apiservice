@@ -11,4 +11,12 @@
     language_name
     FROM shangshufang_base.programming_language;
   </select>
+
+  <select id="searchListByDirection" resultMap="BaseResultMap">
+    SELECT
+      language_id,
+      language_name
+    FROM shangshufang_base.programming_language
+    WHERE direction_id = #{directionID,jdbcType=INTEGER} ;
+  </select>
 </mapper>

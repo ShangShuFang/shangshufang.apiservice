@@ -20,6 +20,10 @@ public class StudentAbilityAnalysisEntity extends BaseEntity {
     private int technologyID;
     private int languageID;
     private String technologyName;
+
+    private String technologyThumbnailSquare;
+    private String technologyThumbnailRectangle;
+
     private int finishedKnowledgeCount;
     private float finishedKnowledgePercent;
     private int finishedUnitExercisesCount;

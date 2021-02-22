@@ -23,6 +23,8 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
     @Autowired
     private AnalysisAbilityMapper myMapper;
     @Autowired
+    private TechnologyMapper technologyMapper;
+    @Autowired
     private TechnologyKnowledgeMapper knowledgeMapper;
     @Autowired
     private CourseSignUpMapper signUpMapper;
@@ -30,6 +32,12 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
     private CourseMapper courseMapper;
     @Autowired
     private StudentCourseExercisesDetailMapper courseExercisesDetailMapper;
+    
+    @Autowired
+    private ComprehensiveExercisesAnalysisMapper comprehensiveExercisesAnalysisMapper;
+    
+    @Autowired
+    private ProgrammingLanguageMapper programmingLanguageMapper;
 
     private final Logger logger = LogManager.getLogger(AnalysisAbilityServiceImpl.class);
 
@@ -249,6 +257,84 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
                 modelList.add(model);
             }
             return UnifiedResponseManager.buildSearchSuccessResponse(noLearnKnowledgeCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse selectComprehensiveExercisesAnalysisList(int studentID) {
+        try {
+            //取得热门技术测评题数量以及学生提交的数量
+            List<ComprehensiveExercisesAnalysisVO> modelList = new ArrayList<>();
+            List<ComprehensiveExercisesAnalysisEntity> entityList =
+                    comprehensiveExercisesAnalysisMapper.searchComprehensiveExercisesAnalysis(studentID);
+            if (entityList.isEmpty()) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            for (ComprehensiveExercisesAnalysisEntity entity : entityList) {
+                ComprehensiveExercisesAnalysisVO model = new ComprehensiveExercisesAnalysisVO();
+                ObjectConvertUtils.toBean(entity, model);
+                //取得每个热门技术测评题涉及的知识点分析情况
+                List<ComprehensiveExercisesKnowledgeAnalysisVO> knowledgeAnalysisModelList = new ArrayList<>();
+                List<ComprehensiveExercisesKnowledgeAnalysisEntity> knowledgeAnalysisEntityList =
+                        comprehensiveExercisesAnalysisMapper.searchComprehensiveExercisesKnowledgeAnalysis(studentID, entity.getTechnologyID());
+//                if (knowledgeAnalysisEntityList.isEmpty()) {
+//                    continue;
+//                }
+                for (ComprehensiveExercisesKnowledgeAnalysisEntity KnowledgeAnalysisEntity : knowledgeAnalysisEntityList) {
+                    ComprehensiveExercisesKnowledgeAnalysisVO knowledgeAnalysisModel = new ComprehensiveExercisesKnowledgeAnalysisVO();
+                    ObjectConvertUtils.toBean(KnowledgeAnalysisEntity, knowledgeAnalysisModel);
+                    knowledgeAnalysisModelList.add(knowledgeAnalysisModel);
+                }
+                model.setKnowledgeAnalysisVOList(knowledgeAnalysisModelList);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse selectComprehensiveExercisesSubmitList(int studentID) {
+        try {
+            List<MapVO> modelList = new ArrayList<>();
+            List<MapEntity> entityList =
+                    comprehensiveExercisesAnalysisMapper.selectComprehensiveExercisesSubmit(studentID);
+            if (entityList.isEmpty()) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            for (MapEntity entity : entityList) {
+                MapVO model = new MapVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse searchComprehensiveExercisesKnowledgeAnalysis(int studentID, int technologyID) {
+        try {
+            List<ComprehensiveExercisesKnowledgeAnalysisVO> modelList = new ArrayList<>();
+            List<ComprehensiveExercisesKnowledgeAnalysisEntity> entityList =
+                    comprehensiveExercisesAnalysisMapper.searchComprehensiveExercisesKnowledgeAnalysis(studentID, technologyID);
+            if (entityList.isEmpty()) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            for (ComprehensiveExercisesKnowledgeAnalysisEntity entity : entityList) {
+                ComprehensiveExercisesKnowledgeAnalysisVO model = new ComprehensiveExercisesKnowledgeAnalysisVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
         } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();
