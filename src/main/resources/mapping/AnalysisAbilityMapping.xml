@@ -210,29 +210,28 @@
         ON a.student_id = b.student_id
         INNER JOIN shangshufang_base.technology c
         ON a.technology_id = c.technology_id
-        <where>
-            <if test="directionID != 0">
-                c.direction_id = #{directionID,jdbcType=INTEGER}
-            </if>
-            <if test="categoryID != 0">
-                AND c.category_id = #{categoryID,jdbcType=INTEGER}
-            </if>
-            <if test="technologyID != 0">
-                AND c.technology_id = #{technologyID,jdbcType=INTEGER}
-            </if>
-            <if test="universityCode != 0">
-                AND b.university_code = #{universityCode,jdbcType=INTEGER}
-            </if>
-            <if test="schoolID != 0">
-                AND b.school_id = #{schoolID,jdbcType=INTEGER}
-            </if>
-            <if test="studentName != null">
-                AND b.full_name = #{studentName,jdbcType=VARCHAR}
-            </if>
-            <if test="studentID != 0">
-                AND a.student_id != #{studentID,jdbcType=INTEGER}
-            </if>
-        </where>;
+        WHERE b.cellphone NOT IN ('15353752299', '18182505299', '18100000011', '18100000004', '18100000001', '13000000002', '13000000001','13000000000')
+        <if test="directionID != 0">
+            AND c.direction_id = #{directionID,jdbcType=INTEGER}
+        </if>
+        <if test="categoryID != 0">
+            AND c.category_id = #{categoryID,jdbcType=INTEGER}
+        </if>
+        <if test="technologyID != 0">
+            AND c.technology_id = #{technologyID,jdbcType=INTEGER}
+        </if>
+        <if test="universityCode != 0">
+            AND b.university_code = #{universityCode,jdbcType=INTEGER}
+        </if>
+        <if test="schoolID != 0">
+            AND b.school_id = #{schoolID,jdbcType=INTEGER}
+        </if>
+        <if test="studentName != null">
+            AND b.full_name = #{studentName,jdbcType=VARCHAR}
+        </if>
+        <if test="studentID != 0">
+            AND a.student_id != #{studentID,jdbcType=INTEGER}
+        </if>;
     </select>
 
     <select id="searchStudentAbilityList" resultMap="StudentAbilityAnalysisResultMap">
@@ -268,29 +267,28 @@
         AND b.major_id = e.major_id
         INNER JOIN shangshufang_base.technology f
         ON a.technology_id = f.technology_id
-        <where>
-            <if test="directionID != 0">
-                f.direction_id = #{directionID,jdbcType=INTEGER}
-            </if>
-            <if test="categoryID != 0">
-                AND f.category_id = #{categoryID,jdbcType=INTEGER}
-            </if>
-            <if test="technologyID != 0">
-                AND a.technology_id = #{technologyID,jdbcType=INTEGER}
-            </if>
-            <if test="universityCode != 0">
-                AND b.university_code = #{universityCode,jdbcType=INTEGER}
-            </if>
-            <if test="schoolID != 0">
-                AND b.school_id = #{schoolID,jdbcType=INTEGER}
-            </if>
-            <if test="studentName != null">
-                AND b.full_name = #{studentName,jdbcType=VARCHAR}
-            </if>
-            <if test="studentID != 0">
-                AND a.student_id != #{studentID,jdbcType=INTEGER}
-            </if>
-        </where>
+        WHERE b.cellphone NOT IN ('15353752299', '18182505299', '18100000011', '18100000004', '18100000001', '13000000002', '13000000001','13000000000')
+        <if test="directionID != 0">
+            AND f.direction_id = #{directionID,jdbcType=INTEGER}
+        </if>
+        <if test="categoryID != 0">
+            AND f.category_id = #{categoryID,jdbcType=INTEGER}
+        </if>
+        <if test="technologyID != 0">
+            AND a.technology_id = #{technologyID,jdbcType=INTEGER}
+        </if>
+        <if test="universityCode != 0">
+            AND b.university_code = #{universityCode,jdbcType=INTEGER}
+        </if>
+        <if test="schoolID != 0">
+            AND b.school_id = #{schoolID,jdbcType=INTEGER}
+        </if>
+        <if test="studentName != null">
+            AND b.full_name = #{studentName,jdbcType=VARCHAR}
+        </if>
+        <if test="studentID != 0">
+            AND a.student_id != #{studentID,jdbcType=INTEGER}
+        </if>
         ORDER BY a.position_site DESC
         LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
     </select>
