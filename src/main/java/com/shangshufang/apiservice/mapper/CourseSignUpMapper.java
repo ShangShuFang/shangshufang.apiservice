@@ -19,9 +19,15 @@ public interface CourseSignUpMapper extends BaseMapper<CourseSignUpEntity> {
                                                        @Param("schoolID") int schoolID,
                                                        @Param("courseID") int courseID);
 
-    int searchStudentSignUpTotalCount(int universityCode, int schoolID, int studentID);
+    int searchStudentSignUpTotalCount(@Param("universityCode") int universityCode,
+                                      @Param("schoolID") int schoolID,
+                                      @Param("studentID") int studentID);
 
-    List<CourseSignUpEntity> searchStudentSignUpList(int startIndex, int pageSize, int universityCode, int schoolID, int studentID);
+    List<CourseSignUpEntity> searchStudentSignUpList(@Param("startIndex") int startIndex,
+                                                     @Param("pageSize") int pageSize,
+                                                     @Param("universityCode") int universityCode,
+                                                     @Param("schoolID") int schoolID,
+                                                     @Param("studentID") int studentID);
 
     int searchTechnologyCourseSignUpTotalCount(int technologyID);
 

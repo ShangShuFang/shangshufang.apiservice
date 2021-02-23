@@ -30,6 +30,56 @@
         <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
     </resultMap>
+    <resultMap id="TechnologyResultMap" type="com.shangshufang.apiservice.entity.TechnologyEntity">
+        <id column="technology_id" property="technologyID" jdbcType="INTEGER" />
+        <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
+    </resultMap>
+    <resultMap id="KnowledgeResultMap" type="com.shangshufang.apiservice.entity.TechnologyKnowledgeEntity">
+        <id column="knowledge_id" property="knowledgeID" jdbcType="INTEGER"/>
+        <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
+        <result column="technology_name" property="technologyName" jdbcType="VARCHAR"/>
+        <result column="knowledge_name" property="knowledgeName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="searchTechnologyList" resultMap="TechnologyResultMap">
+        SELECT a.technology_id,
+               b.technology_name
+        FROM
+            (
+                SELECT DISTINCT technology_id
+                FROM shangshufang_customer.student_comprehensive_exercises a
+                WHERE student_id = #{studentID,jdbcType=INTEGER}
+            ) a
+                LEFT JOIN shangshufang_base.technology b
+                          ON a.technology_id = b.technology_id;
+    </select>
+    <select id="searchLearnedKnowledgeList" resultMap="KnowledgeResultMap">
+        SELECT a.technology_id,
+               b.technology_name,
+               a.knowledge_id,
+               c.knowledge_name
+        FROM shangshufang_customer.comprehensive_exercises_analysis a
+                 LEFT JOIN shangshufang_base.technology b
+                           ON a.technology_id = b.technology_id
+                               AND a.language_id = b.language_id
+                 LEFT JOIN shangshufang_base.technology_knowledge c
+                           ON a.technology_id = c.technology_id
+                               AND a.knowledge_id = c.knowledge_id
+        WHERE student_id = #{studentID,jdbcType=INTEGER}
+          AND a.technology_id = #{technologyID,jdbcType=INTEGER}
+          AND a.result = 'Y';
+    </select>
+
+    <select id="searchLearnedKnowledgeTotalCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) AS total_count
+        FROM shangshufang_customer.comprehensive_exercises_analysis
+        WHERE student_id = #{studentID,jdbcType=INTEGER}
+          AND technology_id = #{technologyID,jdbcType=INTEGER}
+          AND result = 'Y';
+    </select>
+
+
+
 
     <select id="searchTotalCount" resultType="java.lang.Integer">
         SELECT COUNT(1) AS total_count
@@ -197,6 +247,17 @@
         <if test="dataStatus != null">
             AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
         </if>;
+    </select>
+
+    <select id="searchTotalCountWithTechnology" resultType="java.lang.Integer">
+        SELECT COUNT(1) AS total_count
+        FROM shangshufang_customer.student_comprehensive_exercises a
+        LEFT JOIN shangshufang_base.programming_language b
+        ON a.program_language = b.language_id
+        LEFT JOIN shangshufang_base.comprehensive_exercises c
+        ON a.exercises_id = c.exercises_id
+        WHERE a.student_id = #{studentID, jdbcType=INTEGER}
+        AND a.technology_id = #{technologyID,jdbcType=VARCHAR};
     </select>
 
     <select id="searchList4Student" resultMap="BaseResultMap">

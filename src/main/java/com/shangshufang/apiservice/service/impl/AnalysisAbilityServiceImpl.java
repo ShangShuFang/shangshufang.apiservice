@@ -16,14 +16,16 @@ import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
     @Autowired
     private AnalysisAbilityMapper myMapper;
     @Autowired
-    private TechnologyMapper technologyMapper;
+    private UniversityStudentMapper studentMapper;
     @Autowired
     private TechnologyKnowledgeMapper knowledgeMapper;
     @Autowired
@@ -31,13 +33,11 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
     @Autowired
     private CourseMapper courseMapper;
     @Autowired
+    private StudentComprehensiveExercisesMapper studentComprehensiveExercisesMapper;
+    @Autowired
     private StudentCourseExercisesDetailMapper courseExercisesDetailMapper;
-    
     @Autowired
     private ComprehensiveExercisesAnalysisMapper comprehensiveExercisesAnalysisMapper;
-    
-    @Autowired
-    private ProgrammingLanguageMapper programmingLanguageMapper;
 
     private final Logger logger = LogManager.getLogger(AnalysisAbilityServiceImpl.class);
 
@@ -78,6 +78,13 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
             for (StudentAbilityAnalysisEntity entity : entityList) {
                 StudentAbilityAnalysisVO model = new StudentAbilityAnalysisVO();
                 ObjectConvertUtils.toBean(entity, model);
+                //查询完成的就业测评的数量
+                int comprehensiveExercisesCount =
+                        studentComprehensiveExercisesMapper.searchTotalCountWithTechnology(
+                                entity.getStudentID(),
+                                entity.getTechnologyID());
+                model.setFinishedUnitExercisesCount(comprehensiveExercisesCount);
+
                 modelList.add(model);
             }
             return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
@@ -106,12 +113,29 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
     @Override
     public UnifiedResponse findLearningTechnologyList(int studentID) {
         try {
+            final int startIndex = 0;
+            final int pageSize = 9999;
+            final int universityCode = 0;
+            final int schoolID = 0;
             List<StudentAbilityAnalysisVO> modelList = new ArrayList<>();
-            List<StudentAbilityAnalysisEntity> entityList = myMapper.searchLearningTechnologyList(studentID);
-            if (entityList.isEmpty()) {
+            List<CourseSignUpEntity> signCourseEntityList =
+                    signUpMapper.searchStudentSignUpList(startIndex, pageSize, universityCode, schoolID, studentID);
+            if (signCourseEntityList.isEmpty()) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            for (StudentAbilityAnalysisEntity entity : entityList) {
+            List<Integer> technologyList =
+                    signCourseEntityList.stream()
+                            .map(CourseSignUpEntity::getTechnologyID)
+                            .collect(Collectors.toList())
+                            .stream()
+                            .distinct()
+                            .collect(Collectors.toList());
+
+            for (Integer technologyID : technologyList) {
+                StudentAbilityAnalysisEntity entity = myMapper.searchLearningTechnology(studentID, technologyID);
+                if (entity == null) {
+                    continue;
+                }
                 StudentAbilityAnalysisVO model = new StudentAbilityAnalysisVO();
                 ObjectConvertUtils.toBean(entity, model);
                 modelList.add(model);
@@ -346,66 +370,43 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
         int affectCount = 0;
         int pageNumber = 1;
         final int PAGE_SIZE = 10;
-        DecimalFormat df = new DecimalFormat("0.00");
+        final int UNIVERSITY_CODE = 0;
+        final int SCHOOL_ID = 0;
+        final int MAJOR_ID = 0;
+        final String FULL_NAME = null;
 
         while (true) {
             int startIndex = (pageNumber - 1) * PAGE_SIZE;
-            List<CourseSignUpEntity> signUpEntityList = signUpMapper.searchAllStudent(startIndex, PAGE_SIZE);
-            if (signUpEntityList.isEmpty()) {
+            List<UniversityStudentEntity> studentEntityList =
+                    studentMapper.searchList(startIndex, PAGE_SIZE, UNIVERSITY_CODE, SCHOOL_ID, MAJOR_ID, FULL_NAME);
+            if (studentEntityList.isEmpty()) {
                 break;
             }
-            for (CourseSignUpEntity signUpEntity : signUpEntityList) {
+            for (UniversityStudentEntity studentEntity : studentEntityList) {
                 try {
                     StudentAbilityAnalysisEntity entity = new StudentAbilityAnalysisEntity();
-                    ObjectConvertUtils.toBean(signUpEntity, entity);
-                    //region 取得当前学生所报名课程的详细信息（包含对应的技术）
-                    CourseEntity courseEntity = courseMapper.search(
-                            signUpEntity.getCourseUniversityCode(),
-                            signUpEntity.getCourseSchoolID(),
-                            signUpEntity.getCourseID(),
-                            null);
-                    ObjectConvertUtils.toBean(courseEntity, entity);
+                    ObjectConvertUtils.toBean(studentEntity, entity);
+
+                    //region 查询参与课程的数量以及完成就业测评数量
+                    final int directionCode = 0;
+                    final int programLanguage = 0;
+                    final int difficultyLevelCode = 0;
+                    final String dataStatus = null;
+                    int courseSignCount = signUpMapper.searchStudentSignUpTotalCount(UNIVERSITY_CODE, SCHOOL_ID, entity.getStudentID());
+                    int comprehensiveExercisesCount = studentComprehensiveExercisesMapper.searchTotalCount4Student(entity.getStudentID(), directionCode, programLanguage, difficultyLevelCode, dataStatus);
+                    if (courseSignCount == 0 && comprehensiveExercisesCount == 0) {
+                        continue;
+                    }
+                    entity.setJoinedProjectCount(0);//todo 设置参与的项目数量
                     //endregion
 
-                    //region 取得当前技术的知识点总数量
-                    int learningPhaseID = 0;
-                    int knowledgeTotalCount = knowledgeMapper.searchTotalCount(
-                            courseEntity.getTechnologyID(), learningPhaseID, DataStatusConstant.ACTIVE);
-                    //endregion
-
-                    //region 取得当前学生已掌握的知识点数量及占比
-                    int learnedKnowledgeCount = courseExercisesDetailMapper.searchLearnedKnowledgeTotalCount(signUpEntity.getStudentID(), courseEntity.getTechnologyID());
-                    float finishKnowledgeRate = Float.parseFloat(df.format((float) learnedKnowledgeCount / knowledgeTotalCount));
-                    entity.setFinishedKnowledgeCount(learnedKnowledgeCount);
-                    entity.setFinishedKnowledgePercent(finishKnowledgeRate * 100);
-                    //endregion
-
-                    //region 取得当前学生已完成的该技术的综合练习
-                    int finishedUnitExercisesCount = 0;
-                    entity.setFinishedUnitExercisesCount(finishedUnitExercisesCount);
-                    //endregion
-
-                    //region 取得当前学生参与的与该技术有关的实战项目
-                    int joinedProjectCount = 0;
-                    entity.setJoinedProjectCount(joinedProjectCount);
-                    //endregion
-
-                    //region 取得该学生当前技术的能力级别
-                    String abilityLevel = getTechnologyLevel(finishKnowledgeRate, finishedUnitExercisesCount, joinedProjectCount);
-                    entity.setAbilityLevel(abilityLevel);
-                    //endregion
-
-                    //region 根据当前学生的数据，计算能力标准分
-                    double standardScore = calculateStandardScore(learnedKnowledgeCount, finishedUnitExercisesCount, joinedProjectCount);
-                    entity.setStandardScore(standardScore);
-                    //endregion
-
-                    //region 将已取得的分析结果保存到数据库
-                    int totalCount = myMapper.searchAbilityAnalysisTotalCount(entity.getStudentID(), entity.getTechnologyID());
-                    if (totalCount > 0) {
-                        affectCount += myMapper.update(entity);
-                    } else {
-                        affectCount += myMapper.insert(entity);
+                    //region 保存当前学生的能力分析结果
+                    if (courseSignCount > 0 && comprehensiveExercisesCount == 0) { //只参加了课程学习，没有提交就业测评
+                        affectCount += saveWithCourseExercisesOnly(entity);
+                    } else if (courseSignCount == 0 && comprehensiveExercisesCount > 0) {//没有参加课程学习，只提交了就业测评
+                        affectCount += saveWithComprehensiveExercisesOnly(entity);
+                    } else { //参加了课程学习并提交了就业测评
+                        affectCount += saveWithCourseAndComprehensiveExercises(entity);
                     }
                     //endregion
                 } catch (Exception ex) {
@@ -413,6 +414,230 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
                 }
             }
             pageNumber++;
+        }
+        return affectCount;
+    }
+
+    private int save(StudentAbilityAnalysisEntity entity) {
+        int affectCount = 0;
+        int totalCount = myMapper.searchAbilityAnalysisTotalCount(entity.getStudentID(), entity.getTechnologyID());
+        if (totalCount > 0) {
+            affectCount = myMapper.update(entity);
+        } else {
+            affectCount = myMapper.insert(entity);
+        }
+        return affectCount;
+    }
+
+    private int saveWithCourseExercisesOnly(StudentAbilityAnalysisEntity entity) {
+        int affectCount = 0;
+        final int signCourseStartIndex = 0;
+        final int signCoursePageNumber = 9999;
+        final int UNIVERSITY_CODE = 0;
+        final int SCHOOL_ID = 0;
+        final int LEARNING_PHASE_ID = 0;
+        DecimalFormat df = new DecimalFormat("0.00");
+
+        List<CourseSignUpEntity> courseSignUpEntityList =
+                signUpMapper.searchStudentSignUpList(
+                        signCourseStartIndex,
+                        signCoursePageNumber,
+                        UNIVERSITY_CODE,
+                        SCHOOL_ID,
+                        entity.getStudentID());
+
+        if (courseSignUpEntityList.isEmpty()) {
+            return 0;
+        }
+
+        for (CourseSignUpEntity courseSignUpEntity : courseSignUpEntityList) {
+            //region 取得当前技术的知识点总数量
+            int knowledgeTotalCount = knowledgeMapper.searchTotalCount(
+                    courseSignUpEntity.getTechnologyID(),
+                    LEARNING_PHASE_ID,
+                    DataStatusConstant.ACTIVE);
+            //endregion
+
+            entity.setTechnologyID(courseSignUpEntity.getTechnologyID());
+            //region 取得当前学生已掌握的知识点数量及占比
+            int learnedKnowledgeCount =
+                    courseExercisesDetailMapper.searchLearnedKnowledgeTotalCount(
+                            entity.getStudentID(),
+                            courseSignUpEntity.getTechnologyID());
+            float finishKnowledgeRate = Float.parseFloat(df.format((float) learnedKnowledgeCount / knowledgeTotalCount));
+            entity.setFinishedKnowledgeCount(learnedKnowledgeCount);
+            entity.setFinishedKnowledgePercent(finishKnowledgeRate * 100);
+            //endregion
+
+            //region 取得学生提交的就业测评的数量
+            int comprehensiveExercisesCount =
+                    studentComprehensiveExercisesMapper.searchTotalCountWithTechnology(
+                            entity.getStudentID(),
+                            courseSignUpEntity.getTechnologyID());
+            //endregion
+
+
+            //region 取得该学生当前技术的能力级别
+            String abilityLevel = getTechnologyLevel(finishKnowledgeRate, comprehensiveExercisesCount, entity.getJoinedProjectCount());
+            entity.setAbilityLevel(abilityLevel);
+            //endregion
+
+            //region 根据当前学生的数据，计算能力标准分
+            double standardScore = calculateStandardScore(learnedKnowledgeCount, comprehensiveExercisesCount, entity.getJoinedProjectCount());
+            entity.setStandardScore(standardScore);
+            //endregion
+
+            affectCount += save(entity);
+        }
+        return affectCount;
+    }
+
+    private int saveWithComprehensiveExercisesOnly(StudentAbilityAnalysisEntity entity) {
+        int affectCount = 0;
+        final int LEARNING_PHASE_ID = 0;
+        DecimalFormat df = new DecimalFormat("0.00");
+
+        List<TechnologyEntity> technologyEntityList = studentComprehensiveExercisesMapper.searchTechnologyList(entity.getStudentID());
+        if (technologyEntityList.isEmpty()) {
+            return 0;
+        }
+        for (TechnologyEntity technologyEntity : technologyEntityList) {
+            entity.setTechnologyID(technologyEntity.getTechnologyID());
+            //region 取得当前技术的知识点总数量
+            int knowledgeTotalCount = knowledgeMapper.searchTotalCount(
+                    technologyEntity.getTechnologyID(),
+                    LEARNING_PHASE_ID,
+                    DataStatusConstant.ACTIVE);
+            //endregion
+
+            //region 取得当前学生已掌握的知识点数量及占比
+            int learnedKnowledgeCount =
+                    studentComprehensiveExercisesMapper.searchLearnedKnowledgeTotalCount(
+                            entity.getStudentID(),
+                            technologyEntity.getTechnologyID());
+            float finishKnowledgeRate = Float.parseFloat(df.format((float) learnedKnowledgeCount / knowledgeTotalCount));
+            entity.setFinishedKnowledgeCount(learnedKnowledgeCount);
+            entity.setFinishedKnowledgePercent(finishKnowledgeRate * 100);
+            //endregion
+
+            //region 取得学生提交的就业测评的数量
+            int comprehensiveExercisesCount =
+                    studentComprehensiveExercisesMapper.searchTotalCountWithTechnology(
+                            entity.getStudentID(),
+                            technologyEntity.getTechnologyID());
+            //endregion
+
+            //region 取得该学生当前技术的能力级别
+            String abilityLevel = getTechnologyLevel(finishKnowledgeRate, comprehensiveExercisesCount, entity.getJoinedProjectCount());
+            entity.setAbilityLevel(abilityLevel);
+            //endregion
+
+            //region 根据当前学生的数据，计算能力标准分
+            double standardScore = calculateStandardScore(learnedKnowledgeCount, comprehensiveExercisesCount, entity.getJoinedProjectCount());
+            entity.setStandardScore(standardScore);
+            //endregion
+
+            affectCount += save(entity);
+        }
+        return affectCount;
+    }
+
+    private int saveWithCourseAndComprehensiveExercises(StudentAbilityAnalysisEntity entity) {
+        int affectCount = 0;
+        final int startIndex = 0;
+        final int pageSize = 9999;
+        final int signCourseStartIndex = 0;
+        final int signCoursePageNumber = 9999;
+        final int UNIVERSITY_CODE = 0;
+        final int LEARNING_PHASE_ID = 0;
+        final int SCHOOL_ID = 0;
+        DecimalFormat df = new DecimalFormat("0.00");
+        HashMap<Integer, List<Integer>> learnedKnowledgeMap = new HashMap<Integer, List<Integer>>();
+
+        //region 取得在课程学习中掌握的知识点
+        List<CourseSignUpEntity> courseSignUpEntityList =
+                signUpMapper.searchStudentSignUpList(
+                        signCourseStartIndex,
+                        signCoursePageNumber,
+                        UNIVERSITY_CODE,
+                        SCHOOL_ID,
+                        entity.getStudentID());
+        for (CourseSignUpEntity courseSignUpEntity : courseSignUpEntityList) {
+            List<TechnologyKnowledgeEntity> learnedKnowledgeList =
+                    courseExercisesDetailMapper.searchStudentLearnedKnowledgeList(
+                            startIndex,
+                            pageSize,
+                            entity.getStudentID(),
+                            courseSignUpEntity.getTechnologyID());
+            if (!learnedKnowledgeList.isEmpty()) {
+                List<Integer> learnedKnowledgeIDList =
+                        learnedKnowledgeList.stream()
+                                .map(TechnologyKnowledgeEntity::getKnowledgeID)
+                                .collect(Collectors.toList());
+                learnedKnowledgeMap.put(courseSignUpEntity.getTechnologyID(), learnedKnowledgeIDList);
+            }
+
+        }
+        //endregion
+
+        //region 取得通过综合练习掌握的知识点
+        List<TechnologyEntity> technologyEntityList = studentComprehensiveExercisesMapper.searchTechnologyList(entity.getStudentID());
+        for (TechnologyEntity technologyEntity : technologyEntityList) {
+            List<TechnologyKnowledgeEntity> learnedKnowledgeList =
+                    studentComprehensiveExercisesMapper.searchLearnedKnowledgeList(
+                            entity.getStudentID(),
+                            technologyEntity.getTechnologyID());
+            if (!learnedKnowledgeList.isEmpty()) {
+                List<Integer> learnedKnowledgeIDList =
+                        learnedKnowledgeList.stream()
+                                .map(TechnologyKnowledgeEntity::getKnowledgeID)
+                                .collect(Collectors.toList());
+                if (learnedKnowledgeMap.containsKey(technologyEntity.getTechnologyID())) {
+                    List<Integer> knowledgeList = learnedKnowledgeMap.get(technologyEntity.getTechnologyID());
+                    boolean existed = false;
+                    for (Integer learnedKnowledge4Comprehensive : learnedKnowledgeIDList) {
+                        for (Integer learnedKnowledge4Course : knowledgeList) {
+                            if (learnedKnowledge4Comprehensive.equals(learnedKnowledge4Course)) {
+                                existed = true;
+                                break;
+                            }
+                        }
+                        if (!existed) {
+                            learnedKnowledgeMap.get(technologyEntity.getTechnologyID()).add(learnedKnowledge4Comprehensive);
+                        }
+                    }
+                } else {
+                    learnedKnowledgeMap.put(technologyEntity.getTechnologyID(), learnedKnowledgeIDList);
+                }
+            }
+        }
+        //endregion
+
+        for (Integer i : learnedKnowledgeMap.keySet()) {
+            int technologyID = i;
+            int learnedKnowledgeCount = learnedKnowledgeMap.get(i).size();
+            //region 取得当前技术的知识点总数量
+            int knowledgeTotalCount = knowledgeMapper.searchTotalCount(
+                    technologyID,
+                    LEARNING_PHASE_ID,
+                    DataStatusConstant.ACTIVE);
+            //endregion
+            //region 取得学生提交的就业测评的数量
+            int comprehensiveExercisesCount =
+                    studentComprehensiveExercisesMapper.searchTotalCountWithTechnology(
+                            entity.getStudentID(),
+                            technologyID);
+            //endregion
+
+            float finishKnowledgeRate = Float.parseFloat(df.format((float) learnedKnowledgeCount / knowledgeTotalCount));
+            String abilityLevel = getTechnologyLevel(finishKnowledgeRate, comprehensiveExercisesCount, entity.getJoinedProjectCount());
+            double standardScore = calculateStandardScore(learnedKnowledgeCount, comprehensiveExercisesCount, entity.getJoinedProjectCount());
+            entity.setTechnologyID(technologyID);
+            entity.setFinishedKnowledgeCount(learnedKnowledgeCount);
+            entity.setFinishedKnowledgePercent(finishKnowledgeRate * 100);
+            entity.setAbilityLevel(abilityLevel);
+            entity.setStandardScore(standardScore);
+            affectCount += save(entity);
         }
         return affectCount;
     }

@@ -20,6 +20,7 @@
     <result column="course_school_id" property="courseSchoolID" jdbcType="INTEGER"/>
     <result column="course_school_name" property="courseSchoolName" jdbcType="VARCHAR"/>
     <result column="course_id" property="courseID" jdbcType="INTEGER"/>
+    <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
     <result column="course_name" property="courseName" jdbcType="VARCHAR"/>
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR"/>
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR"/>
@@ -201,9 +202,7 @@
   <select id="searchStudentSignUpTotalCount" resultType="java.lang.Integer">
     SELECT COUNT(1) AS totalcount
     FROM shangshufang_customer.course_sign_up
-    WHERE course_university_code = #{arg0,jdbcType=INTEGER}
-      AND course_school_id = #{arg1,jdbcType=INTEGER}
-      AND student_id = #{arg2,jdbcType=INTEGER};
+    WHERE student_id = #{studentID,jdbcType=INTEGER};
   </select>
   <select id="searchStudentSignUpList" resultMap="BaseResultMap">
     SELECT a.sign_up_id,
@@ -223,6 +222,7 @@
            e.school_name                                   AS course_school_name,
            a.course_id,
            g.course_name,
+           g.technology_id,
            a.data_status,
            CASE
              WHEN a.data_status = 'A' THEN '报名成功'
@@ -250,11 +250,9 @@
                       ON a.course_university_code = g.university_code
                         AND a.course_school_id = g.school_id
                         AND a.course_id = g.course_id
-    WHERE a.course_university_code = #{arg2,jdbcType=INTEGER}
-      AND a.course_school_id = #{arg3,jdbcType=INTEGER}
-      AND a.student_id = #{arg4,jdbcType=INTEGER}
+    WHERE a.student_id = #{studentID,jdbcType=INTEGER}
     ORDER BY a.update_time DESC
-    LIMIT #{arg0,jdbcType=INTEGER}, #{arg1,jdbcType=INTEGER};
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
   </select>
 
   <select id="searchTechnologyCourseSignUpTotalCount" resultType="java.lang.Integer">

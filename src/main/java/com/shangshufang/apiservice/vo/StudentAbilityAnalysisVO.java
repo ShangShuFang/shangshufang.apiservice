@@ -13,9 +13,9 @@ public class StudentAbilityAnalysisVO {
     private int majorID;
     private String majorName;
     private int studentID;
-    private String studentName;
-    private String studentPhoto;
-    private String studentCellphone;
+    private String fullName;
+    private String photo;
+    private String cellphone;
 
     private int technologyID;
     private int languageID;

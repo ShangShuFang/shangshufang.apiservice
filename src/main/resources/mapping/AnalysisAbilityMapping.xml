@@ -9,11 +9,11 @@
         <result column="student_school_id" property="schoolID" jdbcType="INTEGER"/>
         <result column="student_school_name" property="schoolName" jdbcType="VARCHAR"/>
         <result column="student_id" property="studentID" jdbcType="INTEGER"/>
-        <result column="student_name" property="studentName" jdbcType="VARCHAR"/>
+        <result column="full_name" property="fullName" jdbcType="VARCHAR"/>
         <result column="major_id" property="majorID" jdbcType="INTEGER"/>
         <result column="major_name" property="majorName" jdbcType="VARCHAR"/>
-        <result column="photo" property="studentPhoto" jdbcType="VARCHAR"/>
-        <result column="cellphone" property="studentCellphone" jdbcType="VARCHAR"/>
+        <result column="photo" property="photo" jdbcType="VARCHAR"/>
+        <result column="cellphone" property="cellphone" jdbcType="VARCHAR"/>
         <result column="technology_id" property="technologyID" jdbcType="INTEGER"/>
         <result column="technology_thumbnail_square" property="technologyThumbnailSquare" jdbcType="VARCHAR"/>
         <result column="technology_thumbnail_rectangle" property="technologyThumbnailRectangle" jdbcType="VARCHAR"/>
@@ -243,7 +243,7 @@
         b.major_id,
         e.major_name,
         a.student_id,
-        b.full_name AS student_name,
+        b.full_name,
         LEFT(b.enrollment_year, 4) AS enrollment_year,
         b.cellphone,
         b.photo,
@@ -276,7 +276,7 @@
                 AND f.category_id = #{categoryID,jdbcType=INTEGER}
             </if>
             <if test="technologyID != 0">
-                AND f.technology_id = #{technologyID,jdbcType=INTEGER}
+                AND a.technology_id = #{technologyID,jdbcType=INTEGER}
             </if>
             <if test="universityCode != 0">
                 AND b.university_code = #{universityCode,jdbcType=INTEGER}
@@ -373,6 +373,26 @@
                  INNER JOIN shangshufang_base.technology b
                             ON a.technology_id = b.technology_id
         WHERE student_id = #{studentID,jdbcType=INTEGER};
+    </select>
+
+    <select id="searchLearningTechnology" resultMap="StudentAbilityAnalysisResultMap">
+        SELECT a.analysis_id,
+               a.student_id,
+               a.technology_id,
+               b.language_id,
+               b.technology_name,
+               b.technology_thumbnail_square,
+               b.technology_thumbnail_rectangle,
+               a.finish_knowledge_count,
+               a.finish_knowledge_percent,
+               a.position_site,
+               a.standard_score,
+               a.ability_level
+        FROM shangshufang_customer.university_student_ability_analysis a
+                 INNER JOIN shangshufang_base.technology b
+                            ON a.technology_id = b.technology_id
+        WHERE a.student_id = #{studentID,jdbcType=INTEGER}
+          AND a.technology_id = #{technologyID,jdbcType=INTEGER};
     </select>
 
     <!--endregion-->

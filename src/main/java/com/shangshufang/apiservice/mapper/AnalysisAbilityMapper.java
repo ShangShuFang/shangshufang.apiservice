@@ -143,6 +143,8 @@ public interface AnalysisAbilityMapper {
      */
     List<StudentAbilityAnalysisEntity> searchLearningTechnologyList(@Param("studentID") int studentID);
 
+    StudentAbilityAnalysisEntity searchLearningTechnology(@Param("studentID") int studentID, @Param("technologyID") int technologyID);
+
 
     //endregion
 

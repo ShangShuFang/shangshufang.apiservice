@@ -22,5 +22,6 @@ public class CourseSignUpEntity extends BaseEntity {
     private int courseSchoolID;
     private String courseSchoolName;
     private int courseID;
+    private int technologyID;
     private String courseName;
 }
