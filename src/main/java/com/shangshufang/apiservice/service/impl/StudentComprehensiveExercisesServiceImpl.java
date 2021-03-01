@@ -102,6 +102,27 @@ public class StudentComprehensiveExercisesServiceImpl implements StudentComprehe
     }
 
     @Override
+    public UnifiedResponse findComprehensiveExercisesWithTechnology(int studentID, int technologyID) {
+        try {
+            List<StudentComprehensiveExercisesVO> modelList = new ArrayList<>();
+            List<StudentComprehensiveExercisesEntity> entityList =
+                    myMapper.searchComprehensiveExercisesWithTechnology(studentID, technologyID);
+            if (entityList.isEmpty()) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            for (StudentComprehensiveExercisesEntity entity : entityList) {
+                StudentComprehensiveExercisesVO model = new StudentComprehensiveExercisesVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
     public UnifiedResponse checkCollected(int studentID, int exercisesID) {
         try {
             int totalCount = myMapper.checkCollected(studentID, exercisesID);

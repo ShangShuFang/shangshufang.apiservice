@@ -18,6 +18,8 @@ public interface StudentComprehensiveExercisesService extends BaseService<Studen
 
     UnifiedResponse find(int studentID, int exercisesID);
 
+    UnifiedResponse findComprehensiveExercisesWithTechnology(int studentID, int technologyID);
+
     UnifiedResponse checkCollected(int studentID, int exercisesID);
 
     UnifiedResponse delete(int studentID, int collectionID);

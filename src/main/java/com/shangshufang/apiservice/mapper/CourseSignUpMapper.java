@@ -1,6 +1,7 @@
 package com.shangshufang.apiservice.mapper;
 
 import com.shangshufang.apiservice.entity.CourseSignUpEntity;
+import com.shangshufang.apiservice.entity.TechnologyEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

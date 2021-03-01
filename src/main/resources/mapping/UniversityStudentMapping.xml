@@ -9,6 +9,13 @@
     <result column="school_name" property="schoolName" jdbcType="VARCHAR" />
     <result column="major_id" property="majorID" jdbcType="INTEGER" />
     <result column="major_name" property="majorName" jdbcType="VARCHAR" />
+
+    <result column="education_level" property="educationLevel" jdbcType="INTEGER" />
+    <result column="education_level_text" property="educationLevelText" jdbcType="VARCHAR" />
+    <result column="graduation_date" property="graduationDate" jdbcType="VARCHAR" />
+    <result column="self_introduction_url" property="selfIntroductionUrl" jdbcType="VARCHAR" />
+
+
     <result column="full_name" property="fullName" jdbcType="VARCHAR" />
     <result column="sex" property="sex" jdbcType="VARCHAR" />
     <result column="birth" property="birth" jdbcType="VARCHAR" />
@@ -48,6 +55,15 @@
       C.school_name,
       a.major_id,
       d.major_name,
+      A.education_level,
+      CASE WHEN A.education_level = 1 THEN '大专'
+      WHEN A.education_level = 2 THEN '本科'
+      WHEN A.education_level = 3 THEN '硕士'
+      WHEN A.education_level = 4 THEN '博士'
+      ELSE ''
+      END AS education_level_text,
+      A.graduation_date,
+      A.self_introduction_url,
       A.full_name,
       A.sex,
       A.birth,
@@ -90,6 +106,17 @@
       B.university_name,
       A.school_id,
       C.school_name,
+      A.major_id,
+      d.major_name,
+      A.education_level,
+      CASE WHEN A.education_level = 1 THEN '大专'
+      WHEN A.education_level = 2 THEN '本科'
+      WHEN A.education_level = 3 THEN '硕士'
+      WHEN A.education_level = 4 THEN '博士'
+      ELSE ''
+      END AS education_level_text,
+      A.graduation_date,
+      A.self_introduction_url,
       A.full_name,
       A.sex,
       A.birth,
@@ -98,14 +125,26 @@
       A.email,
       A.photo
     FROM shangshufang_customer.university_student A
-    INNER JOIN shangshufang_customer.university B
+    LEFT JOIN shangshufang_customer.university B
     ON A.university_code = B.university_code
-    INNER JOIN shangshufang_customer.school C
+    LEFT JOIN shangshufang_customer.school C
     ON A.university_code = C.university_code
     AND A.school_id = C.school_id
-    WHERE A.university_code = #{arg0,jdbcType=INTEGER}
-    AND A.school_id = #{arg1,jdbcType=INTEGER}
-    AND A.student_id = #{arg2,jdbcType=INTEGER};
+    LEFT JOIN shangshufang_customer.major d
+    ON a.university_code = d.university_code
+    AND a.school_id = d.school_id
+    AND a.major_id = d.major_id
+    <where>
+      <if test="universityCode != 0">
+        A.university_code = #{universityCode,jdbcType=INTEGER}
+      </if>
+      <if test="schoolID != 0">
+        AND A.school_id = #{schoolID,jdbcType=INTEGER}
+      </if>
+      <if test="studentID != 0">
+        AND A.student_id = #{studentID,jdbcType=INTEGER}
+      </if>
+    </where>;
   </select>
 
   <select id="login" resultMap="BaseResultMap">

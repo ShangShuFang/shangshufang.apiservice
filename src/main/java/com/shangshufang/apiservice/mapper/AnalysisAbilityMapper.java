@@ -162,6 +162,8 @@ public interface AnalysisAbilityMapper {
 
     List<StudentAbilityAnalysisEntity> searchTechnologyList();
 
+    List<TechnologyEntity> searchComprehensiveExerciseTechnologyList(@Param("studentID") int studentID);
+
     int searchStudentTotalCount(@Param("technologyID") int technologyID);
 
     int searchLowerThanScoreTotalCount(@Param("technologyID") int technologyID,

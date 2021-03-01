@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.CompanyTalentPoolMapper">
+    <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.CompanyTalentPoolEntity">
+        <id column="talent_id" property="talentID" jdbcType="INTEGER"/>
+        <result column="company_id" property="companyID" jdbcType="INTEGER"/>
+        <result column="student_id" property="studentID" jdbcType="INTEGER"/>
+        <result column="student_name" property="studentName" jdbcType="VARCHAR"/>
+        <result column="university_name" property="universityName" jdbcType="VARCHAR"/>
+        <result column="major_name" property="majorName" jdbcType="VARCHAR"/>
+        <result column="cellphone" property="cellphone" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="interview_time" property="interviewTime" jdbcType="TIMESTAMP"/>
+        <result column="interview_address" property="interviewAddress" jdbcType="VARCHAR"/>
+        <result column="memo" property="memo" jdbcType="VARCHAR"/>
+        <result column="data_status" property="dataStatus" jdbcType="VARCHAR"/>
+        <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR"/>
+        <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <select id="searchTotalCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(1) AS TotalCount
+        FROM shangshufang_customer.company_talent_pool
+        WHERE company_id = #{companyID,jdbcType=INTEGER}
+        <if test="dataStatus != null">
+            AND data_status = #{dataStatus,jdbcType=VARCHAR}
+        </if>;
+    </select>
+    <select id="searchList" resultMap="BaseResultMap">
+        SELECT a.talent_id,
+        a.company_id,
+        a.student_id,
+        b.full_name AS student_name,
+        b.cellphone,
+        b.email,
+        DATE_FORMAT(a.interview_time, '%Y-%m-%d %H:%i:%s') AS interview_time,
+        a.interview_address,
+        a.memo,
+        c.university_name,
+        d.major_name,
+        a.data_status,
+        CASE WHEN a.data_status = '1' THEN '已关注'
+        WHEN a.data_status = '2' THEN '已发送面试邀请'
+        WHEN a.data_status = '3' THEN '已接受面试邀请'
+        WHEN a.data_status = '4' THEN '未参加面试'
+        WHEN a.data_status = '5' THEN '面试未通过'
+        WHEN a.data_status = '6' THEN '面试通过'
+        WHEN a.data_status = '7' THEN '未入职'
+        WHEN a.data_status = '8' THEN '已入职'
+        WHEN a.data_status = '9' THEN '已离职'
+        ELSE '未知数据状态'
+        END AS data_status_text,
+        DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+        DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+        FROM shangshufang_customer.company_talent_pool a
+        LEFT JOIN shangshufang_customer.university_student b
+        ON a.student_id = b.student_id
+        LEFT JOIN shangshufang_customer.university c
+        ON b.university_code = c.university_code
+        LEFT JOIN shangshufang_customer.major d
+        ON b.university_code = d.university_code
+        AND b.school_id = d.school_id
+        AND b.major_id = d.major_id
+        WHERE a.company_id = #{companyID,jdbcType=INTEGER}
+        <if test="dataStatus != null">
+            AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
+        </if>
+        ORDER BY a.create_time DESC
+        LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+    </select>
+    <select id="search" resultMap="BaseResultMap">
+        SELECT a.talent_id,
+               a.company_id,
+               a.student_id,
+               b.full_name AS student_name,
+               b.cellphone,
+               b.email,
+               DATE_FORMAT(a.interview_time, '%Y-%m-%d %H:%i:%s') AS interview_time,
+               a.interview_address,
+               a.memo,
+               c.university_name,
+               d.major_name,
+               a.data_status,
+               CASE
+                   WHEN a.data_status = '1' THEN '已关注'
+                   WHEN a.data_status = '2' THEN '已发送面试邀请'
+                   WHEN a.data_status = '3' THEN '已接受面试邀请'
+                   WHEN a.data_status = '4' THEN '未参加面试'
+                   WHEN a.data_status = '5' THEN '面试未通过'
+                   WHEN a.data_status = '6' THEN '面试通过'
+                   WHEN a.data_status = '7' THEN '未入职'
+                   WHEN a.data_status = '8' THEN '已入职'
+                   WHEN a.data_status = '9' THEN '已离职'
+                   ELSE '未知数据状态'
+                   END                                         AS data_status_text,
+               DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+               DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+        FROM shangshufang_customer.company_talent_pool a
+                 LEFT JOIN shangshufang_customer.university_student b
+                           ON a.student_id = b.student_id
+                 LEFT JOIN shangshufang_customer.university c
+                           ON b.university_code = c.university_code
+                 LEFT JOIN shangshufang_customer.major d
+                           ON b.university_code = d.university_code
+                               AND b.school_id = d.school_id
+                               AND b.major_id = d.major_id
+        WHERE a.company_id = #{companyID,jdbcType=INTEGER}
+          AND a.student_id = #{studentID,jdbcType=VARCHAR};
+    </select>
+    <insert id="insert" parameterType="com.shangshufang.apiservice.entity.CompanyTalentPoolEntity">
+        INSERT INTO shangshufang_customer.company_talent_pool (company_id,
+                                                               student_id,
+                                                               data_status,
+                                                               interview_time,
+                                                               interview_address,
+                                                               memo,
+                                                               create_user,
+                                                               update_user)
+        VALUES (#{companyID, jdbcType=INTEGER},
+                #{studentID, jdbcType=INTEGER},
+                #{dataStatus, jdbcType=VARCHAR},
+                #{interviewTime, jdbcType=TIMESTAMP},
+                #{interviewAddress, jdbcType=VARCHAR},
+                #{memo, jdbcType=VARCHAR},
+                #{createUser, jdbcType=VARCHAR},
+                #{updateUser, jdbcType=VARCHAR});
+    </insert>
+    <update id="update" parameterType="com.shangshufang.apiservice.entity.CompanyTalentPoolEntity">
+        UPDATE shangshufang_customer.company_talent_pool
+        SET interview_time    = #{interviewTime,jdbcType=TIMESTAMP},
+            interview_address = #{interviewAddress,jdbcType=VARCHAR},
+            memo              = #{memo,jdbcType=VARCHAR},
+            data_status       = #{dataStatus,jdbcType=VARCHAR},
+            update_user       = #{updateUser,jdbcType=VARCHAR}
+        WHERE talent_id = #{talentID,jdbcType=INTEGER};
+    </update>
+</mapper>

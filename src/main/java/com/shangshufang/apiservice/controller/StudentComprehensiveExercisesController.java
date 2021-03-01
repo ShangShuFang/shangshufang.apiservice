@@ -35,6 +35,12 @@ public class StudentComprehensiveExercisesController {
         return serviceImpl.findList4Student(pageNumber, pageSize, studentID, directionCode, programLanguage, difficultyLevelCode, dataStatus);
     }
 
+    @RequestMapping(value = "/list/technology/{studentID}/{technologyID}", method = RequestMethod.GET)
+    public UnifiedResponse findComprehensiveExercisesWithTechnology(@PathVariable("studentID") int studentID,
+                                            @PathVariable("technologyID") int technologyID){
+        return serviceImpl.findComprehensiveExercisesWithTechnology(studentID, technologyID);
+    }
+
     @RequestMapping(value = "/any/{studentID}/{exercisesID}", method = RequestMethod.GET)
     public UnifiedResponse find(@PathVariable("studentID") int studentID,
                                     @PathVariable("exercisesID") int exercisesID){

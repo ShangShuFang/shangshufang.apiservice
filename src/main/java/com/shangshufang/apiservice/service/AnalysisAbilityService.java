@@ -19,6 +19,8 @@ public interface AnalysisAbilityService {
 
     UnifiedResponse findLearningTechnologyList(int studentID);
 
+    UnifiedResponse findAllTechnologyList(int studentID);
+
     UnifiedResponse findTechnologySummary(int studentID, int technologyID);
 
     UnifiedResponse findCodeGuidelineSummary(int studentID, int languageID);

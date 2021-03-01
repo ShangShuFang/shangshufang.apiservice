@@ -78,6 +78,20 @@
           AND result = 'Y';
     </select>
 
+    <select id="searchComprehensiveExercisesWithTechnology" resultMap="BaseResultMap">
+        SELECT a.student_id,
+               a.exercises_id,
+               b.exercises_title,
+               b.exercises_content,
+               a.git_url,
+               a.data_status
+        FROM shangshufang_customer.student_comprehensive_exercises a
+                 LEFT JOIN shangshufang_base.comprehensive_exercises b
+                           ON a.exercises_id = b.exercises_id
+        WHERE a.student_id = #{studentID,jdbcType=INTEGER}
+          AND a.technology_id = #{technologyID,jdbcType=INTEGER};
+    </select>
+
 
 
 

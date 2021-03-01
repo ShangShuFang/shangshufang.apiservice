@@ -11,6 +11,12 @@ public class UniversityStudentVO extends BaseVO {
     private String schoolName;
     private int majorID;
     private String majorName;
+
+    private int educationLevel;
+    private String educationLevelText;
+    private String graduationDate;
+    private String selfIntroductionUrl;
+
     private String fullName;
     private String sex;
     private String birth;

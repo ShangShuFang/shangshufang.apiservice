@@ -16,9 +16,11 @@ import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
@@ -26,6 +28,8 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
     private AnalysisAbilityMapper myMapper;
     @Autowired
     private UniversityStudentMapper studentMapper;
+    @Autowired
+    private TechnologyMapper technologyMapper;
     @Autowired
     private TechnologyKnowledgeMapper knowledgeMapper;
     @Autowired
@@ -136,6 +140,27 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
                 if (entity == null) {
                     continue;
                 }
+                StudentAbilityAnalysisVO model = new StudentAbilityAnalysisVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(modelList.size(), modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse findAllTechnologyList(int studentID) {
+        try {
+            List<StudentAbilityAnalysisVO> modelList = new ArrayList<>();
+            List<StudentAbilityAnalysisEntity> entityList = myMapper.searchLearningTechnologyList(studentID);
+            if (entityList.isEmpty()) {
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+
+            for (StudentAbilityAnalysisEntity entity : entityList) {
                 StudentAbilityAnalysisVO model = new StudentAbilityAnalysisVO();
                 ObjectConvertUtils.toBean(entity, model);
                 modelList.add(model);

@@ -257,6 +257,27 @@
     WHERE A.technology_id = #{arg0,jdbcType=INTEGER};
   </select>
 
+  <select id="searchSimple" resultMap="BaseResultMap">
+    SELECT technology_id,
+           technology_name,
+           technology_stars,
+           technology_thumbnail_square,
+           technology_thumbnail_rectangle,
+           technology_memo,
+           language_id,
+           direction_id,
+           category_id,
+           difficulty_level,
+           data_status,
+           create_time,
+           create_user,
+           update_user,
+           update_time
+    FROM shangshufang_base.technology
+    WHERE technology_id = #{technologyID,jdbcType=INTEGER}
+      AND data_status = 'A';
+  </select>
+
   <select id="searchStudentLearning" resultMap="BaseResultMap">
     SELECT A.technology_id,
            B.technology_name,

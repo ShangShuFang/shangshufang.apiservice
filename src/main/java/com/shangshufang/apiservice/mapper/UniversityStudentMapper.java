@@ -17,7 +17,9 @@ public interface UniversityStudentMapper extends BaseMapper<UniversityStudentEnt
                                              @Param("majorID") int majorID,
                                              @Param("fullName") String fullName);
 
-    UniversityStudentEntity search(int universityCode, int schoolID, int studentID);
+    UniversityStudentEntity search(@Param("universityCode") int universityCode,
+                                   @Param("schoolID") int schoolID,
+                                   @Param("studentID") int studentID);
 
     UniversityStudentEntity login(String cellphone, String password);
 

@@ -12,6 +12,12 @@ public class UniversityStudentEntity extends BaseEntity {
     private String schoolName;
     private int majorID;
     private String majorName;
+
+    private int educationLevel;
+    private String educationLevelText;
+    private String graduationDate;
+    private String selfIntroductionUrl;
+
     private String photo;
     private String cellphone;
     private String sex;

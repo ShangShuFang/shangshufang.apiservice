@@ -42,6 +42,11 @@ public class AnalysisAbilityController {
         return serviceImpl.findLearningTechnologyList(studentID);
     }
 
+    @RequestMapping(value = "/all/technology/{studentID}", method = RequestMethod.GET)
+    public UnifiedResponse findAllTechnologyList(@PathVariable("studentID") int studentID) {
+        return serviceImpl.findAllTechnologyList(studentID);
+    }
+
     @RequestMapping(value = "/any/technology/{studentID}/{technologyID}", method = RequestMethod.GET)
     public UnifiedResponse findTechnologySummary(@PathVariable("studentID") int studentID, @PathVariable("technologyID") int technologyID) {
         return serviceImpl.findTechnologySummary(studentID, technologyID);
@@ -54,9 +59,9 @@ public class AnalysisAbilityController {
 
     @RequestMapping(value = "/list/knowledge/learned/{pageNumber}/{pageSize}/{studentID}/{technologyID}", method = RequestMethod.GET)
     public UnifiedResponse findFinishedKnowledgeList(@PathVariable("pageNumber") int pageNumber,
-                                                   @PathVariable("pageSize") int pageSize,
-                                                   @PathVariable("studentID") int studentID,
-                                                   @PathVariable("technologyID") int technologyID) {
+                                                     @PathVariable("pageSize") int pageSize,
+                                                     @PathVariable("studentID") int studentID,
+                                                     @PathVariable("technologyID") int technologyID) {
         return serviceImpl.findFinishedKnowledgeList(pageNumber, pageSize, studentID, technologyID);
     }
 
@@ -79,6 +84,12 @@ public class AnalysisAbilityController {
     @RequestMapping(value = "/list/comprehensive/analysis/{studentID}", method = RequestMethod.GET)
     public UnifiedResponse selectComprehensiveExercisesAnalysisList(@PathVariable("studentID") int studentID) {
         return serviceImpl.selectComprehensiveExercisesAnalysisList(studentID);
+    }
+
+    @RequestMapping(value = "/list/comprehensive/analysis/knowledge/{studentID}/{technologyID}", method = RequestMethod.GET)
+    public UnifiedResponse searchComprehensiveExercisesKnowledgeAnalysis(@PathVariable("studentID") int studentID,
+                                                                         @PathVariable("technologyID") int technologyID) {
+        return serviceImpl.searchComprehensiveExercisesKnowledgeAnalysis(studentID, technologyID);
     }
 
     @RequestMapping(value = "/list/comprehensive/submit/{studentID}", method = RequestMethod.GET)

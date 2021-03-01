@@ -51,6 +51,9 @@ public interface StudentComprehensiveExercisesMapper extends BaseMapper<StudentC
     int searchLearnedKnowledgeTotalCount(@Param("studentID") int studentID,
                                          @Param("technologyID") int technologyID);
 
+    List<StudentComprehensiveExercisesEntity> searchComprehensiveExercisesWithTechnology(@Param("studentID") int studentID,
+                                                                                         @Param("technologyID") int technologyID);
+
     List<TechnologyKnowledgeEntity> searchLearnedKnowledgeList(@Param("studentID") int studentID,
                                                                @Param("technologyID") int technologyID);
 

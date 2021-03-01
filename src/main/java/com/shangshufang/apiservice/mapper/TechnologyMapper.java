@@ -18,6 +18,8 @@ public interface TechnologyMapper extends BaseMapper<TechnologyEntity> {
 
     List<TechnologyEntity> searchStudentLearning(int studentUniversityCode, int studentSchoolID, int studentID);
 
+    TechnologyEntity searchSimple(@Param("technologyID") int technologyID);
+
     TechnologyEntity searchByID(int technologyID);
 
     int checkTechnologyNameExist(String technologyName);

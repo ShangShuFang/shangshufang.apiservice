@@ -56,6 +56,11 @@
         <result column="total_count" property="totalCount" jdbcType="INTEGER"/>
     </resultMap>
 
+    <resultMap id="TechnologyResultMap" type="com.shangshufang.apiservice.entity.TechnologyEntity">
+        <id column="technology_id" property="technologyID" jdbcType="INTEGER" />
+        <result column="technology_name" property="technologyName" jdbcType="VARCHAR" />
+    </resultMap>
+
     <!-- region 学生能力批量分析 -->
     <select id="searchDataSource4Base" resultMap="StudentAbilityAnalysisResultMap">
         SELECT a.student_university_code,
@@ -147,6 +152,18 @@
         FROM shangshufang_customer.university_student_ability_analysis;
     </select>
 
+    <select id="searchComprehensiveExerciseTechnologyList" resultMap="TechnologyResultMap">
+        SELECT a.technology_id, b.technology_name
+        FROM
+            (
+                SELECT DISTINCT technology_id
+                FROM shangshufang_customer.comprehensive_exercises_analysis
+                WHERE student_id = #{studentID,jdbcType=INTEGER}
+            ) a
+                LEFT JOIN shangshufang_base.technology b
+                          ON a.technology_id = b.technology_id;
+    </select>
+
     <select id="searchStudentTotalCount" resultType="java.lang.Integer">
         SELECT COUNT(1) AS total_count
         FROM shangshufang_customer.university_student_ability_analysis
@@ -211,7 +228,8 @@
         INNER JOIN shangshufang_base.technology c
         ON a.technology_id = c.technology_id
         WHERE b.cellphone NOT IN ('15353752299', '18182505299', '18100000011', '18100000004', '18100000001', '13000000002', '13000000001','13000000000')
-        <if test="directionID != 0">
+        AND a.finish_knowledge_count > 0
+          <if test="directionID != 0">
             AND c.direction_id = #{directionID,jdbcType=INTEGER}
         </if>
         <if test="categoryID != 0">
@@ -246,6 +264,7 @@
         LEFT(b.enrollment_year, 4) AS enrollment_year,
         b.cellphone,
         b.photo,
+        b.sex,
         a.technology_id,
         f.technology_name,
         a.finish_knowledge_count,
@@ -268,7 +287,8 @@
         INNER JOIN shangshufang_base.technology f
         ON a.technology_id = f.technology_id
         WHERE b.cellphone NOT IN ('15353752299', '18182505299', '18100000011', '18100000004', '18100000001', '13000000002', '13000000001','13000000000')
-        <if test="directionID != 0">
+        AND a.finish_knowledge_count > 0
+          <if test="directionID != 0">
             AND f.direction_id = #{directionID,jdbcType=INTEGER}
         </if>
         <if test="categoryID != 0">
