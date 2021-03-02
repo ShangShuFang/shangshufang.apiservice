@@ -26,16 +26,16 @@ public class CompanyTalentPoolServiceImpl implements CompanyTalentPoolService {
     private final Logger logger = LogManager.getLogger(CompanyTalentPoolServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, int companyID, String dataStatus) {
+    public UnifiedResponse findList(int pageNumber, int pageSize, int companyID, int technologyID, String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<CompanyTalentPoolVO> modelList = new ArrayList<>();
             dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
-            int totalCount = companyTalentPoolMapper.searchTotalCount(companyID, dataStatus);
+            int totalCount = companyTalentPoolMapper.searchTotalCount(companyID, technologyID, dataStatus);
             if(totalCount == 0){
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
-            List<CompanyTalentPoolEntity> entityList =  companyTalentPoolMapper.searchList(startIndex, pageSize, companyID, dataStatus);
+            List<CompanyTalentPoolEntity> entityList =  companyTalentPoolMapper.searchList(startIndex, pageSize, companyID, technologyID, dataStatus);
             for (CompanyTalentPoolEntity entity : entityList) {
                 CompanyTalentPoolVO model = new CompanyTalentPoolVO();
                 ObjectConvertUtils.toBean(entity, model);
@@ -103,6 +103,15 @@ public class CompanyTalentPoolServiceImpl implements CompanyTalentPoolService {
 
     @Override
     public UnifiedResponse changeDataStatus(CompanyTalentPoolDTO dto) {
-        return null;
+        try {
+            CompanyTalentPoolEntity entity = new CompanyTalentPoolEntity();
+            ObjectConvertUtils.toBean(dto, entity);
+            entity.setUpdateUser(dto.getLoginUser());
+            int affectRow = companyTalentPoolMapper.updateDataStatus(entity);
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
     }
 }

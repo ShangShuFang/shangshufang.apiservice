@@ -6,6 +6,7 @@
         <result column="company_id" property="companyID" jdbcType="INTEGER"/>
         <result column="student_id" property="studentID" jdbcType="INTEGER"/>
         <result column="student_name" property="studentName" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="VARCHAR"/>
         <result column="university_name" property="universityName" jdbcType="VARCHAR"/>
         <result column="major_name" property="majorName" jdbcType="VARCHAR"/>
         <result column="cellphone" property="cellphone" jdbcType="VARCHAR"/>
@@ -23,10 +24,15 @@
     <select id="searchTotalCount" resultType="java.lang.Integer">
         SELECT
         COUNT(1) AS TotalCount
-        FROM shangshufang_customer.company_talent_pool
-        WHERE company_id = #{companyID,jdbcType=INTEGER}
+        FROM shangshufang_customer.company_talent_pool a
+        LEFT JOIN shangshufang_customer.university_student_ability_analysis b
+        ON a.student_id = b.student_id
+        WHERE a.company_id = #{companyID,jdbcType=INTEGER}
+        <if test="technologyID != 0">
+            AND b.technology_id = #{technologyID,jdbcType=INTEGER}
+        </if>
         <if test="dataStatus != null">
-            AND data_status = #{dataStatus,jdbcType=VARCHAR}
+            AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
         </if>;
     </select>
     <select id="searchList" resultMap="BaseResultMap">
@@ -34,6 +40,7 @@
         a.company_id,
         a.student_id,
         b.full_name AS student_name,
+        b.sex,
         b.cellphone,
         b.email,
         DATE_FORMAT(a.interview_time, '%Y-%m-%d %H:%i:%s') AS interview_time,
@@ -64,7 +71,12 @@
         ON b.university_code = d.university_code
         AND b.school_id = d.school_id
         AND b.major_id = d.major_id
+        LEFT JOIN shangshufang_customer.university_student_ability_analysis e
+        ON a.student_id = e.student_id
         WHERE a.company_id = #{companyID,jdbcType=INTEGER}
+        <if test="technologyID != 0">
+            AND e.technology_id = #{technologyID,jdbcType=INTEGER}
+        </if>
         <if test="dataStatus != null">
             AND a.data_status = #{dataStatus,jdbcType=VARCHAR}
         </if>
@@ -134,6 +146,12 @@
             interview_address = #{interviewAddress,jdbcType=VARCHAR},
             memo              = #{memo,jdbcType=VARCHAR},
             data_status       = #{dataStatus,jdbcType=VARCHAR},
+            update_user       = #{updateUser,jdbcType=VARCHAR}
+        WHERE talent_id = #{talentID,jdbcType=INTEGER};
+    </update>
+    <update id="updateDataStatus" parameterType="com.shangshufang.apiservice.entity.CompanyTalentPoolEntity">
+        UPDATE shangshufang_customer.company_talent_pool
+        SET data_status       = #{dataStatus,jdbcType=VARCHAR},
             update_user       = #{updateUser,jdbcType=VARCHAR}
         WHERE talent_id = #{talentID,jdbcType=INTEGER};
     </update>

@@ -8,6 +8,7 @@ public class CompanyTalentPoolEntity extends BaseEntity {
     private int companyID;
     private int studentID;
     private String studentName;
+    private String sex;
     private String universityName;
     private String majorName;
     private String cellphone;

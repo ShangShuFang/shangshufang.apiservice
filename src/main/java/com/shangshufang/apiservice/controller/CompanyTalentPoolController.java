@@ -12,12 +12,13 @@ public class CompanyTalentPoolController {
     @Autowired
     private CompanyTalentPoolServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{companyID}/{dataStatus}", method = RequestMethod.GET)
+    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{companyID}/{technologyID}/{dataStatus}", method = RequestMethod.GET)
     public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
                                     @PathVariable("companyID") int companyID,
+                                    @PathVariable("technologyID") int technologyID,
                                     @PathVariable("dataStatus") String dataStatus) {
-        return serviceImpl.findList(pageNumber, pageSize, companyID, dataStatus);
+        return serviceImpl.findList(pageNumber, pageSize, companyID, technologyID, dataStatus);
     }
 
     @RequestMapping(value = "/any/{companyID}/{studentID}", method = RequestMethod.GET)
@@ -34,5 +35,9 @@ public class CompanyTalentPoolController {
     @RequestMapping(value = "/change", method = RequestMethod.PUT)
     public UnifiedResponse change(@RequestBody CompanyTalentPoolDTO dto) {
         return serviceImpl.change(dto);
+    }
+    @RequestMapping(value = "/change/status", method = RequestMethod.PUT)
+    public UnifiedResponse changeDataStatus(@RequestBody CompanyTalentPoolDTO dto) {
+        return serviceImpl.changeDataStatus(dto);
     }
 }

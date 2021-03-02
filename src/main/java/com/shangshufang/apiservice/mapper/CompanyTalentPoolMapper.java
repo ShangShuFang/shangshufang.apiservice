@@ -9,11 +9,13 @@ import java.util.List;
 @Mapper
 public interface CompanyTalentPoolMapper extends BaseMapper<CompanyTalentPoolEntity> {
     int searchTotalCount(@Param("companyID") int companyID,
+                         @Param("technologyID") int technologyID,
                          @Param("dataStatus") String dataStatus);
 
     List<CompanyTalentPoolEntity> searchList(@Param("startIndex") int startIndex,
                                              @Param("pageSize") int pageSize,
                                              @Param("companyID") int companyID,
+                                             @Param("technologyID") int technologyID,
                                              @Param("dataStatus") String dataStatus);
 
     CompanyTalentPoolEntity search(@Param("companyID") int companyID, @Param("studentID") int studentID);
