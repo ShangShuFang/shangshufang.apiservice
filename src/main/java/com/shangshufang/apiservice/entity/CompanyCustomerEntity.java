@@ -13,4 +13,5 @@ public class CompanyCustomerEntity extends BaseEntity {
     private String cellphone;
     private String email;
     private String photo;
+    private String password;
 }

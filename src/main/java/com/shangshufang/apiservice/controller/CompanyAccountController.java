@@ -1,6 +1,7 @@
 package com.shangshufang.apiservice.controller;
 
 import com.shangshufang.apiservice.dto.CompanyAccountDTO;
+import com.shangshufang.apiservice.dto.CompanyCustomerDTO;
 import com.shangshufang.apiservice.service.impl.CompanyAccountServiceImpl;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,17 +38,22 @@ public class CompanyAccountController {
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public UnifiedResponse add(@RequestBody CompanyAccountDTO dto){
+    public UnifiedResponse add(@RequestBody CompanyCustomerDTO dto){
         return serviceImpl.add(dto);
     }
 
     @RequestMapping(value = "/change", method = RequestMethod.PUT)
-    public UnifiedResponse change(@RequestBody CompanyAccountDTO dto){
+    public UnifiedResponse change(@RequestBody CompanyCustomerDTO dto){
         return serviceImpl.change(dto);
     }
 
+    @RequestMapping(value = "/change/password", method = RequestMethod.PUT)
+    public UnifiedResponse changePassword(@RequestBody CompanyCustomerDTO dto){
+        return serviceImpl.changePassword(dto);
+    }
+
     @RequestMapping(value="/change/status", method = RequestMethod.PUT)
-    public UnifiedResponse changeStatus(@RequestBody CompanyAccountDTO dto){
+    public UnifiedResponse changeStatus(@RequestBody CompanyCustomerDTO dto){
         return serviceImpl.changeDataStatus(dto);
     }
 }

@@ -85,8 +85,9 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public UnifiedResponse checkCompanyNameExist(String companyName) {
         try {
-            int count =  myMapper.checkCompanyNameExist(companyName);
-            Boolean exist =  count > 0;
+            CompanyEntity entity =  myMapper.searchByName(companyName);
+            int count = entity != null ? 1 : 0;
+            Boolean exist = entity != null;
             return UnifiedResponseManager.buildSearchSuccessResponse(count, exist);
         } catch (Exception ex) {
             logger.error(ex.toString());

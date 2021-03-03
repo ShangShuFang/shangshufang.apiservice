@@ -15,7 +15,7 @@ public interface CompanyMapper extends BaseMapper<CompanyEntity> {
 
     CompanyEntity searchByID(int companyID);
 
-    int checkCompanyNameExist(String companyName);
+    CompanyEntity searchByName(String companyName);
 
     int checkCellphoneExist(String cellphone);
 

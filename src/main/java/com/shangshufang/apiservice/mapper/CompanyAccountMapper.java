@@ -12,7 +12,8 @@ public interface CompanyAccountMapper extends BaseMapper<CompanyAccountEntity> {
 
     List<CompanyAccountEntity> searchList(int startIndex, int pageSize, int companyID);
 
-    CompanyAccountEntity login(String cellphone, String password);
+    CompanyAccountEntity login(@Param("cellphone") String cellphone,
+                               @Param("password") String password);
 
     int checkCellphoneExist(String cellphone);
 

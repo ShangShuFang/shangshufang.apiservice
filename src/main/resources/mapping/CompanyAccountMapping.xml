@@ -2,16 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.shangshufang.apiservice.mapper.CompanyAccountMapper" >
   <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.CompanyAccountEntity" >
-    <id column="account_id" property="accountID" jdbcType="INTEGER" />
+    <id column="customer_id" property="customerID" jdbcType="INTEGER" />
     <result column="company_id" property="companyID" jdbcType="INTEGER" />
-    <result column="customer_id" property="customerID" jdbcType="VARCHAR" />
     <result column="company_name" property="companyName" jdbcType="VARCHAR" />
     <result column="full_name" property="customerName" jdbcType="VARCHAR" />
     <result column="cellphone" property="cellphone" jdbcType="VARCHAR" />
     <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="photo" property="photo" jdbcType="VARCHAR" />
     <result column="password" property="password" jdbcType="VARCHAR" />
-    <result column="account_role" property="accountRole" jdbcType="VARCHAR" />
-    <result column="account_role_text" property="accountRoleText" jdbcType="VARCHAR" />
     <result column="data_status" property="dataStatus" jdbcType="VARCHAR" />
     <result column="data_status_text" property="dataStatusText" jdbcType="VARCHAR" />
     <result column="create_user" property="createUser" jdbcType="INTEGER" />
@@ -71,44 +69,33 @@
   </select>
   <select id="login" resultMap="BaseResultMap">
     SELECT
-      A.account_id,
-      A.company_id,
-      B.company_name,
-      C.full_name,
-      C.photo,
-      A.cellphone,
-      A.email,
-      A.account_role,
-      CASE WHEN A.account_role = 'A' THEN '管理员'
-          WHEN A.account_role = 'S' THEN '员工'
-          ELSE '未知数据状态'
-      END AS data_status_text,
-      A.data_status,
-      CASE WHEN A.data_status = 'A' THEN '正常'
-          WHEN A.data_status = 'D' THEN '冻结'
-          ELSE '未知数据状态'
-      END AS data_status_text,
-      D.admin_name AS create_user,
+      a.customer_id,
+      a.company_id,
+      b.company_name,
+      a.full_name,
+      a.photo,
+      a.cellphone,
+      a.email,
+      a.data_status,
+      CASE WHEN a.data_status = 'A' THEN '正常'
+           WHEN a.data_status = 'D' THEN '冻结'
+           ELSE '未知数据状态'
+        END AS data_status_text,
+      a.create_user,
       DATE_FORMAT(A.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
-      E.admin_name AS update_user,
+      a.update_user,
       DATE_FORMAT(A.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
-    FROM shangshufang_customer.company_account A
-    INNER JOIN shangshufang_customer.company B
-    ON A.company_id = B.company_id
-    INNER JOIN shangshufang_customer.company_customer C
-    ON A.company_id = C.company_id
-    AND A.cellphone = C.cellphone
-    INNER JOIN shangshufang_base.system_admin D
-    ON A.create_user = D.admin_id
-    INNER JOIN shangshufang_base.system_admin E
-    ON A.update_user = E.admin_id
-    WHERE A.cellphone = #{arg0,jdbcType=VARCHAR}
-    AND A.password = #{arg1,jdbcType=VARCHAR};
+    FROM shangshufang_customer.company_customer a
+           LEFT JOIN shangshufang_customer.company b
+                     ON a.company_id = b.company_id
+    WHERE a.cellphone = #{cellphone,jdbcType=VARCHAR}
+      AND a.password = #{password,jdbcType=VARCHAR}
+      AND a.data_status = 'A';
   </select>
   <select id="checkCellphoneExist" resultType="java.lang.Integer">
     SELECT
       COUNT(1) AS TotalCount
-    FROM shangshufang_customer.company_account
+    FROM shangshufang_customer.company_customer
     WHERE cellphone = #{cellphone,jdbcType=VARCHAR};
   </select>
   <insert id="insert" parameterType="com.shangshufang.apiservice.entity.CompanyAccountEntity" >

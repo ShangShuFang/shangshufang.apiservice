@@ -1,13 +1,17 @@
 package com.shangshufang.apiservice.service.impl;
 
 import com.shangshufang.apiservice.common.ObjectConvertUtils;
+import com.shangshufang.apiservice.constant.DataStatusConstant;
 import com.shangshufang.apiservice.constant.ResponseDataConstant;
 import com.shangshufang.apiservice.dto.CompanyAccountDTO;
+import com.shangshufang.apiservice.dto.CompanyCustomerDTO;
 import com.shangshufang.apiservice.entity.CompanyAccountEntity;
 import com.shangshufang.apiservice.entity.CompanyCustomerEntity;
+import com.shangshufang.apiservice.entity.CompanyEntity;
 import com.shangshufang.apiservice.manager.UnifiedResponseManager;
 import com.shangshufang.apiservice.mapper.CompanyAccountMapper;
 import com.shangshufang.apiservice.mapper.CompanyCustomerMapper;
+import com.shangshufang.apiservice.mapper.CompanyMapper;
 import com.shangshufang.apiservice.service.CompanyAccountService;
 import com.shangshufang.apiservice.vo.CompanyAccountVO;
 import com.shangshufang.apiservice.vo.UnifiedResponse;
@@ -21,6 +25,8 @@ import java.util.List;
 
 @Service
 public class CompanyAccountServiceImpl implements CompanyAccountService {
+    @Autowired
+    private CompanyMapper companyMapper;
     @Autowired
     private CompanyAccountMapper myMapper;
     @Autowired
@@ -70,8 +76,21 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     public UnifiedResponse checkCellphoneExist(String cellphone) {
         try {
             int count =  myMapper.checkCellphoneExist(cellphone);
-            Boolean exist =  count > 0;
-            return UnifiedResponseManager.buildSearchSuccessResponse(count, exist);
+            return UnifiedResponseManager.buildSearchSuccessResponse(count, count);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse changePassword(CompanyCustomerDTO dto) {
+        try {
+            CompanyCustomerEntity customerEntity = new CompanyCustomerEntity();
+            ObjectConvertUtils.toBean(dto, customerEntity);
+            customerEntity.setUpdateUser(dto.getLoginUser());
+            int affectRow = customerMapper.updatePassword(customerEntity);
+            return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
         } catch (Exception ex) {
             logger.error(ex.toString());
             return UnifiedResponseManager.buildExceptionResponse();
@@ -91,24 +110,39 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     }
 
     @Override
-    public UnifiedResponse add(CompanyAccountDTO dto) {
+    public UnifiedResponse add(CompanyCustomerDTO dto) {
         try {
-            CompanyAccountEntity accountEntity = new CompanyAccountEntity();
+            int affectRow = 0;
             CompanyCustomerEntity customerEntity = new CompanyCustomerEntity();
 
-            ObjectConvertUtils.toBean(dto, accountEntity);
-            accountEntity.setCreateUser(dto.getLoginUser());
-            accountEntity.setUpdateUser(dto.getLoginUser());
+            CompanyEntity companyEntity = companyMapper.searchByName(dto.getCompanyName());
+            if (companyEntity == null) {
+                companyEntity = new CompanyEntity();
+                companyEntity.setCompanyName(dto.getCompanyName());
+                companyEntity.setCompanyAbbreviation("");
+                companyEntity.setProvinceCode(0);
+                companyEntity.setCityCode(0);
+                companyEntity.setDistrictCode(0);
+                companyEntity.setAddress("");
+                companyEntity.setContacts("");
+                companyEntity.setCellphone("");
+                companyEntity.setBusinessLicense("");
+                companyEntity.setDataStatus(DataStatusConstant.ACTIVE);
+                companyEntity.setCreateUser(dto.getLoginUser());
+                companyEntity.setUpdateUser(dto.getLoginUser());
+                affectRow += companyMapper.insert(companyEntity);
+            }
 
             ObjectConvertUtils.toBean(dto, customerEntity);
-            customerEntity.setCreateUser(dto.getLoginUser());
-            customerEntity.setUpdateUser(dto.getLoginUser());
+            customerEntity.setCompanyID(companyEntity.getCompanyID());
+            customerEntity.setPassword(dto.getPassword());
+            customerEntity.setFullName(dto.getFullName());
             customerEntity.setSex("");
             customerEntity.setBirth("");
             customerEntity.setEmail("");
             customerEntity.setPhoto("");
-
-            int affectRow = myMapper.insert(accountEntity);
+            customerEntity.setCreateUser(dto.getLoginUser());
+            customerEntity.setUpdateUser(dto.getLoginUser());
             affectRow += customerMapper.insert(customerEntity);
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
         } catch (Exception ex) {
@@ -118,19 +152,12 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     }
 
     @Override
-    public UnifiedResponse change(CompanyAccountDTO dto) {
+    public UnifiedResponse change(CompanyCustomerDTO dto) {
         try {
-            CompanyAccountEntity accountEntity = new CompanyAccountEntity();
             CompanyCustomerEntity customerEntity = new CompanyCustomerEntity();
-
-            ObjectConvertUtils.toBean(dto, accountEntity);
             ObjectConvertUtils.toBean(dto, customerEntity);
-
-            accountEntity.setUpdateUser(dto.getLoginUser());
             customerEntity.setUpdateUser(dto.getLoginUser());
-
-            int affectRow = myMapper.update(accountEntity);
-            affectRow += customerMapper.updateCellphone(customerEntity);
+            int affectRow = customerMapper.updateCellphone(customerEntity);
             return UnifiedResponseManager.buildSubmitSuccessResponse(affectRow);
         } catch (Exception ex) {
             logger.error(ex.toString());
@@ -139,7 +166,7 @@ public class CompanyAccountServiceImpl implements CompanyAccountService {
     }
 
     @Override
-    public UnifiedResponse changeDataStatus(CompanyAccountDTO dto) {
+    public UnifiedResponse changeDataStatus(CompanyCustomerDTO dto) {
         try {
             CompanyAccountEntity entity = new CompanyAccountEntity();
             ObjectConvertUtils.toBean(dto, entity);
