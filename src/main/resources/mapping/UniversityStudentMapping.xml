@@ -155,6 +155,15 @@
            c.school_name,
            a.major_id,
            d.major_name,
+           a.education_level,
+           CASE WHEN a.education_level = 1 THEN '大专'
+                WHEN a.education_level = 2 THEN '本科'
+                WHEN a.education_level = 3 THEN '硕士'
+                WHEN a.education_level = 4 THEN '博士'
+                ELSE ''
+             END AS education_level_text,
+           a.graduation_date,
+           a.self_introduction_url,
            a.full_name,
            a.sex,
            a.birth,
