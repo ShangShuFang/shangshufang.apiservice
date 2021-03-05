@@ -18,5 +18,13 @@ public interface CompanyTalentPoolMapper extends BaseMapper<CompanyTalentPoolEnt
                                              @Param("technologyID") int technologyID,
                                              @Param("dataStatus") String dataStatus);
 
+    int searchTotalCountWithStudent(@Param("studentID") int studentID,
+                                    @Param("dataStatus") String dataStatus);
+
+    List<CompanyTalentPoolEntity> searchListWithStudent(@Param("startIndex") int startIndex,
+                                                        @Param("pageSize") int pageSize,
+                                                        @Param("studentID") int studentID,
+                                                        @Param("dataStatus") String dataStatus);
+
     CompanyTalentPoolEntity search(@Param("companyID") int companyID, @Param("studentID") int studentID);
 }

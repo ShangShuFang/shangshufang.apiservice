@@ -21,4 +21,5 @@ public class StudentAbilitySummaryVO {
     private int onlineQuestionCount;
     private int onlineAnswerCount;
     private int joinProjectCount;
+    private int browseCount;
 }

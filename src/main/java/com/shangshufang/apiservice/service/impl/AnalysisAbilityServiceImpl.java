@@ -42,6 +42,8 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
     private StudentCourseExercisesDetailMapper courseExercisesDetailMapper;
     @Autowired
     private ComprehensiveExercisesAnalysisMapper comprehensiveExercisesAnalysisMapper;
+    @Autowired
+    private ResumeBrowsingHistoryMapper browsingHistoryMapper;
 
     private final Logger logger = LogManager.getLogger(AnalysisAbilityServiceImpl.class);
 
@@ -89,6 +91,10 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
                                 entity.getTechnologyID());
                 model.setFinishedUnitExercisesCount(comprehensiveExercisesCount);
 
+                //查询个人详细信息浏览量
+                int browseCount = browsingHistoryMapper.searchBrowsedByCompanyTotalCount(entity.getStudentID());
+                model.setBrowseCount(browseCount);
+
                 modelList.add(model);
             }
             return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
@@ -105,8 +111,10 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
             if (entity == null) {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
+            int browseCount = browsingHistoryMapper.searchBrowsedByCompanyTotalCount(studentID);
             StudentAbilitySummaryVO model = new StudentAbilitySummaryVO();
             ObjectConvertUtils.toBean(entity, model);
+            model.setBrowseCount(browseCount);
             return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.ONE_SEARCH_COUNT, model);
         } catch (Exception ex) {
             logger.error(ex.toString());
@@ -527,6 +535,9 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
             return 0;
         }
         for (TechnologyEntity technologyEntity : technologyEntityList) {
+            if (technologyEntity.getTechnologyID() == 0) {
+                continue;
+            }
             entity.setTechnologyID(technologyEntity.getTechnologyID());
             //region 取得当前技术的知识点总数量
             int knowledgeTotalCount = knowledgeMapper.searchTotalCount(
@@ -534,6 +545,9 @@ public class AnalysisAbilityServiceImpl implements AnalysisAbilityService {
                     LEARNING_PHASE_ID,
                     DataStatusConstant.ACTIVE);
             //endregion
+            if (knowledgeTotalCount == 0) {
+                continue;
+            }
 
             //region 取得当前学生已掌握的知识点数量及占比
             int learnedKnowledgeCount =

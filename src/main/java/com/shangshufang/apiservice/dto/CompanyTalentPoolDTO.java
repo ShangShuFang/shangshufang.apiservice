@@ -7,6 +7,7 @@ public class CompanyTalentPoolDTO extends BaseDTO {
     private int talentID;
     private int companyID;
     private int studentID;
+    private String interviewJob;
     private String interviewTime;
     private String interviewAddress;
     private String memo;

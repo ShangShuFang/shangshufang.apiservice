@@ -34,4 +34,5 @@ public class StudentAbilityAnalysisVO {
     private double standardScore;
     private float positionSite;
     private String abilityLevel;
+    private int browseCount;
 }

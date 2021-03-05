@@ -12,13 +12,21 @@ public class CompanyTalentPoolController {
     @Autowired
     private CompanyTalentPoolServiceImpl serviceImpl;
 
-    @RequestMapping(value = "/list/{pageNumber}/{pageSize}/{companyID}/{technologyID}/{dataStatus}", method = RequestMethod.GET)
-    public UnifiedResponse findList(@PathVariable("pageNumber") int pageNumber,
+    @RequestMapping(value = "/list/student/{pageNumber}/{pageSize}/{companyID}/{technologyID}/{dataStatus}", method = RequestMethod.GET)
+    public UnifiedResponse findListWithCompany(@PathVariable("pageNumber") int pageNumber,
                                     @PathVariable("pageSize") int pageSize,
                                     @PathVariable("companyID") int companyID,
                                     @PathVariable("technologyID") int technologyID,
                                     @PathVariable("dataStatus") String dataStatus) {
-        return serviceImpl.findList(pageNumber, pageSize, companyID, technologyID, dataStatus);
+        return serviceImpl.findListWithCompany(pageNumber, pageSize, companyID, technologyID, dataStatus);
+    }
+
+    @RequestMapping(value = "/list/company/{pageNumber}/{pageSize}/{studentID}/{dataStatus}", method = RequestMethod.GET)
+    public UnifiedResponse findListWithStudent(@PathVariable("pageNumber") int pageNumber,
+                                               @PathVariable("pageSize") int pageSize,
+                                               @PathVariable("studentID") int studentID,
+                                               @PathVariable("dataStatus") String dataStatus) {
+        return serviceImpl.findListWithStudent(pageNumber, pageSize, studentID, dataStatus);
     }
 
     @RequestMapping(value = "/any/{companyID}/{studentID}", method = RequestMethod.GET)

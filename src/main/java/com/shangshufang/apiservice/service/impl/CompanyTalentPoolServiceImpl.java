@@ -26,7 +26,7 @@ public class CompanyTalentPoolServiceImpl implements CompanyTalentPoolService {
     private final Logger logger = LogManager.getLogger(CompanyTalentPoolServiceImpl.class);
 
     @Override
-    public UnifiedResponse findList(int pageNumber, int pageSize, int companyID, int technologyID, String dataStatus) {
+    public UnifiedResponse findListWithCompany(int pageNumber, int pageSize, int companyID, int technologyID, String dataStatus) {
         try {
             int startIndex = (pageNumber - 1) * pageSize;
             List<CompanyTalentPoolVO> modelList = new ArrayList<>();
@@ -36,6 +36,29 @@ public class CompanyTalentPoolServiceImpl implements CompanyTalentPoolService {
                 return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
             }
             List<CompanyTalentPoolEntity> entityList =  companyTalentPoolMapper.searchList(startIndex, pageSize, companyID, technologyID, dataStatus);
+            for (CompanyTalentPoolEntity entity : entityList) {
+                CompanyTalentPoolVO model = new CompanyTalentPoolVO();
+                ObjectConvertUtils.toBean(entity, model);
+                modelList.add(model);
+            }
+            return UnifiedResponseManager.buildSearchSuccessResponse(totalCount, modelList);
+        } catch (Exception ex) {
+            logger.error(ex.toString());
+            return UnifiedResponseManager.buildExceptionResponse();
+        }
+    }
+
+    @Override
+    public UnifiedResponse findListWithStudent(int pageNumber, int pageSize, int studentID, String dataStatus) {
+        try {
+            int startIndex = (pageNumber - 1) * pageSize;
+            List<CompanyTalentPoolVO> modelList = new ArrayList<>();
+            dataStatus = dataStatus.equals(ParameterConstant.NO_PARAMETER) ? null : dataStatus;
+            int totalCount = companyTalentPoolMapper.searchTotalCountWithStudent(studentID, dataStatus);
+            if(totalCount == 0){
+                return UnifiedResponseManager.buildSearchSuccessResponse(ResponseDataConstant.NO_SEARCH_COUNT, ResponseDataConstant.NO_DATA);
+            }
+            List<CompanyTalentPoolEntity> entityList =  companyTalentPoolMapper.searchListWithStudent(startIndex, pageSize, studentID, dataStatus);
             for (CompanyTalentPoolEntity entity : entityList) {
                 CompanyTalentPoolVO model = new CompanyTalentPoolVO();
                 ObjectConvertUtils.toBean(entity, model);

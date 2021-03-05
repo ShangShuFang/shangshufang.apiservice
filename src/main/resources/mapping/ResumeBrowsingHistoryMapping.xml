@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shangshufang.apiservice.mapper.ResumeBrowsingHistoryMapper" >
+  <resultMap id="BaseResultMap" type="com.shangshufang.apiservice.entity.ResumeBrowsingHistoryEntity" >
+    <id column="browse_id" property="browseID" jdbcType="INTEGER" />
+    <result column="company_id" property="companyID" jdbcType="INTEGER" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="student_id" property="studentID" jdbcType="INTEGER" />
+    <result column="full_name" property="studentName" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="searchBrowseStudentTotalCount" resultType="java.lang.Integer">
+    SELECT
+    COUNT(1) AS total_count
+    FROM shangshufang_customer.resume_browsing_history
+    WHERE company_id = #{companyID,jdbcType=INTEGER};
+  </select>
+  <select id="searchBrowseStudentList" resultMap="BaseResultMap">
+    SELECT a.browse_id,
+           a.company_id,
+           b.company_name,
+           c.full_name,
+           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.resume_browsing_history a
+    LEFT JOIN shangshufang_customer.company b
+    ON a.company_id = b.company_id
+    LEFT JOIN shangshufang_customer.university_student c
+    ON a.student_id = c.student_id
+    WHERE a.company_id = #{companyID,jdbcType=INTEGER}
+    ORDER BY A.update_time DESC
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+  </select>
+
+  <select id="searchBrowsedByCompanyTotalCount" resultType="java.lang.Integer">
+    SELECT
+      COUNT(1) AS total_count
+    FROM shangshufang_customer.resume_browsing_history
+    WHERE student_id = #{studentID,jdbcType=INTEGER};
+  </select>
+  <select id="searchBrowsedByCompanyList" resultMap="BaseResultMap">
+    SELECT a.browse_id,
+           a.company_id,
+           b.company_name,
+           c.full_name,
+           DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') AS create_time,
+           DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') AS update_time
+    FROM shangshufang_customer.resume_browsing_history a
+           LEFT JOIN shangshufang_customer.company b
+                     ON a.company_id = b.company_id
+           LEFT JOIN shangshufang_customer.university_student c
+                     ON a.student_id = c.student_id
+    WHERE a.student_id = #{studentID,jdbcType=INTEGER}
+    ORDER BY A.update_time DESC
+    LIMIT #{startIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER};
+  </select>
+
+  <insert id="insert" parameterType="com.shangshufang.apiservice.entity.ResumeBrowsingHistoryEntity" >
+    INSERT INTO shangshufang_customer.resume_browsing_history (
+      company_id,
+      student_id,
+      create_user,
+      update_user
+    )
+    VALUES (
+      #{companyID, jdbcType=INTEGER},
+      #{studentID, jdbcType=VARCHAR},
+      #{createUser, jdbcType=VARCHAR},
+      #{updateUser, jdbcType=VARCHAR}
+    )
+  </insert>
+</mapper>
